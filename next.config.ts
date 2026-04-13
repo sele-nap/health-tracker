@@ -17,6 +17,9 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   serverExternalPackages: ["pg", "@prisma/adapter-pg", "@react-pdf/renderer", "canvas"],
+  images: {
+    remotePatterns: [new URL("https://api.qrserver.com/**")],
+  },
   async headers() {
     return [
       {

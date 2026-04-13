@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Image from "next/image";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -138,7 +139,7 @@ export function TwoFactorSection({ twoFactorEnabled }: Props) {
                 Scan this code with your authenticator app (Ente Auth, Aegis, etc.), then enter the 6-digit code below.
               </p>
               <div className="bg-white p-3 rounded-lg inline-block">
-                <img
+                <Image
                   src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(totpUri)}`}
                   alt="TOTP QR code"
                   width={160}

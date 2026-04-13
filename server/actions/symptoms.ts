@@ -2,6 +2,7 @@
 
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { encryptIfPresent } from "@/lib/crypto";
@@ -63,4 +64,22 @@ export async function createSymptomLog(
   });
 
   redirect("/symptoms");
+}
+
+export async function deleteSymptomLog(logId: string) {
+  const session = await auth.api.getSession({ headers: await headers() });
+
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  const log = await prisma.symptomLog.findUnique({
+    where: { id: logId },
+    select: { userId: true },
+  });
+
+  if (!log || log.userId !== session.user.id) throw new Error("Not found");
+
+  await prisma.symptomLog.delete({ where: { id: logId } });
+
+  revalidatePath("/symptoms");
+  revalidatePath("/");
 }

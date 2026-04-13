@@ -6,6 +6,7 @@ import { decryptIfPresent } from "@/lib/crypto";
 import { redirect } from "next/navigation";
 import { Plus, Activity } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DeleteSymptomLogButton } from "@/components/symptoms/DeleteSymptomLogButton";
 
 function moodEmoji(value: number | null) {
   if (!value) return "—";
@@ -76,13 +77,16 @@ export default async function SymptomsPage() {
           {decryptedLogs.map((log) => (
             <Card key={log.id}>
               <CardHeader className="pb-2">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-3">
                   <CardTitle className="text-sm font-medium text-muted-foreground">
                     {formatDate(log.loggedAt)}
                   </CardTitle>
-                  <span className="text-xl" aria-label={`Mood: ${log.overallMood ?? "not logged"}`}>
-                    {moodEmoji(log.overallMood)}
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-xl" aria-label={`Mood: ${log.overallMood ?? "not logged"}`}>
+                      {moodEmoji(log.overallMood)}
+                    </span>
+                    <DeleteSymptomLogButton logId={log.id} />
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>

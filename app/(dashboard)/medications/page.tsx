@@ -75,6 +75,12 @@ export default async function MedicationsPage() {
                       {med.isActive ? "active" : "inactive"}
                     </Badge>
                     <ToggleActiveButton medicationId={med.id} isActive={med.isActive} />
+                    <Link
+                      href={`/medications/${med.id}/edit`}
+                      className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      Edit
+                    </Link>
                   </div>
                 </div>
               </CardHeader>
