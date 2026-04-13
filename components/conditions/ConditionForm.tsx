@@ -1,0 +1,65 @@
+"use client";
+
+import { useActionState } from "react";
+import { createCondition, type ConditionState } from "@/server/actions/conditions";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
+
+const initialState: ConditionState = {};
+
+export function ConditionForm() {
+  const [state, formAction, pending] = useActionState(createCondition, initialState);
+
+  return (
+    <form action={formAction} className="space-y-6">
+      {state.errors?._form && (
+        <p className="text-sm text-destructive bg-destructive/10 px-4 py-3 rounded-lg">
+          {state.errors._form[0]}
+        </p>
+      )}
+
+      <div className="space-y-2">
+        <Label htmlFor="name">Condition name</Label>
+        <Input
+          id="name"
+          name="name"
+          placeholder="e.g. Lupus, Generalised Anxiety Disorder"
+          className={cn(state.errors?.name && "border-destructive")}
+        />
+        {state.errors?.name && (
+          <p className="text-xs text-destructive">{state.errors.name[0]}</p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="diagnosedAt">
+          Diagnosis date{" "}
+          <span className="text-muted-foreground font-normal text-xs">(optional)</span>
+        </Label>
+        <Input
+          id="diagnosedAt"
+          name="diagnosedAt"
+          type="date"
+          className={cn(state.errors?.diagnosedAt && "border-destructive")}
+        />
+        {state.errors?.diagnosedAt && (
+          <p className="text-xs text-destructive">{state.errors.diagnosedAt[0]}</p>
+        )}
+      </div>
+
+      <div className="flex items-center gap-4">
+        <Button type="submit" disabled={pending}>
+          {pending ? "Saving…" : "Add condition"}
+        </Button>
+        <a
+          href="/conditions"
+          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          Cancel
+        </a>
+      </div>
+    </form>
+  );
+}

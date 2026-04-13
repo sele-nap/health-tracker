@@ -8,6 +8,7 @@ import { Plus, CalendarDays } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AppointmentStatusButton } from "@/components/appointments/AppointmentStatusButton";
+import { AppointmentSummaryForm } from "@/components/appointments/AppointmentSummaryForm";
 
 const STATUS_LABELS: Record<string, string> = {
   UPCOMING: "upcoming",
@@ -50,6 +51,7 @@ export default async function AppointmentsPage() {
     ...appt,
     doctorName: decryptIfPresent(appt.doctorName),
     location: decryptIfPresent(appt.location),
+    summary: decryptIfPresent(appt.summary),
   }));
 
   const upcoming = decrypted.filter((a) => a.status === "UPCOMING");
@@ -122,6 +124,7 @@ type Appointment = {
   durationMin: number | null;
   status: string;
   purpose: string | null;
+  summary: string | null;
 };
 
 function AppointmentCard({ appointment: a }: { appointment: Appointment }) {
@@ -148,8 +151,16 @@ function AppointmentCard({ appointment: a }: { appointment: Appointment }) {
         )}
         {a.location && <p>{a.location}</p>}
         {a.purpose && <p className="italic text-xs mt-1">{a.purpose}</p>}
-        <div className="pt-2">
+        {a.summary && (
+          <p className="text-xs text-foreground/70 bg-muted/30 rounded-md px-3 py-2 mt-2 italic">
+            {a.summary}
+          </p>
+        )}
+        <div className="pt-2 flex flex-wrap items-center gap-4">
           <AppointmentStatusButton appointmentId={a.id} currentStatus={a.status} />
+          {a.status === "COMPLETED" && (
+            <AppointmentSummaryForm appointmentId={a.id} existingSummary={a.summary} />
+          )}
         </div>
       </CardContent>
     </Card>

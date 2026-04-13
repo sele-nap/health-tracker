@@ -2,6 +2,7 @@
 
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { encryptIfPresent } from "@/lib/crypto";
@@ -89,4 +90,44 @@ export async function updateAppointmentStatus(
     where: { id: appointmentId },
     data: { status },
   });
+}
+
+export type AppointmentSummaryState = {
+  success?: boolean;
+  errors?: { summary?: string[]; _form?: string[] };
+};
+
+export async function saveAppointmentSummary(
+  appointmentId: string,
+  _prevState: AppointmentSummaryState,
+  formData: FormData
+): Promise<AppointmentSummaryState> {
+  const session = await auth.api.getSession({ headers: await headers() });
+
+  if (!session?.user?.id) {
+    return { errors: { _form: ["Unauthorized"] } };
+  }
+
+  const summary = (formData.get("summary") as string | null)?.trim() || null;
+
+  if (summary && summary.length > 3000) {
+    return { errors: { summary: ["Summary is too long"] } };
+  }
+
+  const appointment = await prisma.appointment.findUnique({
+    where: { id: appointmentId },
+    select: { userId: true },
+  });
+
+  if (!appointment || appointment.userId !== session.user.id) {
+    return { errors: { _form: ["Not found"] } };
+  }
+
+  await prisma.appointment.update({
+    where: { id: appointmentId },
+    data: { summary: encryptIfPresent(summary) },
+  });
+
+  revalidatePath("/appointments");
+  return { success: true };
 }

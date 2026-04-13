@@ -8,6 +8,7 @@ import {
   Pill,
   CalendarDays,
   TrendingUp,
+  HeartPulse,
   Settings2,
   LogOut,
 } from "lucide-react";
@@ -20,6 +21,7 @@ const navItems = [
   { href: "/symptoms", icon: Activity, label: "Symptoms" },
   { href: "/medications", icon: Pill, label: "Medications" },
   { href: "/appointments", icon: CalendarDays, label: "Appointments" },
+  { href: "/conditions", icon: HeartPulse, label: "Conditions" },
   { href: "/patterns", icon: TrendingUp, label: "Patterns" },
 ];
 

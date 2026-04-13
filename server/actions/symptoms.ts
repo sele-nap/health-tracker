@@ -62,5 +62,5 @@ export async function createSymptomLog(
     },
   });
 
-  redirect("/");
+  redirect("/symptoms");
 }
