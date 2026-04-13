@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { SettingsForms } from "@/components/settings/SettingsForms";
+import { TwoFactorSection } from "@/components/settings/TwoFactorSection";
 
 export default async function SettingsPage() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -20,6 +21,10 @@ export default async function SettingsPage() {
       <SettingsForms
         currentName={session.user.name ?? ""}
         email={session.user.email}
+      />
+
+      <TwoFactorSection
+        twoFactorEnabled={session.user.twoFactorEnabled ?? false}
       />
     </div>
   );

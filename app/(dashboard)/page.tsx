@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { CalendarDays, Pill, Activity, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { MedicationChecklist } from "@/components/medications/MedicationChecklist";
 
 function getGreeting() {
   const hour = new Date().getHours();
@@ -56,7 +57,7 @@ export default async function DashboardPage() {
   const sevenDaysAgo = new Date(todayStart.getTime() - 7 * 24 * 60 * 60 * 1000);
   const thirtyDaysAgo = new Date(todayStart.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-  const [todayLog, activeMeds, nextAppointment, recentLogs, streakLogs] = await Promise.all([
+  const [todayLog, activeMedsData, nextAppointment, recentLogs, streakLogs] = await Promise.all([
     prisma.symptomLog.findFirst({
       where: {
         userId: session.user.id,
@@ -64,8 +65,20 @@ export default async function DashboardPage() {
       },
       select: { overallMood: true },
     }),
-    prisma.medication.count({
+    prisma.medication.findMany({
       where: { userId: session.user.id, isActive: true },
+      orderBy: { name: "asc" },
+      select: {
+        id: true,
+        name: true,
+        dosage: true,
+        form: true,
+        logs: {
+          where: { scheduledFor: { gte: todayStart, lt: todayEnd } },
+          select: { status: true },
+          take: 1,
+        },
+      },
     }),
     prisma.appointment.findFirst({
       where: {
@@ -93,6 +106,18 @@ export default async function DashboardPage() {
       orderBy: { loggedAt: "desc" },
     }),
   ]);
+
+  const activeMeds = activeMedsData.length;
+
+  const checklistMeds = activeMedsData.map((m) => ({
+    id: m.id,
+    name: m.name,
+    dosage: m.dosage,
+    form: m.form,
+    todayStatus: (m.logs[0]?.status ?? null) as "TAKEN" | "SKIPPED" | "PENDING" | null,
+  }));
+
+  const takenToday = checklistMeds.filter((m) => m.todayStatus === "TAKEN").length;
 
   const avgMood =
     recentLogs.length > 0
@@ -168,9 +193,11 @@ export default async function DashboardPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-heading italic text-foreground">{activeMeds}</p>
+            <p className="text-2xl font-heading italic text-foreground">
+              {activeMeds === 0 ? "—" : `${takenToday}/${activeMeds}`}
+            </p>
             <p className="text-xs text-muted-foreground mt-1">
-              {activeMeds === 1 ? "active medication" : "active medications"}
+              {activeMeds === 0 ? "none active" : "taken today"}
             </p>
           </CardContent>
         </Card>
@@ -267,14 +294,7 @@ export default async function DashboardPage() {
                 .
               </p>
             ) : (
-              <p className="text-sm text-muted-foreground">
-                You have {activeMeds} active{" "}
-                {activeMeds === 1 ? "medication" : "medications"}.{" "}
-                <Link href="/medications" className="text-primary underline underline-offset-4">
-                  View all
-                </Link>
-                .
-              </p>
+              <MedicationChecklist medications={checklistMeds} />
             )}
           </CardContent>
         </Card>

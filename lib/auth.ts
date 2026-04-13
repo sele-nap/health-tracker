@@ -10,9 +10,6 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: false,
-    password: {
-      minLength: 8,
-    },
   },
   plugins: [
     twoFactor({
