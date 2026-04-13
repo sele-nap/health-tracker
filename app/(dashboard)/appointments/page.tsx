@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import { Plus, CalendarDays } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { AppointmentStatusButton } from "@/components/appointments/AppointmentStatusButton";
 
 const STATUS_LABELS: Record<string, string> = {
   UPCOMING: "upcoming",
@@ -129,9 +130,11 @@ function AppointmentCard({ appointment: a }: { appointment: Appointment }) {
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between gap-3">
           <CardTitle className="font-heading italic text-lg leading-tight">{a.title}</CardTitle>
-          <Badge variant={STATUS_VARIANTS[a.status] ?? "secondary"}>
-            {STATUS_LABELS[a.status] ?? a.status.toLowerCase()}
-          </Badge>
+          <div className="flex items-center gap-2 shrink-0">
+            <Badge variant={STATUS_VARIANTS[a.status] ?? "secondary"}>
+              {STATUS_LABELS[a.status] ?? a.status.toLowerCase()}
+            </Badge>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-1 text-sm text-muted-foreground">
@@ -145,6 +148,9 @@ function AppointmentCard({ appointment: a }: { appointment: Appointment }) {
         )}
         {a.location && <p>{a.location}</p>}
         {a.purpose && <p className="italic text-xs mt-1">{a.purpose}</p>}
+        <div className="pt-2">
+          <AppointmentStatusButton appointmentId={a.id} currentStatus={a.status} />
+        </div>
       </CardContent>
     </Card>
   );

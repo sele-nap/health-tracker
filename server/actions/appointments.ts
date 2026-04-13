@@ -65,3 +65,28 @@ export async function createAppointment(
 
   redirect("/appointments");
 }
+
+export async function updateAppointmentStatus(
+  appointmentId: string,
+  status: "COMPLETED" | "CANCELLED" | "RESCHEDULED" | "UPCOMING"
+) {
+  const session = await auth.api.getSession({ headers: await headers() });
+
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized");
+  }
+
+  const appointment = await prisma.appointment.findUnique({
+    where: { id: appointmentId },
+    select: { userId: true },
+  });
+
+  if (!appointment || appointment.userId !== session.user.id) {
+    throw new Error("Not found");
+  }
+
+  await prisma.appointment.update({
+    where: { id: appointmentId },
+    data: { status },
+  });
+}

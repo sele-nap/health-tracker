@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import { Plus, Pill } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { ToggleActiveButton } from "@/components/medications/ToggleActiveButton";
 
 function formatDate(date: Date) {
   return date.toLocaleDateString("en-US", {
@@ -69,9 +70,12 @@ export default async function MedicationsPage() {
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between gap-3">
                   <CardTitle className="font-heading italic text-lg">{med.name}</CardTitle>
-                  <Badge variant={med.isActive ? "default" : "secondary"}>
-                    {med.isActive ? "active" : "inactive"}
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    <Badge variant={med.isActive ? "default" : "secondary"}>
+                      {med.isActive ? "active" : "inactive"}
+                    </Badge>
+                    <ToggleActiveButton medicationId={med.id} isActive={med.isActive} />
+                  </div>
                 </div>
               </CardHeader>
               <CardContent className="space-y-1 text-sm text-muted-foreground">
