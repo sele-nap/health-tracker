@@ -54,8 +54,9 @@ export default async function DashboardPage() {
   const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
 
   const sevenDaysAgo = new Date(todayStart.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const thirtyDaysAgo = new Date(todayStart.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-  const [todayLog, activeMeds, nextAppointment, recentLogs] = await Promise.all([
+  const [todayLog, activeMeds, nextAppointment, recentLogs, streakLogs] = await Promise.all([
     prisma.symptomLog.findFirst({
       where: {
         userId: session.user.id,
@@ -83,12 +84,38 @@ export default async function DashboardPage() {
       },
       select: { overallMood: true },
     }),
+    prisma.symptomLog.findMany({
+      where: {
+        userId: session.user.id,
+        loggedAt: { gte: thirtyDaysAgo },
+      },
+      select: { loggedAt: true },
+      orderBy: { loggedAt: "desc" },
+    }),
   ]);
 
   const avgMood =
     recentLogs.length > 0
       ? recentLogs.reduce((sum, l) => sum + (l.overallMood ?? 0), 0) / recentLogs.length
       : null;
+
+  const loggedDays = new Set(
+    streakLogs.map((l) => {
+      const d = l.loggedAt;
+      return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+    })
+  );
+
+  let streak = 0;
+  for (let i = 0; i < 30; i++) {
+    const d = new Date(todayStart.getTime() - i * 24 * 60 * 60 * 1000);
+    const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+    if (loggedDays.has(key)) {
+      streak++;
+    } else {
+      break;
+    }
+  }
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -124,6 +151,11 @@ export default async function DashboardPage() {
                 <p className="text-2xl font-heading italic text-foreground">—</p>
                 <p className="text-xs text-muted-foreground mt-1">Not logged yet</p>
               </>
+            )}
+            {streak > 0 && (
+              <p className="text-xs text-primary mt-2">
+                🔥 {streak} day{streak === 1 ? "" : "s"} in a row
+              </p>
             )}
           </CardContent>
         </Card>

@@ -12,7 +12,7 @@ import {
   Settings2,
   LogOut,
 } from "lucide-react";
-import { signOut } from "@/lib/auth-client";
+import { signOut, useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 
@@ -28,11 +28,14 @@ const navItems = [
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const { data: session } = useSession();
 
   async function handleSignOut() {
     await signOut();
     router.push("/login");
   }
+
+  const displayName = session?.user?.name ?? session?.user?.email ?? null;
 
   return (
     <aside className="flex flex-col w-16 md:w-56 shrink-0 h-screen sticky top-0 bg-sidebar border-r border-sidebar-border">
@@ -64,7 +67,12 @@ export default function Sidebar() {
         })}
       </nav>
 
-      <div className="p-2 pb-4 border-t border-sidebar-border">
+      <div className="p-2 pb-4 border-t border-sidebar-border space-y-1">
+        {displayName && (
+          <div className="hidden md:block px-3 py-2 text-xs text-muted-foreground truncate">
+            {displayName}
+          </div>
+        )}
         <Link
           href="/settings"
           className={cn(
