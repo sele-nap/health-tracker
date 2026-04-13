@@ -16,6 +16,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  serverExternalPackages: ["pg", "@prisma/adapter-pg"],
   async headers() {
     return [
       {

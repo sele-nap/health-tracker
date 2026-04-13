@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client"
-  output   = "../app/generated/prisma"
+  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -13,10 +13,12 @@ model User {
   emailVerified  Boolean   @default(false)
   name           String?
   image          String?
+  twoFactorEnabled Boolean  @default(false)
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
   sessions       Session[]
+  twoFactors     TwoFactor[]
   accounts       Account[]
   conditions     UserCondition[]
   symptomLogs    SymptomLog[]
@@ -224,4 +226,15 @@ model AppointmentNote {
   appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
 
   @@index([appointmentId])
+}
+
+model TwoFactor {
+  id          String  @id @default(cuid())
+  userId      String
+  secret      String
+  backupCodes String
+
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
