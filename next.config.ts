@@ -16,7 +16,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ["pg", "@prisma/adapter-pg"],
+  serverExternalPackages: ["pg", "@prisma/adapter-pg", "@react-pdf/renderer", "canvas"],
   async headers() {
     return [
       {
