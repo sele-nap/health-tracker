@@ -161,6 +161,12 @@ function AppointmentCard({ appointment: a }: { appointment: Appointment }) {
           {a.status === "COMPLETED" && (
             <AppointmentSummaryForm appointmentId={a.id} existingSummary={a.summary} />
           )}
+          <a
+            href={`/appointments/${a.id}/edit`}
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Edit
+          </a>
         </div>
       </CardContent>
     </Card>

@@ -66,6 +66,62 @@ export async function createSymptomLog(
   redirect("/symptoms");
 }
 
+export async function updateSymptomLog(
+  logId: string,
+  _prevState: SymptomLogState,
+  formData: FormData
+): Promise<SymptomLogState> {
+  const session = await auth.api.getSession({ headers: await headers() });
+
+  if (!session?.user?.id) {
+    return { errors: { _form: ["Unauthorized"] } };
+  }
+
+  const existing = await prisma.symptomLog.findUnique({
+    where: { id: logId },
+    select: { userId: true },
+  });
+
+  if (!existing || existing.userId !== session.user.id) {
+    return { errors: { _form: ["Not found"] } };
+  }
+
+  const raw = {
+    loggedAt: formData.get("loggedAt"),
+    overallMood: formData.get("overallMood") || undefined,
+    energyLevel: formData.get("energyLevel") || undefined,
+    sleepHours: formData.get("sleepHours") || undefined,
+    sleepQuality: formData.get("sleepQuality") || undefined,
+    stressLevel: formData.get("stressLevel") || undefined,
+    notes: formData.get("notes") || undefined,
+  };
+
+  const parsed = symptomLogSchema.safeParse(raw);
+
+  if (!parsed.success) {
+    return { errors: parsed.error.flatten().fieldErrors };
+  }
+
+  const { loggedAt, overallMood, energyLevel, sleepHours, sleepQuality, stressLevel, notes } =
+    parsed.data;
+
+  await prisma.symptomLog.update({
+    where: { id: logId },
+    data: {
+      loggedAt: new Date(loggedAt),
+      overallMood: overallMood ?? null,
+      energyLevel: energyLevel ?? null,
+      sleepHours: sleepHours ?? null,
+      sleepQuality: sleepQuality ?? null,
+      stressLevel: stressLevel ?? null,
+      notes: encryptIfPresent(notes ?? null),
+    },
+  });
+
+  revalidatePath("/symptoms");
+  redirect("/symptoms");
+}
+
 export async function deleteSymptomLog(logId: string) {
   const session = await auth.api.getSession({ headers: await headers() });
 

@@ -85,6 +85,12 @@ export default async function SymptomsPage() {
                     <span className="text-xl" aria-label={`Mood: ${log.overallMood ?? "not logged"}`}>
                       {moodEmoji(log.overallMood)}
                     </span>
+                    <Link
+                      href={`/symptoms/${log.id}/edit`}
+                      className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      Edit
+                    </Link>
                     <DeleteSymptomLogButton logId={log.id} />
                   </div>
                 </div>
