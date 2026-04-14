@@ -28,23 +28,23 @@ type Props = {
 };
 
 const COLORS = {
-  mood: "#c8963c",
-  energy: "#6b9e6b",
-  stress: "#b5673e",
-  sleep: "#7a8fa0",
-  sleepQuality: "#a07aa0",
+  mood: "#8fba70",
+  energy: "#4e9e78",
+  stress: "#c4775a",
+  sleep: "#5a7aaa",
+  sleepQuality: "#9070b8",
 };
 
 const tooltipStyle = {
-  backgroundColor: "#1c1410",
-  border: "1px solid #3a2e24",
+  backgroundColor: "#0e180f",
+  border: "1px solid #253525",
   borderRadius: "8px",
-  color: "#e8d5b7",
+  color: "#c8e0c0",
   fontSize: "12px",
 };
 
 const labelStyle = {
-  color: "#8a7060",
+  color: "#6a8a6a",
   fontSize: "11px",
 };
 
@@ -81,22 +81,22 @@ export function WellbeingChart({ data }: Props) {
             <stop offset="95%" stopColor={COLORS.stress} stopOpacity={0} />
           </linearGradient>
         </defs>
-        <CartesianGrid strokeDasharray="3 3" stroke="#2e2420" />
+        <CartesianGrid strokeDasharray="3 3" stroke="#1a2e1a" />
         <XAxis
           dataKey="date"
-          tick={{ fill: "#8a7060", fontSize: 11 }}
-          axisLine={{ stroke: "#3a2e24" }}
+          tick={{ fill: "#6a8a6a", fontSize: 11 }}
+          axisLine={{ stroke: "#2a3d2a" }}
           tickLine={false}
         />
         <YAxis
           domain={[1, 10]}
           ticks={[1, 3, 5, 7, 10]}
-          tick={{ fill: "#8a7060", fontSize: 11 }}
+          tick={{ fill: "#6a8a6a", fontSize: 11 }}
           axisLine={false}
           tickLine={false}
         />
         <Tooltip contentStyle={tooltipStyle} labelStyle={labelStyle} />
-        <Legend wrapperStyle={{ fontSize: "12px", color: "#8a7060", paddingTop: "8px" }} />
+        <Legend wrapperStyle={{ fontSize: "12px", color: "#6a8a6a", paddingTop: "8px" }} />
         <Area type="monotone" dataKey="mood" stroke={COLORS.mood} strokeWidth={2} fill="url(#gradMood)" dot={false} connectNulls name={tr.patterns.chartMood} />
         <Area type="monotone" dataKey="energy" stroke={COLORS.energy} strokeWidth={2} fill="url(#gradEnergy)" dot={false} connectNulls name={tr.patterns.chartEnergy} />
         <Area type="monotone" dataKey="stress" stroke={COLORS.stress} strokeWidth={2} fill="url(#gradStress)" dot={false} connectNulls name={tr.patterns.chartStress} />
@@ -114,20 +114,20 @@ export function SleepChart({ data }: Props) {
   return (
     <ResponsiveContainer width="100%" height={240}>
       <BarChart data={filtered} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#2e2420" vertical={false} />
+        <CartesianGrid strokeDasharray="3 3" stroke="#1a2e1a" vertical={false} />
         <XAxis
           dataKey="date"
-          tick={{ fill: "#8a7060", fontSize: 11 }}
-          axisLine={{ stroke: "#3a2e24" }}
+          tick={{ fill: "#6a8a6a", fontSize: 11 }}
+          axisLine={{ stroke: "#2a3d2a" }}
           tickLine={false}
         />
         <YAxis
-          tick={{ fill: "#8a7060", fontSize: 11 }}
+          tick={{ fill: "#6a8a6a", fontSize: 11 }}
           axisLine={false}
           tickLine={false}
         />
         <Tooltip contentStyle={tooltipStyle} labelStyle={labelStyle} />
-        <Legend wrapperStyle={{ fontSize: "12px", color: "#8a7060", paddingTop: "8px" }} />
+        <Legend wrapperStyle={{ fontSize: "12px", color: "#6a8a6a", paddingTop: "8px" }} />
         <Bar dataKey="sleepHours" fill={COLORS.sleep} radius={[3, 3, 0, 0]} name={tr.patterns.chartHours} />
         <Bar dataKey="sleepQuality" fill={COLORS.sleepQuality} radius={[3, 3, 0, 0]} name={tr.patterns.chartQuality} />
       </BarChart>

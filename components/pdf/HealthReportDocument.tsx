@@ -1,30 +1,31 @@
 import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
+import type { en } from "@/lib/i18n";
 
 const styles = StyleSheet.create({
   page: {
     fontFamily: "Helvetica",
     fontSize: 10,
-    color: "#1a1210",
+    color: "#1a2a1a",
     paddingTop: 48,
     paddingBottom: 48,
     paddingHorizontal: 48,
-    backgroundColor: "#fdf8f2",
+    backgroundColor: "#f4f8f2",
   },
   header: {
     marginBottom: 28,
     paddingBottom: 16,
     borderBottomWidth: 1,
-    borderBottomColor: "#d4b896",
+    borderBottomColor: "#b0cca8",
   },
   headerTitle: {
     fontSize: 22,
     fontFamily: "Helvetica-Bold",
-    color: "#1a1210",
+    color: "#1a2a1a",
     marginBottom: 4,
   },
   headerMeta: {
     fontSize: 9,
-    color: "#8a7060",
+    color: "#5a7a5a",
   },
   section: {
     marginBottom: 22,
@@ -32,58 +33,58 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 13,
     fontFamily: "Helvetica-Bold",
-    color: "#1a1210",
+    color: "#1a2a1a",
     marginBottom: 10,
     paddingBottom: 4,
     borderBottomWidth: 0.5,
-    borderBottomColor: "#d4b896",
+    borderBottomColor: "#b0cca8",
   },
   tableRow: {
     flexDirection: "row",
     paddingVertical: 5,
     borderBottomWidth: 0.5,
-    borderBottomColor: "#e8ddd4",
+    borderBottomColor: "#cce0c4",
   },
   tableHeader: {
     flexDirection: "row",
     paddingVertical: 5,
-    backgroundColor: "#f0e8dc",
+    backgroundColor: "#ddeedd",
     marginBottom: 2,
   },
   cell: {
     flex: 1,
     fontSize: 9,
-    color: "#3a2e24",
+    color: "#2a3a2a",
     paddingRight: 4,
   },
   cellBold: {
     flex: 1,
     fontSize: 9,
     fontFamily: "Helvetica-Bold",
-    color: "#1a1210",
+    color: "#1a2a1a",
     paddingRight: 4,
   },
   medRow: {
     flexDirection: "row",
     paddingVertical: 6,
     borderBottomWidth: 0.5,
-    borderBottomColor: "#e8ddd4",
+    borderBottomColor: "#cce0c4",
     gap: 8,
   },
   medName: {
     width: 160,
     fontSize: 9,
     fontFamily: "Helvetica-Bold",
-    color: "#1a1210",
+    color: "#1a2a1a",
   },
   medDetail: {
     flex: 1,
     fontSize: 9,
-    color: "#3a2e24",
+    color: "#2a3a2a",
   },
   emptyText: {
     fontSize: 9,
-    color: "#8a7060",
+    color: "#7a9a7a",
     fontStyle: "italic",
   },
   footer: {
@@ -93,27 +94,27 @@ const styles = StyleSheet.create({
     right: 48,
     textAlign: "center",
     fontSize: 8,
-    color: "#b0a090",
+    color: "#9aaa9a",
   },
 });
 
-function formatDate(date: Date) {
-  return date.toLocaleDateString("en-US", {
+function formatDate(date: Date, locale: string) {
+  return date.toLocaleDateString(locale, {
     year: "numeric",
     month: "long",
     day: "numeric",
   });
 }
 
-function formatDateShort(date: Date) {
-  return date.toLocaleDateString("en-US", {
+function formatDateShort(date: Date, locale: string) {
+  return date.toLocaleDateString(locale, {
     month: "short",
     day: "numeric",
   });
 }
 
-function formatDateTime(date: Date) {
-  return date.toLocaleDateString("en-US", {
+function formatDateTime(date: Date, locale: string) {
+  return date.toLocaleDateString(locale, {
     month: "short",
     day: "numeric",
     year: "numeric",
@@ -154,6 +155,7 @@ type Props = {
   medications: ReportMedication[];
   symptomLogs: ReportSymptomLog[];
   upcomingAppointments: ReportAppointment[];
+  tr: typeof en;
 };
 
 export function HealthReportDocument({
@@ -162,29 +164,32 @@ export function HealthReportDocument({
   medications,
   symptomLogs,
   upcomingAppointments,
+  tr,
 }: Props) {
+  const dateLocale = tr.dateLocale;
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Health Report</Text>
+          <Text style={styles.headerTitle}>{tr.pdf.title}</Text>
           <Text style={styles.headerMeta}>
-            {userName ? `${userName} · ` : ""}Generated {formatDate(generatedAt)}
+            {tr.pdf.generatedBy(userName, formatDate(generatedAt, dateLocale))}
           </Text>
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Active Medications</Text>
+          <Text style={styles.sectionTitle}>{tr.pdf.activeMeds}</Text>
           {medications.length === 0 ? (
-            <Text style={styles.emptyText}>No active medications.</Text>
+            <Text style={styles.emptyText}>{tr.pdf.noMeds}</Text>
           ) : (
             <>
               <View style={styles.tableHeader}>
-                <Text style={[styles.cellBold, { width: 160 }]}>Name</Text>
-                <Text style={styles.cellBold}>Dosage</Text>
-                <Text style={styles.cellBold}>Form</Text>
-                <Text style={styles.cellBold}>Prescribed by</Text>
-                <Text style={styles.cellBold}>Since</Text>
+                <Text style={[styles.cellBold, { width: 160 }]}>{tr.pdf.colName}</Text>
+                <Text style={styles.cellBold}>{tr.pdf.colDosage}</Text>
+                <Text style={styles.cellBold}>{tr.pdf.colForm}</Text>
+                <Text style={styles.cellBold}>{tr.pdf.colPrescribedBy}</Text>
+                <Text style={styles.cellBold}>{tr.pdf.colSince}</Text>
               </View>
               {medications.map((med, i) => (
                 <View key={i} style={styles.medRow}>
@@ -192,7 +197,7 @@ export function HealthReportDocument({
                   <Text style={styles.medDetail}>{med.dosage}</Text>
                   <Text style={styles.medDetail}>{med.form ?? "—"}</Text>
                   <Text style={styles.medDetail}>{med.prescribedBy ?? "—"}</Text>
-                  <Text style={styles.medDetail}>{formatDateShort(med.startDate)}</Text>
+                  <Text style={styles.medDetail}>{formatDateShort(med.startDate, dateLocale)}</Text>
                 </View>
               ))}
             </>
@@ -201,24 +206,24 @@ export function HealthReportDocument({
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>
-            Symptom Log — Last 30 days ({symptomLogs.length} entries)
+            {tr.pdf.symptomLog(symptomLogs.length)}
           </Text>
           {symptomLogs.length === 0 ? (
-            <Text style={styles.emptyText}>No entries in this period.</Text>
+            <Text style={styles.emptyText}>{tr.pdf.noEntries}</Text>
           ) : (
             <>
               <View style={styles.tableHeader}>
-                <Text style={[styles.cellBold, { width: 72 }]}>Date</Text>
-                <Text style={styles.cellBold}>Mood</Text>
-                <Text style={styles.cellBold}>Energy</Text>
-                <Text style={styles.cellBold}>Stress</Text>
-                <Text style={styles.cellBold}>Sleep</Text>
-                <Text style={[styles.cellBold, { flex: 2 }]}>Notes</Text>
+                <Text style={[styles.cellBold, { width: 72 }]}>{tr.pdf.colDate}</Text>
+                <Text style={styles.cellBold}>{tr.pdf.colMood}</Text>
+                <Text style={styles.cellBold}>{tr.pdf.colEnergy}</Text>
+                <Text style={styles.cellBold}>{tr.pdf.colStress}</Text>
+                <Text style={styles.cellBold}>{tr.pdf.colSleep}</Text>
+                <Text style={[styles.cellBold, { flex: 2 }]}>{tr.pdf.colNotes}</Text>
               </View>
               {symptomLogs.map((log, i) => (
                 <View key={i} style={styles.tableRow}>
                   <Text style={[styles.cell, { width: 72 }]}>
-                    {formatDateShort(log.loggedAt)}
+                    {formatDateShort(log.loggedAt, dateLocale)}
                   </Text>
                   <Text style={styles.cell}>{log.overallMood ?? "—"}</Text>
                   <Text style={styles.cell}>{log.energyLevel ?? "—"}</Text>
@@ -237,7 +242,7 @@ export function HealthReportDocument({
 
         {upcomingAppointments.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Upcoming Appointments</Text>
+            <Text style={styles.sectionTitle}>{tr.pdf.upcomingAppts}</Text>
             {upcomingAppointments.map((appt, i) => (
               <View key={i} style={styles.tableRow}>
                 <Text style={[styles.cellBold, { flex: 2 }]}>{appt.title}</Text>
@@ -245,14 +250,14 @@ export function HealthReportDocument({
                   {appt.doctorName ?? ""}
                   {appt.specialty ? ` · ${appt.specialty}` : ""}
                 </Text>
-                <Text style={styles.cell}>{formatDateTime(appt.scheduledAt)}</Text>
+                <Text style={styles.cell}>{formatDateTime(appt.scheduledAt, dateLocale)}</Text>
               </View>
             ))}
           </View>
         )}
 
         <Text style={styles.footer}>
-          Health Tracker · Confidential · {formatDate(generatedAt)}
+          {tr.pdf.footer(formatDate(generatedAt, dateLocale))}
         </Text>
       </Page>
     </Document>

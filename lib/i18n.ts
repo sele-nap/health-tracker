@@ -251,6 +251,31 @@ export const en = {
     chartQuality: "Quality (/10)",
   },
 
+  // PDF report
+  pdf: {
+    title: "Health Report",
+    generatedBy: (name: string | null, date: string) =>
+      `${name ? `${name} · ` : ""}Generated ${date}`,
+    activeMeds: "Active Medications",
+    noMeds: "No active medications.",
+    colName: "Name",
+    colDosage: "Dosage",
+    colForm: "Form",
+    colPrescribedBy: "Prescribed by",
+    colSince: "Since",
+    symptomLog: (n: number) =>
+      `Symptom Log — Last 30 days (${n} entr${n === 1 ? "y" : "ies"})`,
+    noEntries: "No entries in this period.",
+    colDate: "Date",
+    colMood: "Mood",
+    colEnergy: "Energy",
+    colStress: "Stress",
+    colSleep: "Sleep",
+    colNotes: "Notes",
+    upcomingAppts: "Upcoming Appointments",
+    footer: (date: string) => `Health Tracker · Confidential · ${date}`,
+  },
+
   // Settings
   settings: {
     title: "Settings",
@@ -537,6 +562,30 @@ export const fr: typeof en = {
     chartStress: "Stress",
     chartHours: "Heures",
     chartQuality: "Qualité (/10)",
+  },
+
+  pdf: {
+    title: "Rapport de santé",
+    generatedBy: (name: string | null, date: string) =>
+      `${name ? `${name} · ` : ""}Généré le ${date}`,
+    activeMeds: "Médicaments actifs",
+    noMeds: "Aucun médicament actif.",
+    colName: "Nom",
+    colDosage: "Dosage",
+    colForm: "Forme",
+    colPrescribedBy: "Prescrit par",
+    colSince: "Depuis",
+    symptomLog: (n: number) =>
+      `Journal des symptômes — 30 derniers jours (${n} entrée${n !== 1 ? "s" : ""})`,
+    noEntries: "Aucune entrée sur cette période.",
+    colDate: "Date",
+    colMood: "Humeur",
+    colEnergy: "Énergie",
+    colStress: "Stress",
+    colSleep: "Sommeil",
+    colNotes: "Notes",
+    upcomingAppts: "Rendez-vous à venir",
+    footer: (date: string) => `Health Tracker · Confidentiel · ${date}`,
   },
 
   settings: {

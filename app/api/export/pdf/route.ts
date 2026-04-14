@@ -2,12 +2,16 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { decryptIfPresent } from "@/lib/crypto";
+import { getT } from "@/lib/i18n";
 import { renderToBuffer } from "@react-pdf/renderer";
 import { HealthReportDocument } from "@/components/pdf/HealthReportDocument";
 import React from "react";
 
 export async function GET() {
-  const session = await auth.api.getSession({ headers: await headers() });
+  const [session, tr] = await Promise.all([
+    auth.api.getSession({ headers: await headers() }),
+    getT(),
+  ]);
 
   if (!session?.user?.id) {
     return new Response("Unauthorized", { status: 401 });
@@ -83,10 +87,9 @@ export async function GET() {
     medications: decryptedMeds,
     symptomLogs: decryptedLogs,
     upcomingAppointments: decryptedAppts,
+    tr,
   });
 
-  // renderToBuffer types expect DocumentProps at the root; cast is safe because
-  // HealthReportDocument renders a <Document> as its root element.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const buffer = await renderToBuffer(element as any);
 

@@ -42,7 +42,7 @@ export default function Sidebar() {
   return (
     <aside className="flex flex-col w-16 md:w-56 shrink-0 h-screen sticky top-0 bg-sidebar border-r border-sidebar-border">
       <div className="flex items-center gap-2 px-4 py-6 border-b border-sidebar-border">
-        <span className="text-xl">🌿</span>
+        <span className="text-xl">🌲</span>
         <span className="hidden md:block font-heading italic text-foreground text-lg leading-tight">
           Health<br />Tracker
         </span>
