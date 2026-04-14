@@ -7,6 +7,7 @@ import { notFound, redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MedicationStatus } from "@/generated/prisma/client";
+import { getT } from "@/lib/i18n";
 
 const STATUS_STYLES: Record<MedicationStatus, string> = {
   TAKEN: "text-primary",
@@ -15,34 +16,16 @@ const STATUS_STYLES: Record<MedicationStatus, string> = {
   PENDING: "text-muted-foreground/60",
 };
 
-const STATUS_LABELS: Record<MedicationStatus, string> = {
-  TAKEN: "Taken",
-  SKIPPED: "Skipped",
-  DELAYED: "Delayed",
-  PENDING: "Pending",
-};
-
-function formatDate(date: Date) {
-  return date.toLocaleDateString("en-US", {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
-
-function formatTime(date: Date | null) {
-  if (!date) return null;
-  return date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
-}
-
 export default async function MedicationDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const session = await auth.api.getSession({ headers: await headers() });
+  const [session, tr] = await Promise.all([
+    auth.api.getSession({ headers: await headers() }),
+    getT(),
+  ]);
 
   if (!session?.user?.id) {
     redirect("/login");
@@ -79,6 +62,13 @@ export default async function MedicationDetailPage({
     notFound();
   }
 
+  const STATUS_LABELS: Record<MedicationStatus, string> = {
+    TAKEN: tr.medications.statusTaken,
+    SKIPPED: tr.medications.statusSkipped,
+    DELAYED: tr.medications.statusDelayed,
+    PENDING: tr.medications.statusPending,
+  };
+
   const prescribedBy = decryptIfPresent(medication.prescribedBy);
   const instructions = decryptIfPresent(medication.instructions);
 
@@ -88,14 +78,33 @@ export default async function MedicationDetailPage({
       ? Math.round((takenCount / medication.logs.length) * 100)
       : null;
 
+  function formatDate(date: Date) {
+    return date.toLocaleDateString(tr.dateLocale, {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  }
+
+  function formatTime(date: Date | null) {
+    if (!date) return null;
+    return date.toLocaleTimeString(tr.dateLocale, {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
+
   return (
     <div className="max-w-2xl mx-auto space-y-8">
       <div className="flex items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-3 mb-1">
-            <h1 className="font-heading italic text-3xl text-foreground">{medication.name}</h1>
+            <h1 className="font-heading italic text-3xl text-foreground">
+              {medication.name}
+            </h1>
             <Badge variant={medication.isActive ? "default" : "secondary"}>
-              {medication.isActive ? "active" : "inactive"}
+              {medication.isActive ? tr.medications.active : tr.medications.inactive}
             </Badge>
           </div>
           <p className="text-muted-foreground">
@@ -107,7 +116,7 @@ export default async function MedicationDetailPage({
           href={`/medications/${medication.id}/edit`}
           className="text-sm text-muted-foreground hover:text-foreground transition-colors shrink-0"
         >
-          Edit
+          {tr.medications.edit}
         </Link>
       </div>
 
@@ -115,17 +124,17 @@ export default async function MedicationDetailPage({
         <CardContent className="pt-5 space-y-2 text-sm">
           {prescribedBy && (
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Prescribed by</span>
+              <span className="text-muted-foreground">{tr.medications.prescribedBy}</span>
               <span>{prescribedBy}</span>
             </div>
           )}
           <div className="flex justify-between">
-            <span className="text-muted-foreground">Started</span>
+            <span className="text-muted-foreground">{tr.medications.since}</span>
             <span>{formatDate(medication.startDate)}</span>
           </div>
           {medication.endDate && (
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Until</span>
+              <span className="text-muted-foreground">{tr.medications.until}</span>
               <span>{formatDate(medication.endDate)}</span>
             </div>
           )}
@@ -138,12 +147,14 @@ export default async function MedicationDetailPage({
       {adherenceRate !== null && (
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="font-heading italic text-lg">Adherence</CardTitle>
+            <CardTitle className="font-heading italic text-lg">
+              {tr.medications.adherence}
+            </CardTitle>
           </CardHeader>
           <CardContent className="flex items-end gap-3">
             <p className="text-4xl font-heading italic text-primary">{adherenceRate}%</p>
             <p className="text-sm text-muted-foreground pb-1">
-              {takenCount} of {medication.logs.length} doses taken
+              {tr.medications.dosesAdherence(takenCount, medication.logs.length)}
             </p>
           </CardContent>
         </Card>
@@ -151,10 +162,10 @@ export default async function MedicationDetailPage({
 
       <div className="space-y-3">
         <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-          Log history
+          {tr.medications.history}
         </h2>
         {medication.logs.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No doses logged yet.</p>
+          <p className="text-sm text-muted-foreground">{tr.medications.noDoses}</p>
         ) : (
           <div className="space-y-1">
             {medication.logs.map((log) => (
@@ -180,7 +191,9 @@ export default async function MedicationDetailPage({
           </div>
         )}
         {medication.logs.length === 60 && (
-          <p className="text-xs text-muted-foreground text-center">Showing last 60 entries</p>
+          <p className="text-xs text-muted-foreground text-center">
+            {tr.medications.last60}
+          </p>
         )}
       </div>
     </div>

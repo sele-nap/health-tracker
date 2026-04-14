@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 type MedicationData = {
   id: string;
@@ -31,13 +32,14 @@ type MedicationData = {
 const initialState: MedicationState = {};
 
 export function MedicationEditForm({ medication }: { medication: MedicationData }) {
+  const { tr } = useLocale();
   const action = updateMedication.bind(null, medication.id);
   const [state, formAction, pending] = useActionState(action, initialState);
   const [delPending, startDelete] = useTransition();
   const router = useRouter();
 
   function handleDelete() {
-    if (!confirm(`Delete "${medication.name}"? This cannot be undone.`)) return;
+    if (!confirm(tr.medications.deleteConfirm(medication.name))) return;
     startDelete(async () => {
       await deleteMedication(medication.id);
       router.push("/medications");
@@ -54,7 +56,7 @@ export function MedicationEditForm({ medication }: { medication: MedicationData 
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="name">Medication name</Label>
+          <Label htmlFor="name">{tr.medications.nameLabel}</Label>
           <Input
             id="name"
             name="name"
@@ -67,7 +69,7 @@ export function MedicationEditForm({ medication }: { medication: MedicationData 
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="dosage">Dosage</Label>
+          <Label htmlFor="dosage">{tr.medications.dosageLabel}</Label>
           <Input
             id="dosage"
             name="dosage"
@@ -82,10 +84,10 @@ export function MedicationEditForm({ medication }: { medication: MedicationData 
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="form">Form</Label>
+          <Label htmlFor="form">{tr.medications.formLabel}</Label>
           <Select name="form" defaultValue={medication.form || undefined}>
             <SelectTrigger id="form" className="w-full">
-              <SelectValue placeholder="Select form…" />
+              <SelectValue placeholder={tr.medications.formPlaceholder} />
             </SelectTrigger>
             <SelectContent>
               {MEDICATION_FORMS.map((f) => (
@@ -98,7 +100,7 @@ export function MedicationEditForm({ medication }: { medication: MedicationData 
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="prescribedBy">Prescribed by</Label>
+          <Label htmlFor="prescribedBy">{tr.medications.prescribedByLabel}</Label>
           <Input
             id="prescribedBy"
             name="prescribedBy"
@@ -109,7 +111,7 @@ export function MedicationEditForm({ medication }: { medication: MedicationData 
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="startDate">Start date</Label>
+          <Label htmlFor="startDate">{tr.medications.startDateLabel}</Label>
           <Input
             id="startDate"
             name="startDate"
@@ -124,8 +126,8 @@ export function MedicationEditForm({ medication }: { medication: MedicationData 
 
         <div className="space-y-2">
           <Label htmlFor="endDate">
-            End date{" "}
-            <span className="text-muted-foreground font-normal text-xs">(optional)</span>
+            {tr.medications.endDateLabel}{" "}
+            <span className="text-muted-foreground font-normal text-xs">{tr.optional}</span>
           </Label>
           <Input
             id="endDate"
@@ -142,8 +144,8 @@ export function MedicationEditForm({ medication }: { medication: MedicationData 
 
       <div className="space-y-2">
         <Label htmlFor="instructions">
-          Instructions{" "}
-          <span className="text-muted-foreground font-normal text-xs">(optional)</span>
+          {tr.medications.instructionsLabel}{" "}
+          <span className="text-muted-foreground font-normal text-xs">{tr.optional}</span>
         </Label>
         <Textarea
           id="instructions"
@@ -156,13 +158,13 @@ export function MedicationEditForm({ medication }: { medication: MedicationData 
       <div className="flex items-center justify-between pt-2">
         <div className="flex items-center gap-4">
           <Button type="submit" disabled={pending || delPending}>
-            {pending ? "Saving…" : "Save changes"}
+            {pending ? tr.saving : tr.medications.saveBtn}
           </Button>
           <a
             href="/medications"
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
-            Cancel
+            {tr.cancel}
           </a>
         </div>
         <button
@@ -171,7 +173,7 @@ export function MedicationEditForm({ medication }: { medication: MedicationData 
           disabled={pending || delPending}
           className="text-sm text-muted-foreground hover:text-destructive transition-colors disabled:opacity-50"
         >
-          {delPending ? "Deleting…" : "Delete medication"}
+          {delPending ? tr.deleting : tr.delete}
         </button>
       </div>
     </form>

@@ -4,6 +4,7 @@ import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { logMedicationStatus } from "@/server/actions/medicationLogs";
 import { cn } from "@/lib/utils";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 type MedWithLog = {
   id: string;
@@ -18,6 +19,7 @@ type Props = {
 };
 
 export function MedicationChecklist({ medications }: Props) {
+  const { tr } = useLocale();
   const [pending, startTransition] = useTransition();
   const router = useRouter();
 
@@ -37,7 +39,7 @@ export function MedicationChecklist({ medications }: Props) {
   return (
     <div className="space-y-3">
       <p className="text-xs text-muted-foreground">
-        {takenCount}/{medications.length} taken today
+        {takenCount}/{medications.length} {tr.medications.takenToday}
       </p>
       <ul className="space-y-2">
         {medications.map((med) => {
@@ -78,7 +80,7 @@ export function MedicationChecklist({ medications }: Props) {
                     disabled={pending}
                     className="text-xs px-2.5 py-1 rounded-md bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 transition-opacity"
                   >
-                    Taken
+                    {tr.medications.markTaken}
                   </button>
                   {!skipped && (
                     <button
@@ -86,7 +88,7 @@ export function MedicationChecklist({ medications }: Props) {
                       disabled={pending}
                       className="text-xs px-2.5 py-1 rounded-md border border-border text-muted-foreground hover:text-foreground disabled:opacity-50 transition-colors"
                     >
-                      Skip
+                      {tr.medications.markSkip}
                     </button>
                   )}
                 </div>

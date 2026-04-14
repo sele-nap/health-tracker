@@ -6,22 +6,7 @@ import { redirect } from "next/navigation";
 import { CalendarDays, Pill, Activity, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MedicationChecklist } from "@/components/medications/MedicationChecklist";
-
-function getGreeting() {
-  const hour = new Date().getHours();
-  if (hour < 12) return "Good morning";
-  if (hour < 18) return "Good afternoon";
-  return "Good evening";
-}
-
-function formatDate() {
-  return new Date().toLocaleDateString("en-US", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-}
+import { getT } from "@/lib/i18n";
 
 function moodEmoji(value: number) {
   if (value <= 2) return "😞";
@@ -31,20 +16,11 @@ function moodEmoji(value: number) {
   return "😊";
 }
 
-function formatAppointmentDate(date: Date) {
-  const now = new Date();
-  const diff = date.getTime() - now.getTime();
-  const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
-
-  if (days === 0) return "Today";
-  if (days === 1) return "Tomorrow";
-  if (days <= 7) return `In ${days} days`;
-
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-}
-
 export default async function DashboardPage() {
-  const session = await auth.api.getSession({ headers: await headers() });
+  const [session, tr] = await Promise.all([
+    auth.api.getSession({ headers: await headers() }),
+    getT(),
+  ]);
 
   if (!session?.user?.id) {
     redirect("/login");
@@ -57,55 +33,56 @@ export default async function DashboardPage() {
   const sevenDaysAgo = new Date(todayStart.getTime() - 7 * 24 * 60 * 60 * 1000);
   const thirtyDaysAgo = new Date(todayStart.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-  const [todayLog, activeMedsData, nextAppointment, recentLogs, streakLogs] = await Promise.all([
-    prisma.symptomLog.findFirst({
-      where: {
-        userId: session.user.id,
-        loggedAt: { gte: todayStart, lt: todayEnd },
-      },
-      select: { overallMood: true },
-    }),
-    prisma.medication.findMany({
-      where: { userId: session.user.id, isActive: true },
-      orderBy: { name: "asc" },
-      select: {
-        id: true,
-        name: true,
-        dosage: true,
-        form: true,
-        logs: {
-          where: { scheduledFor: { gte: todayStart, lt: todayEnd } },
-          select: { status: true },
-          take: 1,
+  const [todayLog, activeMedsData, nextAppointment, recentLogs, streakLogs] =
+    await Promise.all([
+      prisma.symptomLog.findFirst({
+        where: {
+          userId: session.user.id,
+          loggedAt: { gte: todayStart, lt: todayEnd },
         },
-      },
-    }),
-    prisma.appointment.findFirst({
-      where: {
-        userId: session.user.id,
-        status: "UPCOMING",
-        scheduledAt: { gte: now },
-      },
-      orderBy: { scheduledAt: "asc" },
-      select: { scheduledAt: true, title: true },
-    }),
-    prisma.symptomLog.findMany({
-      where: {
-        userId: session.user.id,
-        loggedAt: { gte: sevenDaysAgo },
-        overallMood: { not: null },
-      },
-      select: { overallMood: true },
-    }),
-    prisma.symptomLog.findMany({
-      where: {
-        userId: session.user.id,
-        loggedAt: { gte: thirtyDaysAgo },
-      },
-      select: { loggedAt: true },
-      orderBy: { loggedAt: "desc" },
-    }),
-  ]);
+        select: { overallMood: true },
+      }),
+      prisma.medication.findMany({
+        where: { userId: session.user.id, isActive: true },
+        orderBy: { name: "asc" },
+        select: {
+          id: true,
+          name: true,
+          dosage: true,
+          form: true,
+          logs: {
+            where: { scheduledFor: { gte: todayStart, lt: todayEnd } },
+            select: { status: true },
+            take: 1,
+          },
+        },
+      }),
+      prisma.appointment.findFirst({
+        where: {
+          userId: session.user.id,
+          status: "UPCOMING",
+          scheduledAt: { gte: now },
+        },
+        orderBy: { scheduledAt: "asc" },
+        select: { scheduledAt: true, title: true },
+      }),
+      prisma.symptomLog.findMany({
+        where: {
+          userId: session.user.id,
+          loggedAt: { gte: sevenDaysAgo },
+          overallMood: { not: null },
+        },
+        select: { overallMood: true },
+      }),
+      prisma.symptomLog.findMany({
+        where: {
+          userId: session.user.id,
+          loggedAt: { gte: thirtyDaysAgo },
+        },
+        select: { loggedAt: true },
+        orderBy: { loggedAt: "desc" },
+      }),
+    ]);
 
   const activeMeds = activeMedsData.length;
 
@@ -121,7 +98,8 @@ export default async function DashboardPage() {
 
   const avgMood =
     recentLogs.length > 0
-      ? recentLogs.reduce((sum, l) => sum + (l.overallMood ?? 0), 0) / recentLogs.length
+      ? recentLogs.reduce((sum, l) => sum + (l.overallMood ?? 0), 0) /
+        recentLogs.length
       : null;
 
   const loggedDays = new Set(
@@ -142,6 +120,31 @@ export default async function DashboardPage() {
     }
   }
 
+  function getGreeting() {
+    const hour = new Date().getHours();
+    if (hour < 12) return tr.dashboard.greetingMorning;
+    if (hour < 18) return tr.dashboard.greetingAfternoon;
+    return tr.dashboard.greetingEvening;
+  }
+
+  function formatDate() {
+    return new Date().toLocaleDateString(tr.dateLocale, {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  }
+
+  function formatAppointmentDate(date: Date) {
+    const diff = date.getTime() - now.getTime();
+    const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+    if (days === 0) return tr.dashboard.appointmentToday;
+    if (days === 1) return tr.dashboard.appointmentTomorrow;
+    if (days <= 7) return tr.dashboard.appointmentDays(days);
+    return date.toLocaleDateString(tr.dateLocale, { month: "short", day: "numeric" });
+  }
+
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       <div>
@@ -156,7 +159,7 @@ export default async function DashboardPage() {
           <CardHeader className="flex flex-row items-center gap-2 pb-2">
             <Activity size={16} className="text-primary" />
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Today's log
+              {tr.dashboard.todayLog}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -167,20 +170,20 @@ export default async function DashboardPage() {
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
                   {todayLog.overallMood
-                    ? `Mood ${todayLog.overallMood}/10`
-                    : "Logged today"}
+                    ? tr.dashboard.moodValue(todayLog.overallMood)
+                    : tr.dashboard.loggedToday}
                 </p>
               </>
             ) : (
               <>
                 <p className="text-2xl font-heading italic text-foreground">—</p>
-                <p className="text-xs text-muted-foreground mt-1">Not logged yet</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {tr.dashboard.notYetLogged}
+                </p>
               </>
             )}
             {streak > 0 && (
-              <p className="text-xs text-primary mt-2">
-                🔥 {streak} day{streak === 1 ? "" : "s"} in a row
-              </p>
+              <p className="text-xs text-primary mt-2">{tr.dashboard.streak(streak)}</p>
             )}
           </CardContent>
         </Card>
@@ -189,7 +192,7 @@ export default async function DashboardPage() {
           <CardHeader className="flex flex-row items-center gap-2 pb-2">
             <Pill size={16} className="text-primary" />
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Medications
+              {tr.dashboard.medications}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -197,7 +200,7 @@ export default async function DashboardPage() {
               {activeMeds === 0 ? "—" : `${takenToday}/${activeMeds}`}
             </p>
             <p className="text-xs text-muted-foreground mt-1">
-              {activeMeds === 0 ? "none active" : "taken today"}
+              {activeMeds === 0 ? tr.dashboard.noneActive : tr.dashboard.takenToday}
             </p>
           </CardContent>
         </Card>
@@ -206,7 +209,7 @@ export default async function DashboardPage() {
           <CardHeader className="flex flex-row items-center gap-2 pb-2">
             <CalendarDays size={16} className="text-primary" />
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Next appointment
+              {tr.dashboard.nextAppointment}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -222,7 +225,9 @@ export default async function DashboardPage() {
             ) : (
               <>
                 <p className="text-2xl font-heading italic text-foreground">—</p>
-                <p className="text-xs text-muted-foreground mt-1">None scheduled</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {tr.dashboard.noneScheduled}
+                </p>
               </>
             )}
           </CardContent>
@@ -232,7 +237,7 @@ export default async function DashboardPage() {
           <CardHeader className="flex flex-row items-center gap-2 pb-2">
             <TrendingUp size={16} className="text-primary" />
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              7-day mood
+              {tr.dashboard.moodWeek}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -242,13 +247,15 @@ export default async function DashboardPage() {
                   {avgMood.toFixed(1)}
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  avg over {recentLogs.length} {recentLogs.length === 1 ? "day" : "days"}
+                  {tr.dashboard.avgOverDays(recentLogs.length)}
                 </p>
               </>
             ) : (
               <>
                 <p className="text-2xl font-heading italic text-foreground">—</p>
-                <p className="text-xs text-muted-foreground mt-1">No data yet</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {tr.dashboard.noDataYet}
+                </p>
               </>
             )}
           </CardContent>
@@ -259,21 +266,19 @@ export default async function DashboardPage() {
         <Card>
           <CardHeader>
             <CardTitle className="font-heading italic text-lg">
-              Log today's symptoms
+              {tr.dashboard.logToday}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground mb-4">
-              {todayLog
-                ? "You've already logged today. Add another entry?"
-                : "Track how you're feeling to spot patterns over time."}
+              {todayLog ? tr.dashboard.alreadyLogged : tr.dashboard.trackMoods}
             </p>
             <Link
               href="/symptoms/new"
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
             >
               <Activity size={15} />
-              {todayLog ? "Log again" : "Log symptoms"}
+              {todayLog ? tr.dashboard.addEntry : tr.dashboard.log}
             </Link>
           </CardContent>
         </Card>
@@ -281,15 +286,18 @@ export default async function DashboardPage() {
         <Card>
           <CardHeader>
             <CardTitle className="font-heading italic text-lg">
-              Medication checklist
+              {tr.dashboard.todaysMeds}
             </CardTitle>
           </CardHeader>
           <CardContent>
             {activeMeds === 0 ? (
               <p className="text-sm text-muted-foreground">
-                No medications added yet.{" "}
-                <Link href="/medications/new" className="text-primary underline underline-offset-4">
-                  Add one
+                {tr.dashboard.noMeds}{" "}
+                <Link
+                  href="/medications/new"
+                  className="text-primary underline underline-offset-4"
+                >
+                  {tr.dashboard.addOneMed}
                 </Link>
                 .
               </p>

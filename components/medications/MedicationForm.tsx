@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 function todayString() {
   const d = new Date();
@@ -24,6 +25,7 @@ function todayString() {
 const initialState: MedicationState = {};
 
 export function MedicationForm() {
+  const { tr } = useLocale();
   const [state, formAction, pending] = useActionState(createMedication, initialState);
 
   return (
@@ -36,7 +38,7 @@ export function MedicationForm() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="name">Medication name</Label>
+          <Label htmlFor="name">{tr.medications.nameLabel}</Label>
           <Input
             id="name"
             name="name"
@@ -49,7 +51,7 @@ export function MedicationForm() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="dosage">Dosage</Label>
+          <Label htmlFor="dosage">{tr.medications.dosageLabel}</Label>
           <Input
             id="dosage"
             name="dosage"
@@ -64,10 +66,10 @@ export function MedicationForm() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="form">Form</Label>
+          <Label htmlFor="form">{tr.medications.formLabel}</Label>
           <Select name="form">
             <SelectTrigger id="form" className="w-full">
-              <SelectValue placeholder="Select form…" />
+              <SelectValue placeholder={tr.medications.formPlaceholder} />
             </SelectTrigger>
             <SelectContent>
               {MEDICATION_FORMS.map((f) => (
@@ -83,7 +85,7 @@ export function MedicationForm() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="prescribedBy">Prescribed by</Label>
+          <Label htmlFor="prescribedBy">{tr.medications.prescribedByLabel}</Label>
           <Input
             id="prescribedBy"
             name="prescribedBy"
@@ -98,7 +100,7 @@ export function MedicationForm() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="startDate">Start date</Label>
+          <Label htmlFor="startDate">{tr.medications.startDateLabel}</Label>
           <Input
             id="startDate"
             name="startDate"
@@ -113,8 +115,8 @@ export function MedicationForm() {
 
         <div className="space-y-2">
           <Label htmlFor="endDate">
-            End date{" "}
-            <span className="text-muted-foreground font-normal text-xs">(optional)</span>
+            {tr.medications.endDateLabel}{" "}
+            <span className="text-muted-foreground font-normal text-xs">{tr.optional}</span>
           </Label>
           <Input
             id="endDate"
@@ -130,13 +132,13 @@ export function MedicationForm() {
 
       <div className="space-y-2">
         <Label htmlFor="instructions">
-          Instructions{" "}
-          <span className="text-muted-foreground font-normal text-xs">(optional)</span>
+          {tr.medications.instructionsLabel}{" "}
+          <span className="text-muted-foreground font-normal text-xs">{tr.optional}</span>
         </Label>
         <Textarea
           id="instructions"
           name="instructions"
-          placeholder="e.g. Take with food, avoid sun exposure…"
+          placeholder={tr.medications.instructionsPlaceholder}
           rows={3}
           className={cn(state.errors?.instructions && "border-destructive")}
         />
@@ -147,13 +149,13 @@ export function MedicationForm() {
 
       <div className="flex items-center gap-4">
         <Button type="submit" disabled={pending}>
-          {pending ? "Saving…" : "Add medication"}
+          {pending ? tr.saving : tr.medications.addBtn}
         </Button>
         <a
           href="/medications"
           className="text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
-          Cancel
+          {tr.cancel}
         </a>
       </div>
     </form>

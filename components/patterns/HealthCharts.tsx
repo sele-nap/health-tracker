@@ -12,6 +12,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 export type ChartDataPoint = {
   date: string;
@@ -47,20 +48,21 @@ const labelStyle = {
   fontSize: "11px",
 };
 
-function EmptyState() {
+function EmptyState({ message }: { message: string }) {
   return (
     <div className="flex items-center justify-center h-48 text-muted-foreground text-sm italic">
-      Not enough data yet — keep logging!
+      {message}
     </div>
   );
 }
 
 export function WellbeingChart({ data }: Props) {
+  const { tr } = useLocale();
   const filtered = data.filter(
     (d) => d.mood !== null || d.energy !== null || d.stress !== null
   );
 
-  if (filtered.length < 2) return <EmptyState />;
+  if (filtered.length < 2) return <EmptyState message={tr.patterns.noData} />;
 
   return (
     <ResponsiveContainer width="100%" height={240}>
@@ -94,48 +96,20 @@ export function WellbeingChart({ data }: Props) {
           tickLine={false}
         />
         <Tooltip contentStyle={tooltipStyle} labelStyle={labelStyle} />
-        <Legend
-          wrapperStyle={{ fontSize: "12px", color: "#8a7060", paddingTop: "8px" }}
-        />
-        <Area
-          type="monotone"
-          dataKey="mood"
-          stroke={COLORS.mood}
-          strokeWidth={2}
-          fill="url(#gradMood)"
-          dot={false}
-          connectNulls
-          name="Mood"
-        />
-        <Area
-          type="monotone"
-          dataKey="energy"
-          stroke={COLORS.energy}
-          strokeWidth={2}
-          fill="url(#gradEnergy)"
-          dot={false}
-          connectNulls
-          name="Energy"
-        />
-        <Area
-          type="monotone"
-          dataKey="stress"
-          stroke={COLORS.stress}
-          strokeWidth={2}
-          fill="url(#gradStress)"
-          dot={false}
-          connectNulls
-          name="Stress"
-        />
+        <Legend wrapperStyle={{ fontSize: "12px", color: "#8a7060", paddingTop: "8px" }} />
+        <Area type="monotone" dataKey="mood" stroke={COLORS.mood} strokeWidth={2} fill="url(#gradMood)" dot={false} connectNulls name={tr.patterns.chartMood} />
+        <Area type="monotone" dataKey="energy" stroke={COLORS.energy} strokeWidth={2} fill="url(#gradEnergy)" dot={false} connectNulls name={tr.patterns.chartEnergy} />
+        <Area type="monotone" dataKey="stress" stroke={COLORS.stress} strokeWidth={2} fill="url(#gradStress)" dot={false} connectNulls name={tr.patterns.chartStress} />
       </AreaChart>
     </ResponsiveContainer>
   );
 }
 
 export function SleepChart({ data }: Props) {
+  const { tr } = useLocale();
   const filtered = data.filter((d) => d.sleepHours !== null || d.sleepQuality !== null);
 
-  if (filtered.length < 2) return <EmptyState />;
+  if (filtered.length < 2) return <EmptyState message={tr.patterns.noData} />;
 
   return (
     <ResponsiveContainer width="100%" height={240}>
@@ -153,16 +127,9 @@ export function SleepChart({ data }: Props) {
           tickLine={false}
         />
         <Tooltip contentStyle={tooltipStyle} labelStyle={labelStyle} />
-        <Legend
-          wrapperStyle={{ fontSize: "12px", color: "#8a7060", paddingTop: "8px" }}
-        />
-        <Bar dataKey="sleepHours" fill={COLORS.sleep} radius={[3, 3, 0, 0]} name="Hours" />
-        <Bar
-          dataKey="sleepQuality"
-          fill={COLORS.sleepQuality}
-          radius={[3, 3, 0, 0]}
-          name="Quality (/10)"
-        />
+        <Legend wrapperStyle={{ fontSize: "12px", color: "#8a7060", paddingTop: "8px" }} />
+        <Bar dataKey="sleepHours" fill={COLORS.sleep} radius={[3, 3, 0, 0]} name={tr.patterns.chartHours} />
+        <Bar dataKey="sleepQuality" fill={COLORS.sleepQuality} radius={[3, 3, 0, 0]} name={tr.patterns.chartQuality} />
       </BarChart>
     </ResponsiveContainer>
   );

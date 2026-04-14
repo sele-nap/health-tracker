@@ -6,16 +6,13 @@ import { redirect } from "next/navigation";
 import { Plus, HeartPulse } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DeleteConditionButton } from "@/components/conditions/DeleteConditionButton";
-
-function formatDate(date: Date) {
-  return date.toLocaleDateString("en-US", {
-    month: "long",
-    year: "numeric",
-  });
-}
+import { getT } from "@/lib/i18n";
 
 export default async function ConditionsPage() {
-  const session = await auth.api.getSession({ headers: await headers() });
+  const [session, tr] = await Promise.all([
+    auth.api.getSession({ headers: await headers() }),
+    getT(),
+  ]);
 
   if (!session?.user?.id) {
     redirect("/login");
@@ -29,13 +26,22 @@ export default async function ConditionsPage() {
     },
   });
 
+  function formatDate(date: Date) {
+    return date.toLocaleDateString(tr.dateLocale, {
+      month: "long",
+      year: "numeric",
+    });
+  }
+
   return (
     <div className="max-w-3xl mx-auto space-y-8">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="font-heading italic text-3xl text-foreground">Conditions 🌿</h1>
+          <h1 className="font-heading italic text-3xl text-foreground">
+            {tr.conditions.title} 🌿
+          </h1>
           <p className="text-muted-foreground mt-1">
-            {conditions.length} {conditions.length === 1 ? "condition" : "conditions"} tracked
+            {tr.conditions.conditionsCount(conditions.length)}
           </p>
         </div>
         <Link
@@ -43,7 +49,7 @@ export default async function ConditionsPage() {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
         >
           <Plus size={15} />
-          Add
+          {tr.conditions.add}
         </Link>
       </div>
 
@@ -51,15 +57,15 @@ export default async function ConditionsPage() {
         <Card>
           <CardContent className="py-12 flex flex-col items-center gap-3 text-center">
             <HeartPulse size={32} className="text-muted-foreground/40" />
-            <p className="text-muted-foreground">No conditions added yet.</p>
+            <p className="text-muted-foreground">{tr.conditions.noConditions}</p>
             <p className="text-xs text-muted-foreground/70 max-w-xs">
-              Add your chronic conditions to keep all your health context in one place.
+              {tr.conditions.noConditionsDesc}
             </p>
             <Link
               href="/conditions/new"
               className="text-primary text-sm underline underline-offset-4"
             >
-              Add your first condition
+              {tr.conditions.addFirst}
             </Link>
           </CardContent>
         </Card>
@@ -74,11 +80,13 @@ export default async function ConditionsPage() {
                 </div>
               </CardHeader>
               <CardContent className="text-sm text-muted-foreground space-y-0.5">
-                {c.diagnosedAt && <p>Diagnosed {formatDate(c.diagnosedAt)}</p>}
+                {c.diagnosedAt && (
+                  <p>{tr.conditions.diagnosed} {formatDate(c.diagnosedAt)}</p>
+                )}
                 <p>
                   {c.symptomDefinitions.length === 0
-                    ? "No custom symptom definitions yet"
-                    : `${c.symptomDefinitions.length} custom ${c.symptomDefinitions.length === 1 ? "symptom" : "symptoms"}`}
+                    ? tr.conditions.noSymptomDefs
+                    : tr.conditions.symptomDefs(c.symptomDefinitions.length)}
                 </p>
               </CardContent>
             </Card>

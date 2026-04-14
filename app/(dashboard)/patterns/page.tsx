@@ -4,10 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { WellbeingChart, SleepChart, type ChartDataPoint } from "@/components/patterns/HealthCharts";
-
-function shortDate(date: Date) {
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-}
+import { getT } from "@/lib/i18n";
 
 function avg(values: (number | null)[]): string | null {
   const nums = values.filter((v): v is number => v !== null);
@@ -16,7 +13,10 @@ function avg(values: (number | null)[]): string | null {
 }
 
 export default async function PatternsPage() {
-  const session = await auth.api.getSession({ headers: await headers() });
+  const [session, tr] = await Promise.all([
+    auth.api.getSession({ headers: await headers() }),
+    getT(),
+  ]);
 
   if (!session?.user?.id) {
     redirect("/login");
@@ -41,6 +41,10 @@ export default async function PatternsPage() {
     },
   });
 
+  function shortDate(date: Date) {
+    return date.toLocaleDateString(tr.dateLocale, { month: "short", day: "numeric" });
+  }
+
   const chartData: ChartDataPoint[] = logs.map((log) => ({
     date: shortDate(log.loggedAt),
     mood: log.overallMood,
@@ -56,25 +60,29 @@ export default async function PatternsPage() {
   const sleepAvg = avg(logs.map((l) => l.sleepHours));
 
   const stats = [
-    { label: "Avg mood", value: moodAvg },
-    { label: "Avg energy", value: energyAvg },
-    { label: "Avg stress", value: stressAvg },
-    { label: "Avg sleep", value: sleepAvg ? `${sleepAvg}h` : null },
+    { label: tr.patterns.moodAvg, value: moodAvg },
+    { label: tr.patterns.energyAvg, value: energyAvg },
+    { label: tr.patterns.stressAvg, value: stressAvg },
+    { label: tr.patterns.sleepAvg, value: sleepAvg ? `${sleepAvg}h` : null },
   ];
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="font-heading italic text-3xl text-foreground">Patterns 🌿</h1>
-          <p className="text-muted-foreground mt-1">Last 30 days · {logs.length} entries</p>
+          <h1 className="font-heading italic text-3xl text-foreground">
+            {tr.patterns.title} 🌿
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            {tr.patterns.subtitle(logs.length)}
+          </p>
         </div>
         <a
           href="/api/export/pdf"
           className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-sm text-muted-foreground hover:text-foreground hover:border-primary transition-colors"
           download
         >
-          Export PDF
+          {tr.patterns.exportPdf}
         </a>
       </div>
 
@@ -91,7 +99,9 @@ export default async function PatternsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="font-heading italic text-lg">Wellbeing over time</CardTitle>
+          <CardTitle className="font-heading italic text-lg">
+            {tr.patterns.wellbeingChart}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <WellbeingChart data={chartData} />
@@ -100,7 +110,9 @@ export default async function PatternsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="font-heading italic text-lg">Sleep</CardTitle>
+          <CardTitle className="font-heading italic text-lg">
+            {tr.patterns.sleepChart}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <SleepChart data={chartData} />

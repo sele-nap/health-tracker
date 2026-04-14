@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 type SliderFieldProps = {
   id: string;
@@ -15,17 +16,16 @@ type SliderFieldProps = {
   value: number;
   onChange: (v: number) => void;
   error?: string[];
+  sliderLabels: string[];
 };
 
-function SliderField({ id, name, label, value, onChange, error }: SliderFieldProps) {
-  const labels = ["", "terrible", "bad", "poor", "low", "okay", "decent", "good", "great", "excellent", "perfect"];
-
+function SliderField({ id, name, label, value, onChange, error, sliderLabels }: SliderFieldProps) {
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
         <Label htmlFor={id}>{label}</Label>
         <span className="text-xs text-muted-foreground italic">
-          {value} — {labels[value]}
+          {value} — {sliderLabels[value]}
         </span>
       </div>
       <div className="flex items-center gap-3">
@@ -64,6 +64,7 @@ type Props = {
 const initialState: SymptomLogState = {};
 
 export function SymptomEditForm({ logId, defaults }: Props) {
+  const { tr } = useLocale();
   const action = updateSymptomLog.bind(null, logId);
   const [state, formAction, pending] = useActionState(action, initialState);
 
@@ -95,16 +96,16 @@ export function SymptomEditForm({ logId, defaults }: Props) {
       </div>
 
       <div className="space-y-6">
-        <h2 className="font-heading italic text-lg text-foreground">How do you feel?</h2>
-        <SliderField id="overallMood" name="overallMood" label="Overall mood" value={mood} onChange={setMood} error={state.errors?.overallMood} />
-        <SliderField id="energyLevel" name="energyLevel" label="Energy level" value={energy} onChange={setEnergy} error={state.errors?.energyLevel} />
-        <SliderField id="stressLevel" name="stressLevel" label="Stress level" value={stress} onChange={setStress} error={state.errors?.stressLevel} />
+        <h2 className="font-heading italic text-lg text-foreground">{tr.symptoms.formTitle}</h2>
+        <SliderField id="overallMood" name="overallMood" label={tr.symptoms.overallMood} value={mood} onChange={setMood} error={state.errors?.overallMood} sliderLabels={tr.symptoms.sliderLabels} />
+        <SliderField id="energyLevel" name="energyLevel" label={tr.symptoms.energyLevel} value={energy} onChange={setEnergy} error={state.errors?.energyLevel} sliderLabels={tr.symptoms.sliderLabels} />
+        <SliderField id="stressLevel" name="stressLevel" label={tr.symptoms.stressLevel} value={stress} onChange={setStress} error={state.errors?.stressLevel} sliderLabels={tr.symptoms.sliderLabels} />
       </div>
 
       <div className="space-y-6">
-        <h2 className="font-heading italic text-lg text-foreground">Sleep</h2>
+        <h2 className="font-heading italic text-lg text-foreground">{tr.symptoms.sleep}</h2>
         <div className="space-y-2">
-          <Label htmlFor="sleepHours">Hours slept</Label>
+          <Label htmlFor="sleepHours">{tr.symptoms.sleepHours}</Label>
           <Input
             id="sleepHours"
             name="sleepHours"
@@ -120,15 +121,15 @@ export function SymptomEditForm({ logId, defaults }: Props) {
             <p className="text-xs text-destructive">{state.errors.sleepHours[0]}</p>
           )}
         </div>
-        <SliderField id="sleepQuality" name="sleepQuality" label="Sleep quality" value={sleepQuality} onChange={setSleepQuality} error={state.errors?.sleepQuality} />
+        <SliderField id="sleepQuality" name="sleepQuality" label={tr.symptoms.sleepQuality} value={sleepQuality} onChange={setSleepQuality} error={state.errors?.sleepQuality} sliderLabels={tr.symptoms.sliderLabels} />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="notes">Notes</Label>
+        <Label htmlFor="notes">{tr.symptoms.notes}</Label>
         <Textarea
           id="notes"
           name="notes"
-          placeholder="Any symptoms, flare-ups, or observations…"
+          placeholder={tr.symptoms.notesPlaceholder}
           rows={4}
           defaultValue={defaults.notes}
           className={cn(state.errors?.notes && "border-destructive")}
@@ -140,10 +141,10 @@ export function SymptomEditForm({ logId, defaults }: Props) {
 
       <div className="flex items-center gap-4">
         <Button type="submit" disabled={pending}>
-          {pending ? "Saving…" : "Save changes"}
+          {pending ? tr.saving : tr.save}
         </Button>
         <a href="/symptoms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-          Cancel
+          {tr.cancel}
         </a>
       </div>
     </form>

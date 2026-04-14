@@ -6,10 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 const initialState: ConditionState = {};
 
 export function ConditionForm() {
+  const { tr } = useLocale();
   const [state, formAction, pending] = useActionState(createCondition, initialState);
 
   return (
@@ -21,11 +23,11 @@ export function ConditionForm() {
       )}
 
       <div className="space-y-2">
-        <Label htmlFor="name">Condition name</Label>
+        <Label htmlFor="name">{tr.conditions.nameLabel}</Label>
         <Input
           id="name"
           name="name"
-          placeholder="e.g. Lupus, Generalised Anxiety Disorder"
+          placeholder={tr.conditions.namePlaceholder}
           className={cn(state.errors?.name && "border-destructive")}
         />
         {state.errors?.name && (
@@ -35,8 +37,8 @@ export function ConditionForm() {
 
       <div className="space-y-2">
         <Label htmlFor="diagnosedAt">
-          Diagnosis date{" "}
-          <span className="text-muted-foreground font-normal text-xs">(optional)</span>
+          {tr.conditions.diagnosedAtLabel}{" "}
+          <span className="text-muted-foreground font-normal text-xs">{tr.optional}</span>
         </Label>
         <Input
           id="diagnosedAt"
@@ -51,13 +53,13 @@ export function ConditionForm() {
 
       <div className="flex items-center gap-4">
         <Button type="submit" disabled={pending}>
-          {pending ? "Saving…" : "Add condition"}
+          {pending ? tr.saving : tr.conditions.addBtn}
         </Button>
         <a
           href="/conditions"
           className="text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
-          Cancel
+          {tr.cancel}
         </a>
       </div>
     </form>

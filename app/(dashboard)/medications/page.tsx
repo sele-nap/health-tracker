@@ -8,17 +8,13 @@ import { Plus, Pill } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ToggleActiveButton } from "@/components/medications/ToggleActiveButton";
-
-function formatDate(date: Date) {
-  return date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
+import { getT } from "@/lib/i18n";
 
 export default async function MedicationsPage() {
-  const session = await auth.api.getSession({ headers: await headers() });
+  const [session, tr] = await Promise.all([
+    auth.api.getSession({ headers: await headers() }),
+    getT(),
+  ]);
 
   if (!session?.user?.id) {
     redirect("/login");
@@ -35,13 +31,25 @@ export default async function MedicationsPage() {
     instructions: decryptIfPresent(med.instructions),
   }));
 
+  function formatDate(date: Date) {
+    return date.toLocaleDateString(tr.dateLocale, {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  }
+
+  const activeCount = decrypted.filter((m) => m.isActive).length;
+
   return (
     <div className="max-w-3xl mx-auto space-y-8">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="font-heading italic text-3xl text-foreground">Medications 🌿</h1>
+          <h1 className="font-heading italic text-3xl text-foreground">
+            {tr.medications.title} 🌿
+          </h1>
           <p className="text-muted-foreground mt-1">
-            {decrypted.filter((m) => m.isActive).length} active
+            {tr.medications.activeCount(activeCount)}
           </p>
         </div>
         <Link
@@ -49,7 +57,7 @@ export default async function MedicationsPage() {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
         >
           <Plus size={15} />
-          Add
+          {tr.medications.add}
         </Link>
       </div>
 
@@ -57,9 +65,12 @@ export default async function MedicationsPage() {
         <Card>
           <CardContent className="py-12 flex flex-col items-center gap-3 text-center">
             <Pill size={32} className="text-muted-foreground/40" />
-            <p className="text-muted-foreground">No medications added yet.</p>
-            <Link href="/medications/new" className="text-primary text-sm underline underline-offset-4">
-              Add your first medication
+            <p className="text-muted-foreground">{tr.medications.noMeds}</p>
+            <Link
+              href="/medications/new"
+              className="text-primary text-sm underline underline-offset-4"
+            >
+              {tr.medications.addFirst}
             </Link>
           </CardContent>
         </Card>
@@ -70,20 +81,23 @@ export default async function MedicationsPage() {
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between gap-3">
                   <CardTitle className="font-heading italic text-lg">
-                    <Link href={`/medications/${med.id}`} className="hover:text-primary transition-colors">
+                    <Link
+                      href={`/medications/${med.id}`}
+                      className="hover:text-primary transition-colors"
+                    >
                       {med.name}
                     </Link>
                   </CardTitle>
                   <div className="flex items-center gap-2">
                     <Badge variant={med.isActive ? "default" : "secondary"}>
-                      {med.isActive ? "active" : "inactive"}
+                      {med.isActive ? tr.medications.active : tr.medications.inactive}
                     </Badge>
                     <ToggleActiveButton medicationId={med.id} isActive={med.isActive} />
                     <Link
                       href={`/medications/${med.id}/edit`}
                       className="text-xs text-muted-foreground hover:text-foreground transition-colors"
                     >
-                      Edit
+                      {tr.medications.edit}
                     </Link>
                   </div>
                 </div>
@@ -93,10 +107,12 @@ export default async function MedicationsPage() {
                   <span className="text-foreground font-medium">{med.dosage}</span>
                   {med.form && <span className="ml-1">· {med.form}</span>}
                 </p>
-                {med.prescribedBy && <p>Prescribed by {med.prescribedBy}</p>}
+                {med.prescribedBy && (
+                  <p>{tr.medications.prescribedBy} {med.prescribedBy}</p>
+                )}
                 <p>
-                  Since {formatDate(med.startDate)}
-                  {med.endDate && ` · until ${formatDate(med.endDate)}`}
+                  {tr.medications.since} {formatDate(med.startDate)}
+                  {med.endDate && ` · ${tr.medications.until} ${formatDate(med.endDate)}`}
                 </p>
                 {med.instructions && (
                   <p className="italic text-xs mt-1">{med.instructions}</p>

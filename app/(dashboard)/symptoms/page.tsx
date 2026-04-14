@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import { Plus, Activity } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DeleteSymptomLogButton } from "@/components/symptoms/DeleteSymptomLogButton";
+import { getT } from "@/lib/i18n";
 
 function moodEmoji(value: number | null) {
   if (!value) return "—";
@@ -17,17 +18,11 @@ function moodEmoji(value: number | null) {
   return "😊";
 }
 
-function formatDate(date: Date) {
-  return date.toLocaleDateString("en-US", {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
-
 export default async function SymptomsPage() {
-  const session = await auth.api.getSession({ headers: await headers() });
+  const [session, tr] = await Promise.all([
+    auth.api.getSession({ headers: await headers() }),
+    getT(),
+  ]);
 
   if (!session?.user?.id) {
     redirect("/login");
@@ -44,13 +39,24 @@ export default async function SymptomsPage() {
     notes: decryptIfPresent(log.notes),
   }));
 
+  function formatDate(date: Date) {
+    return date.toLocaleDateString(tr.dateLocale, {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  }
+
   return (
     <div className="max-w-3xl mx-auto space-y-8">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="font-heading italic text-3xl text-foreground">Symptom logs 🌿</h1>
+          <h1 className="font-heading italic text-3xl text-foreground">
+            {tr.symptoms.title} 🌿
+          </h1>
           <p className="text-muted-foreground mt-1">
-            {logs.length} {logs.length === 1 ? "entry" : "entries"} recorded
+            {tr.symptoms.entriesCount(logs.length)}
           </p>
         </div>
         <Link
@@ -58,7 +64,7 @@ export default async function SymptomsPage() {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
         >
           <Plus size={15} />
-          Log today
+          {tr.symptoms.addEntry}
         </Link>
       </div>
 
@@ -66,9 +72,12 @@ export default async function SymptomsPage() {
         <Card>
           <CardContent className="py-12 flex flex-col items-center gap-3 text-center">
             <Activity size={32} className="text-muted-foreground/40" />
-            <p className="text-muted-foreground">No logs yet.</p>
-            <Link href="/symptoms/new" className="text-primary text-sm underline underline-offset-4">
-              Log your first day
+            <p className="text-muted-foreground">{tr.symptoms.noEntries}</p>
+            <Link
+              href="/symptoms/new"
+              className="text-primary text-sm underline underline-offset-4"
+            >
+              {tr.symptoms.startLogging}
             </Link>
           </CardContent>
         </Card>
@@ -82,14 +91,12 @@ export default async function SymptomsPage() {
                     {formatDate(log.loggedAt)}
                   </CardTitle>
                   <div className="flex items-center gap-3">
-                    <span className="text-xl" aria-label={`Mood: ${log.overallMood ?? "not logged"}`}>
-                      {moodEmoji(log.overallMood)}
-                    </span>
+                    <span className="text-xl">{moodEmoji(log.overallMood)}</span>
                     <Link
                       href={`/symptoms/${log.id}/edit`}
                       className="text-xs text-muted-foreground hover:text-foreground transition-colors"
                     >
-                      Edit
+                      {tr.edit}
                     </Link>
                     <DeleteSymptomLogButton logId={log.id} />
                   </div>
@@ -99,31 +106,31 @@ export default async function SymptomsPage() {
                 <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm">
                   {log.overallMood !== null && (
                     <span>
-                      <span className="text-muted-foreground">mood </span>
+                      <span className="text-muted-foreground">{tr.symptoms.moodLabel} </span>
                       <span className="font-medium">{log.overallMood}/10</span>
                     </span>
                   )}
                   {log.energyLevel !== null && (
                     <span>
-                      <span className="text-muted-foreground">energy </span>
+                      <span className="text-muted-foreground">{tr.symptoms.energyLabel} </span>
                       <span className="font-medium">{log.energyLevel}/10</span>
                     </span>
                   )}
                   {log.stressLevel !== null && (
                     <span>
-                      <span className="text-muted-foreground">stress </span>
+                      <span className="text-muted-foreground">{tr.symptoms.stressLabel} </span>
                       <span className="font-medium">{log.stressLevel}/10</span>
                     </span>
                   )}
                   {log.sleepHours !== null && (
                     <span>
-                      <span className="text-muted-foreground">sleep </span>
+                      <span className="text-muted-foreground">{tr.symptoms.sleepLabel} </span>
                       <span className="font-medium">{log.sleepHours}h</span>
                     </span>
                   )}
                   {log.sleepQuality !== null && (
                     <span>
-                      <span className="text-muted-foreground">sleep quality </span>
+                      <span className="text-muted-foreground">{tr.symptoms.sleepQualityLabel} </span>
                       <span className="font-medium">{log.sleepQuality}/10</span>
                     </span>
                   )}

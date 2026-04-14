@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Geist } from "next/font/google";
 import { Playfair_Display } from "next/font/google";
+import { LocaleProvider } from "@/components/providers/LocaleProvider";
+import { getLocale } from "@/lib/i18n";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -24,17 +26,21 @@ export const metadata: Metadata = {
   description: "Health tracking for chronic diseases",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+
   return (
     <html
-      lang="en"
+      lang={locale}
       className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} h-full`}
     >
-      <body className="min-h-full flex flex-col antialiased">{children}</body>
+      <body className="min-h-full flex flex-col antialiased">
+        <LocaleProvider initialLocale={locale}>{children}</LocaleProvider>
+      </body>
     </html>
   );
 }

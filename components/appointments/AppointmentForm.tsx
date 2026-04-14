@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 function defaultDateTimeLocal() {
   const d = new Date();
@@ -25,6 +26,7 @@ function defaultDateTimeLocal() {
 const initialState: AppointmentState = {};
 
 export function AppointmentForm() {
+  const { tr } = useLocale();
   const [state, formAction, pending] = useActionState(createAppointment, initialState);
 
   return (
@@ -36,7 +38,7 @@ export function AppointmentForm() {
       )}
 
       <div className="space-y-2">
-        <Label htmlFor="title">Title</Label>
+        <Label htmlFor="title">{tr.appointments.titleLabel}</Label>
         <Input
           id="title"
           name="title"
@@ -51,8 +53,8 @@ export function AppointmentForm() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="doctorName">
-            Doctor{" "}
-            <span className="text-muted-foreground font-normal text-xs">(optional)</span>
+            {tr.appointments.doctorLabel}{" "}
+            <span className="text-muted-foreground font-normal text-xs">{tr.optional}</span>
           </Label>
           <Input
             id="doctorName"
@@ -67,8 +69,8 @@ export function AppointmentForm() {
 
         <div className="space-y-2">
           <Label htmlFor="specialty">
-            Specialty{" "}
-            <span className="text-muted-foreground font-normal text-xs">(optional)</span>
+            {tr.appointments.specialtyLabel}{" "}
+            <span className="text-muted-foreground font-normal text-xs">{tr.optional}</span>
           </Label>
           <Select name="specialty">
             <SelectTrigger id="specialty" className="w-full">
@@ -90,7 +92,7 @@ export function AppointmentForm() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="scheduledAt">Date &amp; time</Label>
+          <Label htmlFor="scheduledAt">{tr.appointments.dateTimeLabel}</Label>
           <Input
             id="scheduledAt"
             name="scheduledAt"
@@ -105,8 +107,8 @@ export function AppointmentForm() {
 
         <div className="space-y-2">
           <Label htmlFor="durationMin">
-            Duration (min){" "}
-            <span className="text-muted-foreground font-normal text-xs">(optional)</span>
+            {tr.appointments.durationLabel}{" "}
+            <span className="text-muted-foreground font-normal text-xs">{tr.optional}</span>
           </Label>
           <Input
             id="durationMin"
@@ -125,13 +127,13 @@ export function AppointmentForm() {
 
       <div className="space-y-2">
         <Label htmlFor="location">
-          Location{" "}
-          <span className="text-muted-foreground font-normal text-xs">(optional)</span>
+          {tr.appointments.locationLabel}{" "}
+          <span className="text-muted-foreground font-normal text-xs">{tr.optional}</span>
         </Label>
         <Input
           id="location"
           name="location"
-          placeholder="e.g. Hôpital Lariboisière, Paris"
+          placeholder="e.g. Paris Hospital, Room 12"
           className={cn(state.errors?.location && "border-destructive")}
         />
         {state.errors?.location && (
@@ -141,13 +143,13 @@ export function AppointmentForm() {
 
       <div className="space-y-2">
         <Label htmlFor="purpose">
-          Purpose{" "}
-          <span className="text-muted-foreground font-normal text-xs">(optional)</span>
+          {tr.appointments.purposeLabel}{" "}
+          <span className="text-muted-foreground font-normal text-xs">{tr.optional}</span>
         </Label>
         <Textarea
           id="purpose"
           name="purpose"
-          placeholder="What do you want to discuss or check?"
+          placeholder="What you want to discuss or check…"
           rows={3}
           className={cn(state.errors?.purpose && "border-destructive")}
         />
@@ -158,13 +160,13 @@ export function AppointmentForm() {
 
       <div className="flex items-center gap-4">
         <Button type="submit" disabled={pending}>
-          {pending ? "Saving…" : "Add appointment"}
+          {pending ? tr.saving : tr.appointments.addBtn}
         </Button>
         <a
           href="/appointments"
           className="text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
-          Cancel
+          {tr.cancel}
         </a>
       </div>
     </form>

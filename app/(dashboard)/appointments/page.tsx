@@ -9,37 +9,41 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AppointmentStatusButton } from "@/components/appointments/AppointmentStatusButton";
 import { AppointmentSummaryForm } from "@/components/appointments/AppointmentSummaryForm";
-
-const STATUS_LABELS: Record<string, string> = {
-  UPCOMING: "upcoming",
-  COMPLETED: "completed",
-  CANCELLED: "cancelled",
-  RESCHEDULED: "rescheduled",
-};
-
-const STATUS_VARIANTS: Record<string, "default" | "secondary" | "outline"> = {
-  UPCOMING: "default",
-  COMPLETED: "secondary",
-  CANCELLED: "outline",
-  RESCHEDULED: "secondary",
-};
-
-function formatDateTime(date: Date) {
-  return date.toLocaleDateString("en-US", {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
+import { getT } from "@/lib/i18n";
 
 export default async function AppointmentsPage() {
-  const session = await auth.api.getSession({ headers: await headers() });
+  const [session, tr] = await Promise.all([
+    auth.api.getSession({ headers: await headers() }),
+    getT(),
+  ]);
 
   if (!session?.user?.id) {
     redirect("/login");
+  }
+
+  const STATUS_LABELS = {
+    UPCOMING: tr.appointments.statusUpcoming,
+    COMPLETED: tr.appointments.statusCompleted,
+    CANCELLED: tr.appointments.statusCancelled,
+    RESCHEDULED: tr.appointments.statusRescheduled,
+  };
+
+  const STATUS_VARIANTS: Record<string, "default" | "secondary" | "outline"> = {
+    UPCOMING: "default",
+    COMPLETED: "secondary",
+    CANCELLED: "outline",
+    RESCHEDULED: "secondary",
+  };
+
+  function formatDateTime(date: Date) {
+    return date.toLocaleDateString(tr.dateLocale, {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   }
 
   const appointments = await prisma.appointment.findMany({
@@ -61,9 +65,11 @@ export default async function AppointmentsPage() {
     <div className="max-w-3xl mx-auto space-y-8">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="font-heading italic text-3xl text-foreground">Appointments 🌿</h1>
+          <h1 className="font-heading italic text-3xl text-foreground">
+            {tr.appointments.title} 🌿
+          </h1>
           <p className="text-muted-foreground mt-1">
-            {upcoming.length} upcoming
+            {tr.appointments.upcomingCount(upcoming.length)}
           </p>
         </div>
         <Link
@@ -71,7 +77,7 @@ export default async function AppointmentsPage() {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
         >
           <Plus size={15} />
-          Add
+          {tr.appointments.add}
         </Link>
       </div>
 
@@ -79,9 +85,12 @@ export default async function AppointmentsPage() {
         <Card>
           <CardContent className="py-12 flex flex-col items-center gap-3 text-center">
             <CalendarDays size={32} className="text-muted-foreground/40" />
-            <p className="text-muted-foreground">No appointments scheduled.</p>
-            <Link href="/appointments/new" className="text-primary text-sm underline underline-offset-4">
-              Schedule your first appointment
+            <p className="text-muted-foreground">{tr.appointments.noAppointments}</p>
+            <Link
+              href="/appointments/new"
+              className="text-primary text-sm underline underline-offset-4"
+            >
+              {tr.appointments.addFirst}
             </Link>
           </CardContent>
         </Card>
@@ -90,10 +99,17 @@ export default async function AppointmentsPage() {
           {upcoming.length > 0 && (
             <section className="space-y-3">
               <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-                Upcoming
+                {tr.appointments.upcoming}
               </h2>
               {upcoming.map((appt) => (
-                <AppointmentCard key={appt.id} appointment={appt} />
+                <AppointmentCard
+                  key={appt.id}
+                  appointment={appt}
+                  statusLabel={STATUS_LABELS[appt.status as keyof typeof STATUS_LABELS] ?? appt.status.toLowerCase()}
+                  statusVariant={STATUS_VARIANTS[appt.status] ?? "secondary"}
+                  formattedDate={formatDateTime(appt.scheduledAt)}
+                  editLabel={tr.appointments.edit}
+                />
               ))}
             </section>
           )}
@@ -101,10 +117,17 @@ export default async function AppointmentsPage() {
           {past.length > 0 && (
             <section className="space-y-3">
               <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-                Past
+                {tr.appointments.past}
               </h2>
               {past.map((appt) => (
-                <AppointmentCard key={appt.id} appointment={appt} />
+                <AppointmentCard
+                  key={appt.id}
+                  appointment={appt}
+                  statusLabel={STATUS_LABELS[appt.status as keyof typeof STATUS_LABELS] ?? appt.status.toLowerCase()}
+                  statusVariant={STATUS_VARIANTS[appt.status] ?? "secondary"}
+                  formattedDate={formatDateTime(appt.scheduledAt)}
+                  editLabel={tr.appointments.edit}
+                />
               ))}
             </section>
           )}
@@ -127,21 +150,31 @@ type Appointment = {
   summary: string | null;
 };
 
-function AppointmentCard({ appointment: a }: { appointment: Appointment }) {
+function AppointmentCard({
+  appointment: a,
+  statusLabel,
+  statusVariant,
+  formattedDate,
+  editLabel,
+}: {
+  appointment: Appointment;
+  statusLabel: string;
+  statusVariant: "default" | "secondary" | "outline";
+  formattedDate: string;
+  editLabel: string;
+}) {
   return (
     <Card>
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between gap-3">
           <CardTitle className="font-heading italic text-lg leading-tight">{a.title}</CardTitle>
           <div className="flex items-center gap-2 shrink-0">
-            <Badge variant={STATUS_VARIANTS[a.status] ?? "secondary"}>
-              {STATUS_LABELS[a.status] ?? a.status.toLowerCase()}
-            </Badge>
+            <Badge variant={statusVariant}>{statusLabel}</Badge>
           </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-1 text-sm text-muted-foreground">
-        <p className="text-foreground font-medium">{formatDateTime(a.scheduledAt)}</p>
+        <p className="text-foreground font-medium">{formattedDate}</p>
         {a.durationMin && <p>{a.durationMin} min</p>}
         {a.doctorName && (
           <p>
@@ -165,7 +198,7 @@ function AppointmentCard({ appointment: a }: { appointment: Appointment }) {
             href={`/appointments/${a.id}/edit`}
             className="text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
-            Edit
+            {editLabel}
           </a>
         </div>
       </CardContent>

@@ -3,6 +3,7 @@
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { updateAppointmentStatus } from "@/server/actions/appointments";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 type Status = "COMPLETED" | "CANCELLED" | "RESCHEDULED" | "UPCOMING";
 
@@ -12,55 +13,58 @@ type Action = {
   className: string;
 };
 
-const ACTIONS_FOR: Record<string, Action[]> = {
-  UPCOMING: [
-    {
-      label: "Mark completed",
-      status: "COMPLETED",
-      className:
-        "text-xs px-2.5 py-1 rounded-md border border-primary/40 text-primary hover:bg-primary/10 transition-colors",
-    },
-    {
-      label: "Cancel",
-      status: "CANCELLED",
-      className:
-        "text-xs px-2.5 py-1 rounded-md border border-border text-muted-foreground hover:border-destructive hover:text-destructive transition-colors",
-    },
-  ],
-  COMPLETED: [
-    {
-      label: "Reopen",
-      status: "UPCOMING",
-      className:
-        "text-xs px-2.5 py-1 rounded-md border border-border text-muted-foreground hover:text-foreground transition-colors",
-    },
-  ],
-  CANCELLED: [
-    {
-      label: "Reopen",
-      status: "UPCOMING",
-      className:
-        "text-xs px-2.5 py-1 rounded-md border border-border text-muted-foreground hover:text-foreground transition-colors",
-    },
-  ],
-  RESCHEDULED: [
-    {
-      label: "Mark completed",
-      status: "COMPLETED",
-      className:
-        "text-xs px-2.5 py-1 rounded-md border border-primary/40 text-primary hover:bg-primary/10 transition-colors",
-    },
-  ],
-};
-
-type Props = {
+export function AppointmentStatusButton({
+  appointmentId,
+  currentStatus,
+}: {
   appointmentId: string;
   currentStatus: string;
-};
-
-export function AppointmentStatusButton({ appointmentId, currentStatus }: Props) {
+}) {
+  const { tr } = useLocale();
   const [pending, startTransition] = useTransition();
   const router = useRouter();
+
+  const ACTIONS_FOR: Record<string, Action[]> = {
+    UPCOMING: [
+      {
+        label: tr.appointments.markComplete,
+        status: "COMPLETED",
+        className:
+          "text-xs px-2.5 py-1 rounded-md border border-primary/40 text-primary hover:bg-primary/10 transition-colors",
+      },
+      {
+        label: tr.appointments.cancelAppt,
+        status: "CANCELLED",
+        className:
+          "text-xs px-2.5 py-1 rounded-md border border-border text-muted-foreground hover:border-destructive hover:text-destructive transition-colors",
+      },
+    ],
+    COMPLETED: [
+      {
+        label: tr.appointments.reopen,
+        status: "UPCOMING",
+        className:
+          "text-xs px-2.5 py-1 rounded-md border border-border text-muted-foreground hover:text-foreground transition-colors",
+      },
+    ],
+    CANCELLED: [
+      {
+        label: tr.appointments.reopen,
+        status: "UPCOMING",
+        className:
+          "text-xs px-2.5 py-1 rounded-md border border-border text-muted-foreground hover:text-foreground transition-colors",
+      },
+    ],
+    RESCHEDULED: [
+      {
+        label: tr.appointments.markComplete,
+        status: "COMPLETED",
+        className:
+          "text-xs px-2.5 py-1 rounded-md border border-primary/40 text-primary hover:bg-primary/10 transition-colors",
+      },
+    ],
+  };
+
   const actions = ACTIONS_FOR[currentStatus] ?? [];
 
   if (actions.length === 0) return null;

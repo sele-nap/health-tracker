@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 type Props = {
   twoFactorEnabled: boolean;
@@ -15,6 +16,7 @@ type Props = {
 type Step = "idle" | "setup" | "verify" | "backupcodes";
 
 export function TwoFactorSection({ twoFactorEnabled }: Props) {
+  const { tr } = useLocale();
   const [step, setStep] = useState<Step>("idle");
   const [totpUri, setTotpUri] = useState<string | null>(null);
   const [backupCodes, setBackupCodes] = useState<string[]>([]);
@@ -31,14 +33,14 @@ export function TwoFactorSection({ twoFactorEnabled }: Props) {
 
   function handleGetUri() {
     if (!password) {
-      setError("Password is required");
+      setError(tr.settings.passwordRequired);
       return;
     }
     setError("");
     startTransition(async () => {
       const res = await authClient.twoFactor.getTotpUri({ password });
       if (res.error) {
-        setError(res.error.message ?? "Failed to get TOTP URI");
+        setError(res.error.message ?? tr.settings.failedTotp);
         return;
       }
       setTotpUri(res.data?.totpURI ?? null);
@@ -50,7 +52,7 @@ export function TwoFactorSection({ twoFactorEnabled }: Props) {
     startTransition(async () => {
       const res = await authClient.twoFactor.verifyTotp({ code });
       if (res.error) {
-        setError(res.error.message ?? "Invalid code");
+        setError(res.error.message ?? tr.settings.invalidCode);
         return;
       }
       const backupRes = await authClient.twoFactor.generateBackupCodes({ password });
@@ -67,7 +69,7 @@ export function TwoFactorSection({ twoFactorEnabled }: Props) {
     startTransition(async () => {
       const res = await authClient.twoFactor.disable({ password });
       if (res.error) {
-        setError(res.error.message ?? "Failed to disable 2FA");
+        setError(res.error.message ?? tr.settings.failedDisable);
         return;
       }
       setEnabled(false);
@@ -80,11 +82,11 @@ export function TwoFactorSection({ twoFactorEnabled }: Props) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="font-heading italic text-lg">Two-factor authentication</CardTitle>
+          <CardTitle className="font-heading italic text-lg">{tr.settings.twoFactor}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-primary bg-primary/10 px-3 py-2 rounded-lg">
-            2FA is now enabled. Save these backup codes somewhere safe — you won't see them again.
+            {tr.settings.backupCodesMsg}
           </p>
           <div className="grid grid-cols-2 gap-2">
             {backupCodes.map((c, i) => (
@@ -94,7 +96,7 @@ export function TwoFactorSection({ twoFactorEnabled }: Props) {
             ))}
           </div>
           <Button variant="outline" onClick={() => setStep("idle")}>
-            Done
+            {tr.settings.done}
           </Button>
         </CardContent>
       </Card>
@@ -105,7 +107,7 @@ export function TwoFactorSection({ twoFactorEnabled }: Props) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="font-heading italic text-lg">Enable two-factor authentication</CardTitle>
+          <CardTitle className="font-heading italic text-lg">{tr.settings.enableTwoFactor}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {error && (
@@ -115,7 +117,7 @@ export function TwoFactorSection({ twoFactorEnabled }: Props) {
           {!totpUri ? (
             <>
               <div className="space-y-2">
-                <Label htmlFor="2fa-password">Confirm your password</Label>
+                <Label htmlFor="2fa-password">{tr.settings.confirmPassword2fa}</Label>
                 <Input
                   id="2fa-password"
                   type="password"
@@ -126,18 +128,16 @@ export function TwoFactorSection({ twoFactorEnabled }: Props) {
               </div>
               <div className="flex gap-3">
                 <Button onClick={handleGetUri} disabled={pending}>
-                  {pending ? "Loading…" : "Continue"}
+                  {pending ? tr.settings.loading : tr.settings.continueBtn}
                 </Button>
                 <Button variant="outline" onClick={() => setStep("idle")}>
-                  Cancel
+                  {tr.cancel}
                 </Button>
               </div>
             </>
           ) : (
             <>
-              <p className="text-sm text-muted-foreground">
-                Scan this code with your authenticator app (Ente Auth, Aegis, etc.), then enter the 6-digit code below.
-              </p>
+              <p className="text-sm text-muted-foreground">{tr.settings.scanInstructions}</p>
               <div className="bg-white p-3 rounded-lg inline-block">
                 <Image
                   src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(totpUri)}`}
@@ -148,7 +148,7 @@ export function TwoFactorSection({ twoFactorEnabled }: Props) {
               </div>
               <p className="text-xs text-muted-foreground break-all font-mono">{totpUri}</p>
               <div className="space-y-2">
-                <Label htmlFor="totp-code">6-digit code</Label>
+                <Label htmlFor="totp-code">{tr.settings.digitCode}</Label>
                 <Input
                   id="totp-code"
                   value={code}
@@ -162,10 +162,10 @@ export function TwoFactorSection({ twoFactorEnabled }: Props) {
               </div>
               <div className="flex gap-3">
                 <Button onClick={handleVerify} disabled={pending || code.length !== 6}>
-                  {pending ? "Verifying…" : "Verify & enable"}
+                  {pending ? tr.settings.verifying : tr.settings.verifyEnable}
                 </Button>
                 <Button variant="outline" onClick={() => setStep("idle")}>
-                  Cancel
+                  {tr.cancel}
                 </Button>
               </div>
             </>
@@ -178,7 +178,7 @@ export function TwoFactorSection({ twoFactorEnabled }: Props) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="font-heading italic text-lg">Two-factor authentication</CardTitle>
+        <CardTitle className="font-heading italic text-lg">{tr.settings.twoFactor}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {error && (
@@ -187,12 +187,10 @@ export function TwoFactorSection({ twoFactorEnabled }: Props) {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium">
-              {enabled ? "2FA is enabled" : "2FA is disabled"}
+              {enabled ? tr.settings.twoFactorEnabled : tr.settings.twoFactorDisabled}
             </p>
             <p className="text-xs text-muted-foreground mt-0.5">
-              {enabled
-                ? "Your account is protected with TOTP authentication."
-                : "Add an extra layer of security to your account."}
+              {enabled ? tr.settings.twoFactorEnabledDesc : tr.settings.twoFactorDisabledDesc}
             </p>
           </div>
           {enabled ? (
@@ -205,7 +203,7 @@ export function TwoFactorSection({ twoFactorEnabled }: Props) {
         {enabled ? (
           <div className="space-y-3 pt-1">
             <div className="space-y-2">
-              <Label htmlFor="disable-password">Password to disable</Label>
+              <Label htmlFor="disable-password">{tr.settings.passwordToDisable}</Label>
               <Input
                 id="disable-password"
                 type="password"
@@ -216,12 +214,12 @@ export function TwoFactorSection({ twoFactorEnabled }: Props) {
               />
             </div>
             <Button variant="destructive" onClick={handleDisable} disabled={pending || !password}>
-              {pending ? "Disabling…" : "Disable 2FA"}
+              {pending ? tr.settings.disabling : tr.settings.disableBtn}
             </Button>
           </div>
         ) : (
           <Button variant="outline" onClick={handleEnable}>
-            Enable 2FA
+            {tr.settings.enableBtn}
           </Button>
         )}
       </CardContent>

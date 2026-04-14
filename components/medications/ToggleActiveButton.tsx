@@ -4,6 +4,7 @@ import { useTransition } from "react";
 import { toggleMedicationActive } from "@/server/actions/medications";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 type Props = {
   medicationId: string;
@@ -11,6 +12,7 @@ type Props = {
 };
 
 export function ToggleActiveButton({ medicationId, isActive }: Props) {
+  const { tr } = useLocale();
   const [pending, startTransition] = useTransition();
   const router = useRouter();
 
@@ -33,7 +35,7 @@ export function ToggleActiveButton({ medicationId, isActive }: Props) {
         pending && "opacity-50 cursor-not-allowed"
       )}
     >
-      {pending ? "…" : isActive ? "Mark inactive" : "Mark active"}
+      {pending ? "…" : isActive ? tr.medications.deactivate : tr.medications.activate}
     </button>
   );
 }

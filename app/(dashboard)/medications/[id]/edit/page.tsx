@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { decryptIfPresent } from "@/lib/crypto";
 import { notFound, redirect } from "next/navigation";
 import { MedicationEditForm } from "@/components/medications/MedicationEditForm";
+import { getT } from "@/lib/i18n";
 
 export default async function EditMedicationPage({
   params,
@@ -11,7 +12,10 @@ export default async function EditMedicationPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const session = await auth.api.getSession({ headers: await headers() });
+  const [session, tr] = await Promise.all([
+    auth.api.getSession({ headers: await headers() }),
+    getT(),
+  ]);
 
   if (!session?.user?.id) {
     redirect("/login");
@@ -55,7 +59,9 @@ export default async function EditMedicationPage({
   return (
     <div className="max-w-xl mx-auto space-y-8">
       <div>
-        <h1 className="font-heading italic text-3xl text-foreground">Edit medication 🌿</h1>
+        <h1 className="font-heading italic text-3xl text-foreground">
+          {tr.medications.editTitle} 🌿
+        </h1>
         <p className="text-muted-foreground mt-1">{medication.name}</p>
       </div>
 

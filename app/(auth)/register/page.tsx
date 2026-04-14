@@ -8,9 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { tr } = useLocale();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,7 +27,7 @@ export default function RegisterPage() {
     const { error } = await signUp.email({ name, email, password });
 
     if (error) {
-      setError(error.message ?? "Registration failed.");
+      setError(error.message ?? tr.auth.registrationFailed);
       setLoading(false);
       return;
     }
@@ -38,7 +40,7 @@ export default function RegisterPage() {
       <div className="text-center space-y-1">
         <p className="text-3xl">🌿</p>
         <h1 className="font-heading italic text-2xl text-foreground">Health Tracker</h1>
-        <p className="text-sm text-muted-foreground">Create your account</p>
+        <p className="text-sm text-muted-foreground">{tr.auth.createAccount}</p>
       </div>
 
       <Card className="w-full max-w-sm">
@@ -51,7 +53,7 @@ export default function RegisterPage() {
               </p>
             )}
             <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
+              <Label htmlFor="name">{tr.auth.name}</Label>
               <Input
                 id="name"
                 type="text"
@@ -59,11 +61,11 @@ export default function RegisterPage() {
                 onChange={(e) => setName(e.target.value)}
                 required
                 autoComplete="name"
-                placeholder="Your name"
+                placeholder={tr.auth.namePlaceholder}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{tr.auth.email}</Label>
               <Input
                 id="email"
                 type="email"
@@ -75,7 +77,7 @@ export default function RegisterPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{tr.auth.password}</Label>
               <Input
                 id="password"
                 type="password"
@@ -84,19 +86,19 @@ export default function RegisterPage() {
                 required
                 minLength={8}
                 autoComplete="new-password"
-                placeholder="At least 8 characters"
+                placeholder={tr.auth.passwordPlaceholder}
               />
             </div>
           </CardContent>
 
           <CardFooter className="flex flex-col gap-3 pt-2">
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Creating account…" : "Create account"}
+              {loading ? tr.auth.creating : tr.auth.createAccountBtn}
             </Button>
             <p className="text-sm text-muted-foreground text-center">
-              Already have an account?{" "}
+              {tr.auth.alreadyAccount}{" "}
               <Link href="/login" className="text-primary underline underline-offset-4">
-                Sign in
+                {tr.auth.signIn}
               </Link>
             </p>
           </CardFooter>

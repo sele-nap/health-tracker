@@ -8,9 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { tr } = useLocale();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -24,7 +26,7 @@ export default function LoginPage() {
     const { error } = await signIn.email({ email, password });
 
     if (error) {
-      setError(error.message ?? "Invalid credentials.");
+      setError(error.message ?? tr.auth.invalidCredentials);
       setLoading(false);
       return;
     }
@@ -37,7 +39,7 @@ export default function LoginPage() {
       <div className="text-center space-y-1">
         <p className="text-3xl">🌿</p>
         <h1 className="font-heading italic text-2xl text-foreground">Health Tracker</h1>
-        <p className="text-sm text-muted-foreground">Welcome back</p>
+        <p className="text-sm text-muted-foreground">{tr.auth.welcomeBack}</p>
       </div>
 
       <Card className="w-full max-w-sm">
@@ -50,7 +52,7 @@ export default function LoginPage() {
               </p>
             )}
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{tr.auth.email}</Label>
               <Input
                 id="email"
                 type="email"
@@ -62,7 +64,7 @@ export default function LoginPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{tr.auth.password}</Label>
               <Input
                 id="password"
                 type="password"
@@ -76,12 +78,12 @@ export default function LoginPage() {
 
           <CardFooter className="flex flex-col gap-3 pt-2">
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Signing in…" : "Sign in"}
+              {loading ? tr.auth.signingIn : tr.auth.signIn}
             </Button>
             <p className="text-sm text-muted-foreground text-center">
-              No account?{" "}
+              {tr.auth.noAccount}{" "}
               <Link href="/register" className="text-primary underline underline-offset-4">
-                Register
+                {tr.auth.signUp}
               </Link>
             </p>
           </CardFooter>

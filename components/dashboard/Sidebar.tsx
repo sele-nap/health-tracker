@@ -15,20 +15,22 @@ import {
 import { signOut, useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-
-const navItems = [
-  { href: "/", icon: Sparkles, label: "Overview" },
-  { href: "/symptoms", icon: Activity, label: "Symptoms" },
-  { href: "/medications", icon: Pill, label: "Medications" },
-  { href: "/appointments", icon: CalendarDays, label: "Appointments" },
-  { href: "/conditions", icon: HeartPulse, label: "Conditions" },
-  { href: "/patterns", icon: TrendingUp, label: "Patterns" },
-];
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { data: session } = useSession();
+  const { tr, locale, setLocale } = useLocale();
+
+  const navItems = [
+    { href: "/", icon: Sparkles, label: tr.nav.home },
+    { href: "/symptoms", icon: Activity, label: tr.nav.symptoms },
+    { href: "/medications", icon: Pill, label: tr.nav.medications },
+    { href: "/appointments", icon: CalendarDays, label: tr.nav.appointments },
+    { href: "/conditions", icon: HeartPulse, label: tr.nav.conditions },
+    { href: "/patterns", icon: TrendingUp, label: tr.nav.trends },
+  ];
 
   async function handleSignOut() {
     await signOut();
@@ -73,6 +75,19 @@ export default function Sidebar() {
             {displayName}
           </div>
         )}
+
+        {/* Language switcher */}
+        <button
+          onClick={() => setLocale(locale === "en" ? "fr" : "en")}
+          className="hidden md:flex w-full items-center justify-between px-3 py-2 rounded-lg text-xs text-muted-foreground hover:bg-sidebar-accent hover:text-foreground transition-colors"
+          aria-label="Switch language"
+        >
+          <span>{tr.settings.language}</span>
+          <span className="font-medium uppercase tracking-wide">
+            {locale === "en" ? "FR" : "EN"}
+          </span>
+        </button>
+
         <Link
           href="/settings"
           className={cn(
@@ -83,14 +98,14 @@ export default function Sidebar() {
           )}
         >
           <Settings2 size={18} className="shrink-0" />
-          <span className="hidden md:block">Settings</span>
+          <span className="hidden md:block">{tr.nav.settings}</span>
         </Link>
         <button
           onClick={handleSignOut}
           className="flex w-full items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-muted-foreground hover:bg-sidebar-accent hover:text-foreground transition-colors"
         >
           <LogOut size={18} className="shrink-0" />
-          <span className="hidden md:block">Sign out</span>
+          <span className="hidden md:block">{tr.nav.signOut}</span>
         </button>
       </div>
     </aside>

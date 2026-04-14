@@ -6,6 +6,7 @@ import type { AppointmentSummaryState } from "@/server/actions/appointments";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 const initialState: AppointmentSummaryState = {};
 
@@ -15,6 +16,7 @@ type Props = {
 };
 
 export function AppointmentSummaryForm({ appointmentId, existingSummary }: Props) {
+  const { tr } = useLocale();
   const [open, setOpen] = useState(false);
   const action = saveAppointmentSummary.bind(null, appointmentId);
   const [state, formAction, pending] = useActionState(action, initialState);
@@ -25,14 +27,14 @@ export function AppointmentSummaryForm({ appointmentId, existingSummary }: Props
         onClick={() => setOpen(true)}
         className="text-xs text-primary hover:underline underline-offset-4 transition-colors"
       >
-        {existingSummary ? "Edit summary" : "+ Add visit summary"}
+        {existingSummary ? tr.appointments.editSummary : tr.appointments.addSummary}
       </button>
     );
   }
 
   if (state.success) {
     return (
-      <p className="text-xs text-primary/80 italic">Summary saved.</p>
+      <p className="text-xs text-primary/80 italic">{tr.appointments.summarySaved}</p>
     );
   }
 
@@ -44,7 +46,7 @@ export function AppointmentSummaryForm({ appointmentId, existingSummary }: Props
       <Textarea
         name="summary"
         defaultValue={existingSummary ?? ""}
-        placeholder="What was discussed, next steps, prescriptions changed…"
+        placeholder={tr.appointments.summaryPlaceholder}
         rows={3}
         className={cn("text-sm", state.errors?.summary && "border-destructive")}
       />
@@ -53,14 +55,14 @@ export function AppointmentSummaryForm({ appointmentId, existingSummary }: Props
       )}
       <div className="flex items-center gap-3">
         <Button type="submit" size="sm" disabled={pending}>
-          {pending ? "Saving…" : "Save"}
+          {pending ? tr.saving : tr.save}
         </Button>
         <button
           type="button"
           onClick={() => setOpen(false)}
           className="text-xs text-muted-foreground hover:text-foreground transition-colors"
         >
-          Cancel
+          {tr.cancel}
         </button>
       </div>
     </form>

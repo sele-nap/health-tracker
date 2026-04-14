@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 type AppointmentData = {
   id: string;
@@ -31,13 +32,14 @@ type AppointmentData = {
 const initialState: AppointmentState = {};
 
 export function AppointmentEditForm({ appointment }: { appointment: AppointmentData }) {
+  const { tr } = useLocale();
   const action = updateAppointment.bind(null, appointment.id);
   const [state, formAction, pending] = useActionState(action, initialState);
   const [delPending, startDelete] = useTransition();
   const router = useRouter();
 
   function handleDelete() {
-    if (!confirm(`Delete "${appointment.title}"? This cannot be undone.`)) return;
+    if (!confirm(tr.appointments.deleteConfirm(appointment.title))) return;
     startDelete(async () => {
       await deleteAppointment(appointment.id);
       router.push("/appointments");
@@ -53,7 +55,7 @@ export function AppointmentEditForm({ appointment }: { appointment: AppointmentD
       )}
 
       <div className="space-y-2">
-        <Label htmlFor="title">Title</Label>
+        <Label htmlFor="title">{tr.appointments.titleLabel}</Label>
         <Input
           id="title"
           name="title"
@@ -68,8 +70,8 @@ export function AppointmentEditForm({ appointment }: { appointment: AppointmentD
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="doctorName">
-            Doctor{" "}
-            <span className="text-muted-foreground font-normal text-xs">(optional)</span>
+            {tr.appointments.doctorLabel}{" "}
+            <span className="text-muted-foreground font-normal text-xs">{tr.optional}</span>
           </Label>
           <Input
             id="doctorName"
@@ -80,8 +82,8 @@ export function AppointmentEditForm({ appointment }: { appointment: AppointmentD
 
         <div className="space-y-2">
           <Label htmlFor="specialty">
-            Specialty{" "}
-            <span className="text-muted-foreground font-normal text-xs">(optional)</span>
+            {tr.appointments.specialtyLabel}{" "}
+            <span className="text-muted-foreground font-normal text-xs">{tr.optional}</span>
           </Label>
           <Select name="specialty" defaultValue={appointment.specialty || undefined}>
             <SelectTrigger id="specialty" className="w-full">
@@ -100,7 +102,7 @@ export function AppointmentEditForm({ appointment }: { appointment: AppointmentD
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="scheduledAt">Date &amp; time</Label>
+          <Label htmlFor="scheduledAt">{tr.appointments.dateTimeLabel}</Label>
           <Input
             id="scheduledAt"
             name="scheduledAt"
@@ -115,8 +117,8 @@ export function AppointmentEditForm({ appointment }: { appointment: AppointmentD
 
         <div className="space-y-2">
           <Label htmlFor="durationMin">
-            Duration (min){" "}
-            <span className="text-muted-foreground font-normal text-xs">(optional)</span>
+            {tr.appointments.durationLabel}{" "}
+            <span className="text-muted-foreground font-normal text-xs">{tr.optional}</span>
           </Label>
           <Input
             id="durationMin"
@@ -131,8 +133,8 @@ export function AppointmentEditForm({ appointment }: { appointment: AppointmentD
 
       <div className="space-y-2">
         <Label htmlFor="location">
-          Location{" "}
-          <span className="text-muted-foreground font-normal text-xs">(optional)</span>
+          {tr.appointments.locationLabel}{" "}
+          <span className="text-muted-foreground font-normal text-xs">{tr.optional}</span>
         </Label>
         <Input
           id="location"
@@ -143,8 +145,8 @@ export function AppointmentEditForm({ appointment }: { appointment: AppointmentD
 
       <div className="space-y-2">
         <Label htmlFor="purpose">
-          Purpose{" "}
-          <span className="text-muted-foreground font-normal text-xs">(optional)</span>
+          {tr.appointments.purposeLabel}{" "}
+          <span className="text-muted-foreground font-normal text-xs">{tr.optional}</span>
         </Label>
         <Textarea
           id="purpose"
@@ -157,13 +159,13 @@ export function AppointmentEditForm({ appointment }: { appointment: AppointmentD
       <div className="flex items-center justify-between pt-2">
         <div className="flex items-center gap-4">
           <Button type="submit" disabled={pending || delPending}>
-            {pending ? "Saving…" : "Save changes"}
+            {pending ? tr.saving : tr.appointments.saveBtn}
           </Button>
           <a
             href="/appointments"
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
-            Cancel
+            {tr.cancel}
           </a>
         </div>
         <button
@@ -172,7 +174,7 @@ export function AppointmentEditForm({ appointment }: { appointment: AppointmentD
           disabled={pending || delPending}
           className="text-sm text-muted-foreground hover:text-destructive transition-colors disabled:opacity-50"
         >
-          {delPending ? "Deleting…" : "Delete appointment"}
+          {delPending ? tr.deleting : tr.delete}
         </button>
       </div>
     </form>
