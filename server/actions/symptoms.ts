@@ -7,6 +7,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { encryptIfPresent } from "@/lib/crypto";
 import { symptomLogSchema } from "@/lib/validations/symptoms";
+import { rateLimit } from "@/lib/rate-limit";
 
 export type SymptomLogState = {
   errors?: {
@@ -29,6 +30,11 @@ export async function createSymptomLog(
 
   if (!session?.user?.id) {
     return { errors: { _form: ["Unauthorized"] } };
+  }
+
+  const rl = rateLimit(`symptoms:write:${session.user.id}`, 20, 60);
+  if (rl.limited) {
+    return { errors: { _form: ["Too many requests. Please try again shortly."] } };
   }
 
   const raw = {
@@ -75,6 +81,11 @@ export async function updateSymptomLog(
 
   if (!session?.user?.id) {
     return { errors: { _form: ["Unauthorized"] } };
+  }
+
+  const rl = rateLimit(`symptoms:write:${session.user.id}`, 20, 60);
+  if (rl.limited) {
+    return { errors: { _form: ["Too many requests. Please try again shortly."] } };
   }
 
   const existing = await prisma.symptomLog.findUnique({
@@ -126,6 +137,9 @@ export async function deleteSymptomLog(logId: string) {
   const session = await auth.api.getSession({ headers: await headers() });
 
   if (!session?.user?.id) throw new Error("Unauthorized");
+
+  const rl = rateLimit(`symptoms:delete:${session.user.id}`, 10, 60);
+  if (rl.limited) throw new Error("Too many requests");
 
   const log = await prisma.symptomLog.findUnique({
     where: { id: logId },

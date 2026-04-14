@@ -3,6 +3,7 @@
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
+import { rateLimit } from "@/lib/rate-limit";
 
 export type UpdateNameState = {
   success?: boolean;
@@ -39,6 +40,11 @@ export async function updateName(
     return { errors: { _form: ["Unauthorized"] } };
   }
 
+  const rl = rateLimit(`settings:name:${session.user.id}`, 10, 60);
+  if (rl.limited) {
+    return { errors: { _form: ["Too many requests. Please try again shortly."] } };
+  }
+
   await auth.api.updateUser({
     headers: reqHeaders,
     body: { name },
@@ -73,6 +79,11 @@ export async function changePassword(
 
   if (!session?.user?.id) {
     return { errors: { _form: ["Unauthorized"] } };
+  }
+
+  const rl = rateLimit(`settings:password:${session.user.id}`, 5, 60);
+  if (rl.limited) {
+    return { errors: { _form: ["Too many requests. Please try again shortly."] } };
   }
 
   try {

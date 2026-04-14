@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { MedicationStatus } from "@/generated/prisma/client";
+import { rateLimit } from "@/lib/rate-limit";
 
 export async function logMedicationStatus(
   medicationId: string,
@@ -15,6 +16,9 @@ export async function logMedicationStatus(
   if (!session?.user?.id) {
     throw new Error("Unauthorized");
   }
+
+  const rl = rateLimit(`medicationLogs:${session.user.id}`, 60, 60);
+  if (rl.limited) throw new Error("Too many requests");
 
   const medication = await prisma.medication.findUnique({
     where: { id: medicationId },

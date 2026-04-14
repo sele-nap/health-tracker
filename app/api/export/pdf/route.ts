@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { decryptIfPresent } from "@/lib/crypto";
 import { getT } from "@/lib/i18n";
+import { rateLimit } from "@/lib/rate-limit";
 import { renderToBuffer } from "@react-pdf/renderer";
 import { HealthReportDocument } from "@/components/pdf/HealthReportDocument";
 import React from "react";
@@ -15,6 +16,14 @@ export async function GET() {
 
   if (!session?.user?.id) {
     return new Response("Unauthorized", { status: 401 });
+  }
+
+  const rl = rateLimit(`pdf:${session.user.id}`, 5, 60);
+  if (rl.limited) {
+    return new Response("Too many requests", {
+      status: 429,
+      headers: { "Retry-After": String(rl.retryAfter) },
+    });
   }
 
   const now = new Date();

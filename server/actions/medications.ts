@@ -7,6 +7,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { encryptIfPresent } from "@/lib/crypto";
 import { medicationSchema } from "@/lib/validations/medications";
+import { rateLimit } from "@/lib/rate-limit";
 
 export type MedicationState = {
   errors?: {
@@ -29,6 +30,11 @@ export async function createMedication(
 
   if (!session?.user?.id) {
     return { errors: { _form: ["Unauthorized"] } };
+  }
+
+  const rl = rateLimit(`medications:write:${session.user.id}`, 20, 60);
+  if (rl.limited) {
+    return { errors: { _form: ["Too many requests. Please try again shortly."] } };
   }
 
   const raw = {
@@ -77,6 +83,9 @@ export async function toggleMedicationActive(medicationId: string) {
     throw new Error("Unauthorized");
   }
 
+  const rl = rateLimit(`medications:toggle:${session.user.id}`, 30, 60);
+  if (rl.limited) throw new Error("Too many requests");
+
   const medication = await prisma.medication.findUnique({
     where: { id: medicationId },
     select: { userId: true, isActive: true },
@@ -101,6 +110,11 @@ export async function updateMedication(
 
   if (!session?.user?.id) {
     return { errors: { _form: ["Unauthorized"] } };
+  }
+
+  const rl = rateLimit(`medications:write:${session.user.id}`, 20, 60);
+  if (rl.limited) {
+    return { errors: { _form: ["Too many requests. Please try again shortly."] } };
   }
 
   const existing = await prisma.medication.findUnique({
@@ -155,6 +169,9 @@ export async function deleteMedication(medicationId: string) {
   const session = await auth.api.getSession({ headers: await headers() });
 
   if (!session?.user?.id) throw new Error("Unauthorized");
+
+  const rl = rateLimit(`medications:delete:${session.user.id}`, 10, 60);
+  if (rl.limited) throw new Error("Too many requests");
 
   const medication = await prisma.medication.findUnique({
     where: { id: medicationId },

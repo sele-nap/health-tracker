@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { conditionSchema } from "@/lib/validations/conditions";
+import { rateLimit } from "@/lib/rate-limit";
 import { revalidatePath } from "next/cache";
 
 export type ConditionState = {
@@ -19,6 +20,11 @@ export async function createCondition(
 
   if (!session?.user?.id) {
     return { errors: { _form: ["Unauthorized"] } };
+  }
+
+  const rl = rateLimit(`conditions:write:${session.user.id}`, 10, 60);
+  if (rl.limited) {
+    return { errors: { _form: ["Too many requests. Please try again shortly."] } };
   }
 
   const raw = {
@@ -49,6 +55,9 @@ export async function deleteCondition(conditionId: string) {
   if (!session?.user?.id) {
     throw new Error("Unauthorized");
   }
+
+  const rl = rateLimit(`conditions:delete:${session.user.id}`, 5, 60);
+  if (rl.limited) throw new Error("Too many requests");
 
   const condition = await prisma.userCondition.findUnique({
     where: { id: conditionId },

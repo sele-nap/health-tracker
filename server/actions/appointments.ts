@@ -7,6 +7,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { encryptIfPresent } from "@/lib/crypto";
 import { appointmentSchema } from "@/lib/validations/appointments";
+import { rateLimit } from "@/lib/rate-limit";
 
 export type AppointmentState = {
   errors?: {
@@ -29,6 +30,11 @@ export async function createAppointment(
 
   if (!session?.user?.id) {
     return { errors: { _form: ["Unauthorized"] } };
+  }
+
+  const rl = rateLimit(`appointments:write:${session.user.id}`, 20, 60);
+  if (rl.limited) {
+    return { errors: { _form: ["Too many requests. Please try again shortly."] } };
   }
 
   const raw = {
@@ -77,6 +83,9 @@ export async function updateAppointmentStatus(
     throw new Error("Unauthorized");
   }
 
+  const rl = rateLimit(`appointments:write:${session.user.id}`, 20, 60);
+  if (rl.limited) throw new Error("Too many requests");
+
   const appointment = await prisma.appointment.findUnique({
     where: { id: appointmentId },
     select: { userId: true },
@@ -106,6 +115,11 @@ export async function saveAppointmentSummary(
 
   if (!session?.user?.id) {
     return { errors: { _form: ["Unauthorized"] } };
+  }
+
+  const rl = rateLimit(`appointments:write:${session.user.id}`, 20, 60);
+  if (rl.limited) {
+    return { errors: { _form: ["Too many requests. Please try again shortly."] } };
   }
 
   const summary = (formData.get("summary") as string | null)?.trim() || null;
@@ -141,6 +155,11 @@ export async function updateAppointment(
 
   if (!session?.user?.id) {
     return { errors: { _form: ["Unauthorized"] } };
+  }
+
+  const rl = rateLimit(`appointments:write:${session.user.id}`, 20, 60);
+  if (rl.limited) {
+    return { errors: { _form: ["Too many requests. Please try again shortly."] } };
   }
 
   const existing = await prisma.appointment.findUnique({
@@ -192,6 +211,9 @@ export async function deleteAppointment(appointmentId: string) {
   const session = await auth.api.getSession({ headers: await headers() });
 
   if (!session?.user?.id) throw new Error("Unauthorized");
+
+  const rl = rateLimit(`appointments:delete:${session.user.id}`, 10, 60);
+  if (rl.limited) throw new Error("Too many requests");
 
   const appointment = await prisma.appointment.findUnique({
     where: { id: appointmentId },
