@@ -118,6 +118,60 @@ export default async function PatternsPage() {
           <SleepChart data={chartData} />
         </CardContent>
       </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="font-heading italic text-lg">
+            {tr.patterns.exportData}
+          </CardTitle>
+          <p className="text-sm text-muted-foreground mt-1">
+            {tr.patterns.exportDataDesc}
+          </p>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {[
+              {
+                label: tr.patterns.csvSymptoms,
+                desc: tr.patterns.csvSymptomsDesc,
+                sheet: "symptoms",
+              },
+              {
+                label: tr.patterns.csvMedications,
+                desc: tr.patterns.csvMedicationsDesc,
+                sheet: "medications",
+              },
+              {
+                label: tr.patterns.csvAppointments,
+                desc: tr.patterns.csvAppointmentsDesc,
+                sheet: "appointments",
+              },
+              {
+                label: tr.patterns.csvAdherence,
+                desc: tr.patterns.csvAdherenceDesc,
+                sheet: "adherence",
+              },
+            ].map(({ label, desc, sheet }) => (
+              <div
+                key={sheet}
+                className="flex items-center justify-between gap-4 rounded-lg border border-border bg-muted/20 px-4 py-3"
+              >
+                <div>
+                  <p className="text-sm font-medium">{label}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{desc}</p>
+                </div>
+                <a
+                  href={`/api/export/csv?sheet=${sheet}`}
+                  download
+                  className="shrink-0 text-xs text-muted-foreground hover:text-foreground hover:border-primary border border-border rounded-md px-3 py-1.5 transition-colors"
+                >
+                  {tr.patterns.download}
+                </a>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
