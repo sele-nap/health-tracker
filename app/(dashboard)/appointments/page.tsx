@@ -4,22 +4,35 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { decryptIfPresent } from "@/lib/crypto";
 import { redirect } from "next/navigation";
-import { Plus, CalendarDays } from "lucide-react";
+import { Plus, CalendarDays, List } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AppointmentStatusButton } from "@/components/appointments/AppointmentStatusButton";
 import { AppointmentSummaryForm } from "@/components/appointments/AppointmentSummaryForm";
+import {
+  AppointmentCalendar,
+  type CalendarAppointment,
+} from "@/components/appointments/AppointmentCalendar";
 import { getT } from "@/lib/i18n";
+import { cn } from "@/lib/utils";
 
-export default async function AppointmentsPage() {
-  const [session, tr] = await Promise.all([
-    auth.api.getSession({ headers: await headers() }),
+export default async function AppointmentsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ view?: string }>;
+}) {
+  const h = await headers();
+  const [params, session, tr] = await Promise.all([
+    searchParams,
+    auth.api.getSession({ headers: h }),
     getT(),
   ]);
 
   if (!session?.user?.id) {
     redirect("/login");
   }
+
+  const view = params.view === "calendar" ? "calendar" : "list";
 
   const STATUS_LABELS = {
     UPCOMING: tr.appointments.statusUpcoming,
@@ -61,9 +74,17 @@ export default async function AppointmentsPage() {
   const upcoming = decrypted.filter((a) => a.status === "UPCOMING");
   const past = decrypted.filter((a) => a.status !== "UPCOMING");
 
+  const calendarAppts: CalendarAppointment[] = decrypted.map((a) => ({
+    id: a.id,
+    title: a.title,
+    scheduledAt: a.scheduledAt.toISOString(),
+    status: a.status,
+    doctorName: a.doctorName,
+  }));
+
   return (
     <div className="max-w-3xl mx-auto space-y-8">
-      <div className="flex items-start justify-between">
+      <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="font-heading italic text-3xl text-foreground">
             {tr.appointments.title} 🌿
@@ -72,16 +93,65 @@ export default async function AppointmentsPage() {
             {tr.appointments.upcomingCount(upcoming.length)}
           </p>
         </div>
-        <Link
-          href="/appointments/new"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
-        >
-          <Plus size={15} />
-          {tr.appointments.add}
-        </Link>
+
+        <div className="flex items-center gap-2 shrink-0">
+          <div className="flex rounded-lg border border-border overflow-hidden text-sm">
+            <Link
+              href="/appointments"
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-1.5 transition-colors",
+                view === "list"
+                  ? "bg-accent text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+              )}
+            >
+              <List size={14} />
+              <span className="hidden sm:inline">{tr.appointments.viewList}</span>
+            </Link>
+            <Link
+              href="/appointments?view=calendar"
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-1.5 border-l border-border transition-colors",
+                view === "calendar"
+                  ? "bg-accent text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+              )}
+            >
+              <CalendarDays size={14} />
+              <span className="hidden sm:inline">{tr.appointments.viewCalendar}</span>
+            </Link>
+          </div>
+
+          <Link
+            href="/appointments/new"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
+          >
+            <Plus size={15} />
+            <span className="hidden sm:inline">{tr.appointments.add}</span>
+          </Link>
+        </div>
       </div>
 
-      {decrypted.length === 0 ? (
+      {view === "calendar" ? (
+        <Card>
+          <CardContent className="pt-6 pb-6">
+            {decrypted.length === 0 ? (
+              <div className="py-8 flex flex-col items-center gap-3 text-center">
+                <CalendarDays size={32} className="text-muted-foreground/40" />
+                <p className="text-muted-foreground">{tr.appointments.noAppointments}</p>
+                <Link
+                  href="/appointments/new"
+                  className="text-primary text-sm underline underline-offset-4"
+                >
+                  {tr.appointments.addFirst}
+                </Link>
+              </div>
+            ) : (
+              <AppointmentCalendar appointments={calendarAppts} />
+            )}
+          </CardContent>
+        </Card>
+      ) : decrypted.length === 0 ? (
         <Card>
           <CardContent className="py-12 flex flex-col items-center gap-3 text-center">
             <CalendarDays size={32} className="text-muted-foreground/40" />

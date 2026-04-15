@@ -207,6 +207,9 @@ export const en = {
     saveBtn: "Save",
     deleteConfirm: (title: string) =>
       `Delete "${title}"? This action is irreversible.`,
+    viewList: "List",
+    viewCalendar: "Calendar",
+    calendarNoAppts: "No appointments on this day.",
   },
 
   // Conditions
@@ -531,6 +534,9 @@ export const fr: typeof en = {
     saveBtn: "Enregistrer",
     deleteConfirm: (title: string) =>
       `Supprimer « ${title} » ? Cette action est irréversible.`,
+    viewList: "Liste",
+    viewCalendar: "Calendrier",
+    calendarNoAppts: "Aucun rendez-vous ce jour.",
   },
 
   conditions: {
