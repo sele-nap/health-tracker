@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
@@ -9,6 +10,27 @@ import { Badge } from "@/components/ui/badge";
 import { MedicationStatus } from "@/generated/prisma/client";
 import { getT } from "@/lib/i18n";
 import { ReminderScheduleSection } from "@/components/medications/ReminderScheduleSection";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const med = await prisma.medication.findUnique({
+    where: { id },
+    select: { name: true, dosage: true },
+  });
+  if (!med) return { title: "Medication" };
+  return {
+    title: med.name,
+    description: `${med.name} — ${med.dosage}. Track adherence and set reminders.`,
+    openGraph: {
+      title: `${med.name} · Health Tracker`,
+      description: `${med.name} — ${med.dosage}. Track adherence and set reminders.`,
+    },
+  };
+}
 
 const STATUS_STYLES: Record<MedicationStatus, string> = {
   TAKEN: "text-primary",

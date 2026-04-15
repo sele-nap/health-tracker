@@ -1,5 +1,12 @@
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
+
+export const metadata: Metadata = {
+  title: "Log symptoms",
+  description: "Log how you feel today.",
+  openGraph: { title: "Log symptoms · Health Tracker", description: "Log how you feel today." },
+};
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { getT } from "@/lib/i18n";

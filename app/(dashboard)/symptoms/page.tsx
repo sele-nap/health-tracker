@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
+
+export const metadata: Metadata = {
+  title: "Symptoms journal",
+  description: "Track your daily mood, energy, sleep and symptoms.",
+  openGraph: { title: "Symptoms journal · Health Tracker", description: "Track your daily mood, energy, sleep and symptoms." },
+};
 import { prisma } from "@/lib/prisma";
 import { decryptIfPresent } from "@/lib/crypto";
 import { redirect } from "next/navigation";

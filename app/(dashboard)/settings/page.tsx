@@ -1,5 +1,12 @@
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
+
+export const metadata: Metadata = {
+  title: "Settings",
+  description: "Manage your account and preferences.",
+  openGraph: { title: "Settings · Health Tracker", description: "Manage your account and preferences." },
+};
 import { redirect } from "next/navigation";
 import { SettingsForms } from "@/components/settings/SettingsForms";
 import { TwoFactorSection } from "@/components/settings/TwoFactorSection";

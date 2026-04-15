@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -5,6 +6,23 @@ import { decryptIfPresent } from "@/lib/crypto";
 import { notFound, redirect } from "next/navigation";
 import { SymptomEditForm } from "@/components/symptoms/SymptomEditForm";
 import { getT } from "@/lib/i18n";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const log = await prisma.symptomLog.findUnique({ where: { id }, select: { loggedAt: true } });
+  const date = log
+    ? log.loggedAt.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+    : null;
+  const title = date ? `Edit entry · ${date}` : "Edit entry";
+  return {
+    title,
+    openGraph: { title: `${title} · Health Tracker` },
+  };
+}
 
 
 export default async function EditSymptomLogPage({

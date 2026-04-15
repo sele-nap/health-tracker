@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -7,6 +8,21 @@ import { AppointmentEditForm } from "@/components/appointments/AppointmentEditFo
 import { AppointmentNotesSection } from "@/components/appointments/AppointmentNotesSection";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getT } from "@/lib/i18n";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const appt = await prisma.appointment.findUnique({ where: { id }, select: { title: true } });
+  const title = appt ? appt.title : "Edit appointment";
+  return {
+    title,
+    description: "Edit appointment details and notes.",
+    openGraph: { title: `${title} · Health Tracker`, description: "Edit appointment details and notes." },
+  };
+}
 
 export default async function EditAppointmentPage({
   params,

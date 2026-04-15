@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
@@ -6,6 +7,21 @@ import { notFound, redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SymptomDefinitionManager } from "@/components/conditions/SymptomDefinitionManager";
 import { getT } from "@/lib/i18n";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const cond = await prisma.userCondition.findUnique({ where: { id }, select: { name: true } });
+  const title = cond ? cond.name : "Condition";
+  return {
+    title,
+    description: `Manage custom symptoms for ${title}.`,
+    openGraph: { title: `${title} · Health Tracker`, description: `Manage custom symptoms for ${title}.` },
+  };
+}
 
 export default async function ConditionDetailPage({
   params,

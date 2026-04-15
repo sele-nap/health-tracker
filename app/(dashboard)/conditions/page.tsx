@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
+
+export const metadata: Metadata = {
+  title: "Conditions",
+  description: "Manage your chronic conditions and custom symptoms.",
+  openGraph: { title: "Conditions · Health Tracker", description: "Manage your chronic conditions and custom symptoms." },
+};
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { Plus, HeartPulse } from "lucide-react";

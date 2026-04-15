@@ -1,8 +1,23 @@
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { decryptIfPresent } from "@/lib/crypto";
 import { notFound, redirect } from "next/navigation";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const med = await prisma.medication.findUnique({ where: { id }, select: { name: true } });
+  const title = med ? `Edit ${med.name}` : "Edit medication";
+  return {
+    title,
+    openGraph: { title: `${title} · Health Tracker` },
+  };
+}
 import { MedicationEditForm } from "@/components/medications/MedicationEditForm";
 import { getT } from "@/lib/i18n";
 

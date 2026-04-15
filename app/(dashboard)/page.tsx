@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
+
+export const metadata: Metadata = {
+  title: "Dashboard",
+  description: "Overview of your health at a glance.",
+  openGraph: { title: "Dashboard · Health Tracker", description: "Overview of your health at a glance." },
+};
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { CalendarDays, Pill, Activity, TrendingUp } from "lucide-react";

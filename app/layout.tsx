@@ -22,8 +22,17 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Health Tracker",
-  description: "Health tracking for chronic diseases",
+  title: {
+    default: "Health Tracker",
+    template: "%s · Health Tracker",
+  },
+  description: "Personal health tracking for chronic conditions.",
+  robots: { index: false, follow: false },
+  openGraph: {
+    siteName: "Health Tracker",
+    type: "website",
+    locale: "en_US",
+  },
 };
 
 export default async function RootLayout({

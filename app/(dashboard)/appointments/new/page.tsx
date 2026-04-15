@@ -1,5 +1,12 @@
+import type { Metadata } from "next";
 import { getT } from "@/lib/i18n";
 import { AppointmentForm } from "@/components/appointments/AppointmentForm";
+
+export const metadata: Metadata = {
+  title: "New appointment",
+  description: "Schedule a new medical appointment.",
+  openGraph: { title: "New appointment · Health Tracker", description: "Schedule a new medical appointment." },
+};
 
 export default async function NewAppointmentPage() {
   const tr = await getT();

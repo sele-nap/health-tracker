@@ -1,5 +1,12 @@
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
+
+export const metadata: Metadata = {
+  title: "Trends",
+  description: "Visualize your health data and spot correlations.",
+  openGraph: { title: "Trends · Health Tracker", description: "Visualize your health data and spot correlations." },
+};
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

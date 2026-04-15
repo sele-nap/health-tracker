@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
+
+export const metadata: Metadata = {
+  title: "Appointments",
+  description: "Schedule and review your medical appointments.",
+  openGraph: { title: "Appointments · Health Tracker", description: "Schedule and review your medical appointments." },
+};
 import { prisma } from "@/lib/prisma";
 import { decryptIfPresent } from "@/lib/crypto";
 import { redirect } from "next/navigation";
