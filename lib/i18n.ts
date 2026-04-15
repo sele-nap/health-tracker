@@ -17,6 +17,11 @@ export const en = {
   edit: "Edit",
   add: "Add",
   optional: "(optional)",
+  from: "From",
+  to: "To",
+  apply: "Apply",
+  clearFilter: "Clear",
+  noResults: "No results for this filter.",
 
   // Navigation
   nav: {
@@ -161,6 +166,7 @@ export const en = {
     newTitle: "Add a medication",
     newSubtitle: "Track what you're taking and when.",
     editTitle: "Edit medication",
+    filterAll: "All",
     addBtn: "Add medication",
     saveBtn: "Save",
     deleteConfirm: (name: string) =>
@@ -210,6 +216,7 @@ export const en = {
     viewList: "List",
     viewCalendar: "Calendar",
     calendarNoAppts: "No appointments on this day.",
+    searchDoctor: "Doctor name…",
   },
 
   // Conditions
@@ -348,6 +355,11 @@ export const fr: typeof en = {
   edit: "Modifier",
   add: "Ajouter",
   optional: "(optionnel)",
+  from: "Du",
+  to: "Au",
+  apply: "Appliquer",
+  clearFilter: "Effacer",
+  noResults: "Aucun résultat pour ce filtre.",
 
   nav: {
     home: "Accueil",
@@ -487,6 +499,7 @@ export const fr: typeof en = {
     instructionsPlaceholder: "Avec de la nourriture, le soir…",
     newTitle: "Ajouter un médicament",
     newSubtitle: "Suivez ce que vous prenez et quand.",
+    filterAll: "Tous",
     editTitle: "Modifier le médicament",
     addBtn: "Ajouter le médicament",
     saveBtn: "Enregistrer",
@@ -537,6 +550,7 @@ export const fr: typeof en = {
     viewList: "Liste",
     viewCalendar: "Calendrier",
     calendarNoAppts: "Aucun rendez-vous ce jour.",
+    searchDoctor: "Nom du médecin…",
   },
 
   conditions: {

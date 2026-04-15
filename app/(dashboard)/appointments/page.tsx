@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils";
 export default async function AppointmentsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ view?: string }>;
+  searchParams: Promise<{ view?: string; doctor?: string }>;
 }) {
   const h = await headers();
   const [params, session, tr] = await Promise.all([
@@ -33,6 +33,7 @@ export default async function AppointmentsPage({
   }
 
   const view = params.view === "calendar" ? "calendar" : "list";
+  const doctorQuery = params.doctor?.trim() ?? "";
 
   const STATUS_LABELS = {
     UPCOMING: tr.appointments.statusUpcoming,
@@ -71,10 +72,16 @@ export default async function AppointmentsPage({
     summary: decryptIfPresent(appt.summary),
   }));
 
-  const upcoming = decrypted.filter((a) => a.status === "UPCOMING");
-  const past = decrypted.filter((a) => a.status !== "UPCOMING");
+  const filtered = doctorQuery
+    ? decrypted.filter((a) =>
+        a.doctorName?.toLowerCase().includes(doctorQuery.toLowerCase())
+      )
+    : decrypted;
 
-  const calendarAppts: CalendarAppointment[] = decrypted.map((a) => ({
+  const upcoming = filtered.filter((a) => a.status === "UPCOMING");
+  const past = filtered.filter((a) => a.status !== "UPCOMING");
+
+  const calendarAppts: CalendarAppointment[] = filtered.map((a) => ({
     id: a.id,
     title: a.title,
     scheduledAt: a.scheduledAt.toISOString(),
@@ -97,7 +104,7 @@ export default async function AppointmentsPage({
         <div className="flex items-center gap-2 shrink-0">
           <div className="flex rounded-lg border border-border overflow-hidden text-sm">
             <Link
-              href="/appointments"
+              href={doctorQuery ? `/appointments?doctor=${encodeURIComponent(doctorQuery)}` : "/appointments"}
               className={cn(
                 "flex items-center gap-1.5 px-3 py-1.5 transition-colors",
                 view === "list"
@@ -109,7 +116,7 @@ export default async function AppointmentsPage({
               <span className="hidden sm:inline">{tr.appointments.viewList}</span>
             </Link>
             <Link
-              href="/appointments?view=calendar"
+              href={doctorQuery ? `/appointments?view=calendar&doctor=${encodeURIComponent(doctorQuery)}` : "/appointments?view=calendar"}
               className={cn(
                 "flex items-center gap-1.5 px-3 py-1.5 border-l border-border transition-colors",
                 view === "calendar"
@@ -132,36 +139,79 @@ export default async function AppointmentsPage({
         </div>
       </div>
 
+      <form
+        method="GET"
+        className="flex flex-wrap items-end gap-3 p-4 rounded-xl border border-border bg-card"
+      >
+        <input type="hidden" name="view" value={view} />
+        <div className="flex flex-col gap-1 flex-1 min-w-48">
+          <label className="text-xs text-muted-foreground">
+            {tr.appointments.searchDoctor}
+          </label>
+          <input
+            type="text"
+            name="doctor"
+            defaultValue={doctorQuery}
+            placeholder={tr.appointments.searchDoctor}
+            className="h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+          />
+        </div>
+        <div className="flex items-center gap-2 pb-0.5">
+          <button
+            type="submit"
+            className="h-9 px-4 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
+          >
+            {tr.apply}
+          </button>
+          {doctorQuery && (
+            <Link
+              href={view === "calendar" ? "/appointments?view=calendar" : "/appointments"}
+              className="h-9 px-4 inline-flex items-center rounded-md border border-border text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {tr.clearFilter}
+            </Link>
+          )}
+        </div>
+      </form>
+
       {view === "calendar" ? (
         <Card>
           <CardContent className="pt-6 pb-6">
-            {decrypted.length === 0 ? (
+            {filtered.length === 0 ? (
               <div className="py-8 flex flex-col items-center gap-3 text-center">
                 <CalendarDays size={32} className="text-muted-foreground/40" />
-                <p className="text-muted-foreground">{tr.appointments.noAppointments}</p>
-                <Link
-                  href="/appointments/new"
-                  className="text-primary text-sm underline underline-offset-4"
-                >
-                  {tr.appointments.addFirst}
-                </Link>
+                <p className="text-muted-foreground">
+                  {doctorQuery ? tr.noResults : tr.appointments.noAppointments}
+                </p>
+                {!doctorQuery && (
+                  <Link
+                    href="/appointments/new"
+                    className="text-primary text-sm underline underline-offset-4"
+                  >
+                    {tr.appointments.addFirst}
+                  </Link>
+                )}
               </div>
             ) : (
               <AppointmentCalendar appointments={calendarAppts} />
             )}
           </CardContent>
         </Card>
-      ) : decrypted.length === 0 ? (
+      ) : filtered.length === 0 ? (
         <Card>
           <CardContent className="py-12 flex flex-col items-center gap-3 text-center">
             <CalendarDays size={32} className="text-muted-foreground/40" />
-            <p className="text-muted-foreground">{tr.appointments.noAppointments}</p>
-            <Link
-              href="/appointments/new"
-              className="text-primary text-sm underline underline-offset-4"
-            >
-              {tr.appointments.addFirst}
-            </Link>
+            <p className="text-muted-foreground">
+              {doctorQuery ? tr.noResults : tr.appointments.noAppointments}
+            </p>
+            {!doctorQuery && (
+              <Link
+                href="/appointments/new"
+                className="text-primary text-sm underline underline-offset-4"
+              >
+                {tr.appointments.addFirst}
+              </Link>
+            )}
           </CardContent>
         </Card>
       ) : (

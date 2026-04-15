@@ -9,10 +9,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ToggleActiveButton } from "@/components/medications/ToggleActiveButton";
 import { getT } from "@/lib/i18n";
+import { cn } from "@/lib/utils";
 
-export default async function MedicationsPage() {
-  const [session, tr] = await Promise.all([
-    auth.api.getSession({ headers: await headers() }),
+export default async function MedicationsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string }>;
+}) {
+  const h = await headers();
+  const [params, session, tr] = await Promise.all([
+    searchParams,
+    auth.api.getSession({ headers: h }),
     getT(),
   ]);
 
@@ -20,8 +27,14 @@ export default async function MedicationsPage() {
     redirect("/login");
   }
 
+  const statusFilter = params.status === "active" ? true : params.status === "inactive" ? false : undefined;
+  const isFiltered = statusFilter !== undefined;
+
   const medications = await prisma.medication.findMany({
-    where: { userId: session.user.id },
+    where: {
+      userId: session.user.id,
+      ...(statusFilter !== undefined ? { isActive: statusFilter } : {}),
+    },
     orderBy: [{ isActive: "desc" }, { name: "asc" }],
   });
 
@@ -40,6 +53,13 @@ export default async function MedicationsPage() {
   }
 
   const activeCount = decrypted.filter((m) => m.isActive).length;
+
+  const filterTabs = [
+    { label: tr.medications.filterAll, href: "/medications" },
+    { label: tr.medications.active, href: "/medications?status=active" },
+    { label: tr.medications.inactive, href: "/medications?status=inactive" },
+  ];
+  const currentStatus = params.status ?? "";
 
   return (
     <div className="max-w-3xl mx-auto space-y-8">
@@ -61,17 +81,43 @@ export default async function MedicationsPage() {
         </Link>
       </div>
 
+      <div className="flex rounded-lg border border-border overflow-hidden text-sm w-fit">
+        {filterTabs.map(({ label, href }, i) => {
+          const tabStatus = i === 0 ? "" : i === 1 ? "active" : "inactive";
+          const isActive = currentStatus === tabStatus;
+          return (
+            <Link
+              key={href}
+              href={href}
+              className={cn(
+                "px-4 py-1.5 transition-colors",
+                i > 0 && "border-l border-border",
+                isActive
+                  ? "bg-accent text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+              )}
+            >
+              {label}
+            </Link>
+          );
+        })}
+      </div>
+
       {decrypted.length === 0 ? (
         <Card>
           <CardContent className="py-12 flex flex-col items-center gap-3 text-center">
             <Pill size={32} className="text-muted-foreground/40" />
-            <p className="text-muted-foreground">{tr.medications.noMeds}</p>
-            <Link
-              href="/medications/new"
-              className="text-primary text-sm underline underline-offset-4"
-            >
-              {tr.medications.addFirst}
-            </Link>
+            <p className="text-muted-foreground">
+              {isFiltered ? tr.noResults : tr.medications.noMeds}
+            </p>
+            {!isFiltered && (
+              <Link
+                href="/medications/new"
+                className="text-primary text-sm underline underline-offset-4"
+              >
+                {tr.medications.addFirst}
+              </Link>
+            )}
           </CardContent>
         </Card>
       ) : (

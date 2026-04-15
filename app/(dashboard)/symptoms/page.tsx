@@ -18,9 +18,15 @@ function moodEmoji(value: number | null) {
   return "😊";
 }
 
-export default async function SymptomsPage() {
-  const [session, tr] = await Promise.all([
-    auth.api.getSession({ headers: await headers() }),
+export default async function SymptomsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ from?: string; to?: string }>;
+}) {
+  const h = await headers();
+  const [params, session, tr] = await Promise.all([
+    searchParams,
+    auth.api.getSession({ headers: h }),
     getT(),
   ]);
 
@@ -28,10 +34,19 @@ export default async function SymptomsPage() {
     redirect("/login");
   }
 
+  const from = params.from ?? "";
+  const to = params.to ?? "";
+  const isFiltered = Boolean(from || to);
+
   const logs = await prisma.symptomLog.findMany({
-    where: { userId: session.user.id },
+    where: {
+      userId: session.user.id,
+      loggedAt: {
+        gte: from ? new Date(from) : undefined,
+        lte: to ? new Date(`${to}T23:59:59`) : undefined,
+      },
+    },
     orderBy: { loggedAt: "desc" },
-    take: 30,
   });
 
   const decryptedLogs = logs.map((log) => ({
@@ -56,7 +71,7 @@ export default async function SymptomsPage() {
             {tr.symptoms.title} 🌿
           </h1>
           <p className="text-muted-foreground mt-1">
-            {tr.symptoms.entriesCount(logs.length)}
+            {tr.symptoms.entriesCount(decryptedLogs.length)}
           </p>
         </div>
         <Link
@@ -68,17 +83,63 @@ export default async function SymptomsPage() {
         </Link>
       </div>
 
+      <form
+        method="GET"
+        className="flex flex-wrap items-end gap-3 p-4 rounded-xl border border-border bg-card"
+      >
+        <div className="flex flex-col gap-1">
+          <label className="text-xs text-muted-foreground">{tr.from}</label>
+          <input
+            type="date"
+            name="from"
+            defaultValue={from}
+            max={to || undefined}
+            className="h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+          />
+        </div>
+        <div className="flex flex-col gap-1">
+          <label className="text-xs text-muted-foreground">{tr.to}</label>
+          <input
+            type="date"
+            name="to"
+            defaultValue={to}
+            min={from || undefined}
+            className="h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+          />
+        </div>
+        <div className="flex items-center gap-2 pb-0.5">
+          <button
+            type="submit"
+            className="h-9 px-4 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
+          >
+            {tr.apply}
+          </button>
+          {isFiltered && (
+            <Link
+              href="/symptoms"
+              className="h-9 px-4 inline-flex items-center rounded-md border border-border text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {tr.clearFilter}
+            </Link>
+          )}
+        </div>
+      </form>
+
       {decryptedLogs.length === 0 ? (
         <Card>
           <CardContent className="py-12 flex flex-col items-center gap-3 text-center">
             <Activity size={32} className="text-muted-foreground/40" />
-            <p className="text-muted-foreground">{tr.symptoms.noEntries}</p>
-            <Link
-              href="/symptoms/new"
-              className="text-primary text-sm underline underline-offset-4"
-            >
-              {tr.symptoms.startLogging}
-            </Link>
+            <p className="text-muted-foreground">
+              {isFiltered ? tr.noResults : tr.symptoms.noEntries}
+            </p>
+            {!isFiltered && (
+              <Link
+                href="/symptoms/new"
+                className="text-primary text-sm underline underline-offset-4"
+              >
+                {tr.symptoms.startLogging}
+              </Link>
+            )}
           </CardContent>
         </Card>
       ) : (
