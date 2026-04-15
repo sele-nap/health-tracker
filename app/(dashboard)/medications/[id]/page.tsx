@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MedicationStatus } from "@/generated/prisma/client";
 import { getT } from "@/lib/i18n";
+import { ReminderScheduleSection } from "@/components/medications/ReminderScheduleSection";
 
 const STATUS_STYLES: Record<MedicationStatus, string> = {
   TAKEN: "text-primary",
@@ -44,6 +45,16 @@ export default async function MedicationDetailPage({
       endDate: true,
       instructions: true,
       isActive: true,
+      schedules: {
+        orderBy: { createdAt: "asc" },
+        select: {
+          id: true,
+          frequency: true,
+          times: true,
+          daysOfWeek: true,
+          reminderEnabled: true,
+        },
+      },
       logs: {
         orderBy: { scheduledFor: "desc" },
         take: 60,
@@ -159,6 +170,11 @@ export default async function MedicationDetailPage({
           </CardContent>
         </Card>
       )}
+
+      <ReminderScheduleSection
+        medicationId={medication.id}
+        schedules={medication.schedules}
+      />
 
       <div className="space-y-3">
         <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">

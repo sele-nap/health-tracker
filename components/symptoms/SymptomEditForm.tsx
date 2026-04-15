@@ -48,6 +48,13 @@ function SliderField({ id, name, label, value, onChange, error, sliderLabels }: 
   );
 }
 
+export type SymptomDefinitionProp = {
+  id: string;
+  name: string;
+  unit: string | null;
+  conditionName: string;
+};
+
 type Props = {
   logId: string;
   defaults: {
@@ -59,11 +66,18 @@ type Props = {
     sleepQuality: number;
     notes: string;
   };
+  definitions?: SymptomDefinitionProp[];
+  defaultCustomEntries?: Record<string, number>;
 };
 
 const initialState: SymptomLogState = {};
 
-export function SymptomEditForm({ logId, defaults }: Props) {
+export function SymptomEditForm({
+  logId,
+  defaults,
+  definitions = [],
+  defaultCustomEntries = {},
+}: Props) {
   const { tr } = useLocale();
   const action = updateSymptomLog.bind(null, logId);
   const [state, formAction, pending] = useActionState(action, initialState);
@@ -72,6 +86,15 @@ export function SymptomEditForm({ logId, defaults }: Props) {
   const [energy, setEnergy] = useState(defaults.energy);
   const [sleepQuality, setSleepQuality] = useState(defaults.sleepQuality);
   const [stress, setStress] = useState(defaults.stress);
+  const [customValues, setCustomValues] = useState<Record<string, number>>(
+    () => {
+      const init: Record<string, number> = {};
+      for (const def of definitions) {
+        init[def.id] = defaultCustomEntries[def.id] ?? 5;
+      }
+      return init;
+    }
+  );
 
   return (
     <form action={formAction} className="space-y-8">
@@ -123,6 +146,25 @@ export function SymptomEditForm({ logId, defaults }: Props) {
         </div>
         <SliderField id="sleepQuality" name="sleepQuality" label={tr.symptoms.sleepQuality} value={sleepQuality} onChange={setSleepQuality} error={state.errors?.sleepQuality} sliderLabels={tr.symptoms.sliderLabels} />
       </div>
+
+      {definitions.length > 0 && (
+        <div className="space-y-6">
+          <h2 className="font-heading italic text-lg text-foreground">
+            {tr.symptoms.customSection}
+          </h2>
+          {definitions.map((def) => (
+            <SliderField
+              key={def.id}
+              id={`custom_${def.id}`}
+              name={`custom_${def.id}`}
+              label={`${def.name}${def.unit ? ` (${def.unit})` : ""}`}
+              value={customValues[def.id] ?? 5}
+              onChange={(v) => setCustomValues((prev) => ({ ...prev, [def.id]: v }))}
+              sliderLabels={tr.symptoms.sliderLabels}
+            />
+          ))}
+        </div>
+      )}
 
       <div className="space-y-2">
         <Label htmlFor="notes">{tr.symptoms.notes}</Label>

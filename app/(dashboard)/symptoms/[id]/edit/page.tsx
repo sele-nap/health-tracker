@@ -6,6 +6,7 @@ import { notFound, redirect } from "next/navigation";
 import { SymptomEditForm } from "@/components/symptoms/SymptomEditForm";
 import { getT } from "@/lib/i18n";
 
+
 export default async function EditSymptomLogPage({
   params,
 }: {
@@ -21,23 +22,45 @@ export default async function EditSymptomLogPage({
     redirect("/login");
   }
 
-  const log = await prisma.symptomLog.findUnique({
-    where: { id },
-    select: {
-      id: true,
-      userId: true,
-      loggedAt: true,
-      overallMood: true,
-      energyLevel: true,
-      stressLevel: true,
-      sleepHours: true,
-      sleepQuality: true,
-      notes: true,
-    },
-  });
+  const [log, conditions] = await Promise.all([
+    prisma.symptomLog.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        userId: true,
+        loggedAt: true,
+        overallMood: true,
+        energyLevel: true,
+        stressLevel: true,
+        sleepHours: true,
+        sleepQuality: true,
+        notes: true,
+        entries: {
+          select: { symptomDefinitionId: true, severity: true, value: true },
+        },
+      },
+    }),
+    prisma.userCondition.findMany({
+      where: { userId: session.user.id },
+      select: {
+        name: true,
+        symptomDefinitions: { select: { id: true, name: true, unit: true } },
+      },
+    }),
+  ]);
 
   if (!log || log.userId !== session.user.id) {
     notFound();
+  }
+
+  const definitions = conditions.flatMap((c) =>
+    c.symptomDefinitions.map((def) => ({ ...def, conditionName: c.name }))
+  );
+
+  const defaultCustomEntries: Record<string, number> = {};
+  for (const entry of log.entries) {
+    defaultCustomEntries[entry.symptomDefinitionId] =
+      entry.severity ?? Number(entry.value) ?? 5;
   }
 
   const defaults = {
@@ -65,7 +88,12 @@ export default async function EditSymptomLogPage({
         <p className="text-muted-foreground mt-1">{formattedDate}</p>
       </div>
 
-      <SymptomEditForm logId={log.id} defaults={defaults} />
+      <SymptomEditForm
+        logId={log.id}
+        defaults={defaults}
+        definitions={definitions}
+        defaultCustomEntries={defaultCustomEntries}
+      />
     </div>
   );
 }

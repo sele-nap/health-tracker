@@ -9,6 +9,20 @@ import { encryptIfPresent } from "@/lib/crypto";
 import { symptomLogSchema } from "@/lib/validations/symptoms";
 import { rateLimit } from "@/lib/rate-limit";
 
+function extractCustomEntries(formData: FormData) {
+  const entries: { symptomDefinitionId: string; severity: number; value: string }[] = [];
+  for (const [key, val] of formData.entries()) {
+    if (key.startsWith("custom_") && typeof val === "string" && val !== "") {
+      const definitionId = key.slice("custom_".length);
+      const severity = Math.min(10, Math.max(1, Math.round(Number(val))));
+      if (!isNaN(severity)) {
+        entries.push({ symptomDefinitionId: definitionId, severity, value: String(severity) });
+      }
+    }
+  }
+  return entries;
+}
+
 export type SymptomLogState = {
   errors?: {
     loggedAt?: string[];
@@ -56,6 +70,8 @@ export async function createSymptomLog(
   const { loggedAt, overallMood, energyLevel, sleepHours, sleepQuality, stressLevel, notes } =
     parsed.data;
 
+  const customEntries = extractCustomEntries(formData);
+
   await prisma.symptomLog.create({
     data: {
       userId: session.user.id,
@@ -66,6 +82,9 @@ export async function createSymptomLog(
       sleepQuality: sleepQuality ?? null,
       stressLevel: stressLevel ?? null,
       notes: encryptIfPresent(notes ?? null),
+      entries: {
+        create: customEntries,
+      },
     },
   });
 
@@ -116,17 +135,27 @@ export async function updateSymptomLog(
   const { loggedAt, overallMood, energyLevel, sleepHours, sleepQuality, stressLevel, notes } =
     parsed.data;
 
-  await prisma.symptomLog.update({
-    where: { id: logId },
-    data: {
-      loggedAt: new Date(loggedAt),
-      overallMood: overallMood ?? null,
-      energyLevel: energyLevel ?? null,
-      sleepHours: sleepHours ?? null,
-      sleepQuality: sleepQuality ?? null,
-      stressLevel: stressLevel ?? null,
-      notes: encryptIfPresent(notes ?? null),
-    },
+  const customEntries = extractCustomEntries(formData);
+
+  await prisma.$transaction(async (tx) => {
+    await tx.symptomLogEntry.deleteMany({ where: { symptomLogId: logId } });
+    await tx.symptomLog.update({
+      where: { id: logId },
+      data: {
+        loggedAt: new Date(loggedAt),
+        overallMood: overallMood ?? null,
+        energyLevel: energyLevel ?? null,
+        sleepHours: sleepHours ?? null,
+        sleepQuality: sleepQuality ?? null,
+        stressLevel: stressLevel ?? null,
+        notes: encryptIfPresent(notes ?? null),
+      },
+    });
+    if (customEntries.length > 0) {
+      await tx.symptomLogEntry.createMany({
+        data: customEntries.map((e) => ({ ...e, symptomLogId: logId })),
+      });
+    }
   });
 
   revalidatePath("/symptoms");

@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { decryptIfPresent } from "@/lib/crypto";
 import { notFound, redirect } from "next/navigation";
 import { AppointmentEditForm } from "@/components/appointments/AppointmentEditForm";
+import { AppointmentNotesSection } from "@/components/appointments/AppointmentNotesSection";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getT } from "@/lib/i18n";
 
 export default async function EditAppointmentPage({
@@ -33,6 +35,10 @@ export default async function EditAppointmentPage({
       scheduledAt: true,
       durationMin: true,
       purpose: true,
+      notes: {
+        orderBy: { createdAt: "asc" },
+        select: { id: true, content: true, createdAt: true },
+      },
     },
   });
 
@@ -57,6 +63,12 @@ export default async function EditAppointmentPage({
     purpose: appt.purpose ?? "",
   };
 
+  const notes = appt.notes.map((n) => ({
+    id: n.id,
+    content: decryptIfPresent(n.content) ?? n.content,
+    createdAt: n.createdAt.toISOString(),
+  }));
+
   return (
     <div className="max-w-xl mx-auto space-y-8">
       <div>
@@ -67,6 +79,20 @@ export default async function EditAppointmentPage({
       </div>
 
       <AppointmentEditForm appointment={data} />
+
+      <Card>
+        <CardHeader className="pb-4">
+          <CardTitle className="font-heading italic text-lg">
+            {tr.appointments.notes}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <AppointmentNotesSection
+            appointmentId={appt.id}
+            initialNotes={notes}
+          />
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -129,6 +129,8 @@ export const en = {
       "fair", "okay", "good", "very good", "excellent", "perfect",
     ],
     deleteConfirm: "Delete this entry? This action is irreversible.",
+    customSection: "Custom symptoms",
+    customSeverity: "severity",
   },
 
   // Medications
@@ -217,6 +219,13 @@ export const en = {
     viewCalendar: "Calendar",
     calendarNoAppts: "No appointments on this day.",
     searchDoctor: "Doctor name…",
+    notes: "Notes",
+    addNote: "Add a note",
+    notePlaceholder: "Observations, instructions, follow-up actions…",
+    noNotes: "No notes yet.",
+    noteAdded: "Note added.",
+    deleteNote: "Delete",
+    deleteNoteConfirm: "Delete this note?",
   },
 
   // Conditions
@@ -240,6 +249,17 @@ export const en = {
     namePlaceholder: "e.g. Lupus, Generalized anxiety disorder",
     diagnosedAtLabel: "Diagnosis date",
     addBtn: "Add",
+    manageSymptoms: "Manage symptoms",
+    customSymptoms: "Custom symptoms",
+    addSymptomDef: "Add symptom",
+    symptomNameLabel: "Symptom name",
+    symptomNamePlaceholder: "e.g. Joint pain, Eye fatigue",
+    symptomUnitLabel: "Unit",
+    symptomUnitPlaceholder: "e.g. /10, mg",
+    noCustomSymptoms: "No custom symptoms defined yet.",
+    customSymptomsDesc: "Add symptoms specific to this condition to track them in your daily log.",
+    deleteSymptomConfirm: "Delete this symptom? Existing log entries will be preserved.",
+    backToConditions: "← Conditions",
   },
 
   // Patterns / trends
@@ -295,6 +315,25 @@ export const en = {
     colNotes: "Notes",
     upcomingAppts: "Upcoming Appointments",
     footer: (date: string) => `Health Tracker · Confidential · ${date}`,
+  },
+
+  // Reminders
+  reminders: {
+    sectionTitle: "Reminders",
+    add: "Add reminder",
+    noReminders: "No reminders configured.",
+    setupNote: "You'll receive an email at the scheduled times.",
+    daily: "Daily",
+    weekly: "Weekly",
+    frequencyLabel: "Frequency",
+    timesLabel: "Times",
+    addTime: "+ Add time",
+    daysLabel: "Days",
+    save: "Save",
+    delete: "Delete reminder",
+    deleteConfirm: "Delete this reminder?",
+    toggle: "Toggle",
+    days: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as string[],
   },
 
   // Settings
@@ -464,6 +503,8 @@ export const fr: typeof en = {
       "passable", "correct", "bien", "très bien", "excellent", "parfait",
     ],
     deleteConfirm: "Supprimer cette entrée ? Cette action est irréversible.",
+    customSection: "Symptômes personnalisés",
+    customSeverity: "sévérité",
   },
 
   medications: {
@@ -551,6 +592,13 @@ export const fr: typeof en = {
     viewCalendar: "Calendrier",
     calendarNoAppts: "Aucun rendez-vous ce jour.",
     searchDoctor: "Nom du médecin…",
+    notes: "Notes",
+    addNote: "Ajouter une note",
+    notePlaceholder: "Observations, instructions, points de suivi…",
+    noNotes: "Aucune note.",
+    noteAdded: "Note ajoutée.",
+    deleteNote: "Supprimer",
+    deleteNoteConfirm: "Supprimer cette note ?",
   },
 
   conditions: {
@@ -574,6 +622,17 @@ export const fr: typeof en = {
     namePlaceholder: "ex. Lupus, Trouble anxieux généralisé",
     diagnosedAtLabel: "Date de diagnostic",
     addBtn: "Ajouter",
+    manageSymptoms: "Gérer les symptômes",
+    customSymptoms: "Symptômes personnalisés",
+    addSymptomDef: "Ajouter un symptôme",
+    symptomNameLabel: "Nom du symptôme",
+    symptomNamePlaceholder: "ex. Douleurs articulaires, Fatigue oculaire",
+    symptomUnitLabel: "Unité",
+    symptomUnitPlaceholder: "ex. /10, mg",
+    noCustomSymptoms: "Aucun symptôme personnalisé défini.",
+    customSymptomsDesc: "Ajoutez des symptômes propres à cette condition pour les suivre dans votre journal quotidien.",
+    deleteSymptomConfirm: "Supprimer ce symptôme ? Les entrées existantes seront conservées.",
+    backToConditions: "← Conditions",
   },
 
   patterns: {
@@ -628,6 +687,24 @@ export const fr: typeof en = {
     colNotes: "Notes",
     upcomingAppts: "Rendez-vous à venir",
     footer: (date: string) => `Health Tracker · Confidentiel · ${date}`,
+  },
+
+  reminders: {
+    sectionTitle: "Rappels",
+    add: "Ajouter un rappel",
+    noReminders: "Aucun rappel configuré.",
+    setupNote: "Vous recevrez un e-mail aux heures programmées.",
+    daily: "Quotidien",
+    weekly: "Hebdomadaire",
+    frequencyLabel: "Fréquence",
+    timesLabel: "Heures",
+    addTime: "+ Ajouter une heure",
+    daysLabel: "Jours",
+    save: "Enregistrer",
+    delete: "Supprimer le rappel",
+    deleteConfirm: "Supprimer ce rappel ?",
+    toggle: "Activer/Désactiver",
+    days: ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"] as string[],
   },
 
   settings: {

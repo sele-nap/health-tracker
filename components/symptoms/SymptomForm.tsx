@@ -60,6 +60,13 @@ function SliderField({ id, name, label, value, onChange, error, sliderLabels }: 
 
 const initialState: SymptomLogState = {};
 
+export type SymptomDefinitionProp = {
+  id: string;
+  name: string;
+  unit: string | null;
+  conditionName: string;
+};
+
 type Props = {
   defaultDate?: string;
   defaultMood?: number;
@@ -69,6 +76,8 @@ type Props = {
   defaultSleepHours?: number;
   defaultNotes?: string;
   cancelHref?: string;
+  definitions?: SymptomDefinitionProp[];
+  defaultCustomEntries?: Record<string, number>;
 };
 
 export function SymptomForm({
@@ -80,6 +89,8 @@ export function SymptomForm({
   defaultSleepHours,
   defaultNotes = "",
   cancelHref = "/symptoms",
+  definitions = [],
+  defaultCustomEntries = {},
 }: Props) {
   const { tr } = useLocale();
   const [state, formAction, pending] = useActionState(createSymptomLog, initialState);
@@ -88,6 +99,15 @@ export function SymptomForm({
   const [energy, setEnergy] = useState(defaultEnergy);
   const [sleepQuality, setSleepQuality] = useState(defaultSleepQuality);
   const [stress, setStress] = useState(defaultStress);
+  const [customValues, setCustomValues] = useState<Record<string, number>>(
+    () => {
+      const init: Record<string, number> = {};
+      for (const def of definitions) {
+        init[def.id] = defaultCustomEntries[def.id] ?? 5;
+      }
+      return init;
+    }
+  );
 
   return (
     <form action={formAction} className="space-y-8">
@@ -181,6 +201,25 @@ export function SymptomForm({
           sliderLabels={tr.symptoms.sliderLabels}
         />
       </div>
+
+      {definitions.length > 0 && (
+        <div className="space-y-6">
+          <h2 className="font-heading italic text-lg text-foreground">
+            {tr.symptoms.customSection}
+          </h2>
+          {definitions.map((def) => (
+            <SliderField
+              key={def.id}
+              id={`custom_${def.id}`}
+              name={`custom_${def.id}`}
+              label={`${def.name}${def.unit ? ` (${def.unit})` : ""}`}
+              value={customValues[def.id] ?? 5}
+              onChange={(v) => setCustomValues((prev) => ({ ...prev, [def.id]: v }))}
+              sliderLabels={tr.symptoms.sliderLabels}
+            />
+          ))}
+        </div>
+      )}
 
       <div className="space-y-2">
         <Label htmlFor="notes">{tr.symptoms.notes}</Label>

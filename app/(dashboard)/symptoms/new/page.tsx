@@ -1,8 +1,36 @@
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { redirect } from "next/navigation";
 import { getT } from "@/lib/i18n";
 import { SymptomForm } from "@/components/symptoms/SymptomForm";
 
 export default async function NewSymptomLogPage() {
-  const tr = await getT();
+  const [session, tr] = await Promise.all([
+    auth.api.getSession({ headers: await headers() }),
+    getT(),
+  ]);
+
+  if (!session?.user?.id) {
+    redirect("/login");
+  }
+
+  const conditions = await prisma.userCondition.findMany({
+    where: { userId: session.user.id },
+    select: {
+      name: true,
+      symptomDefinitions: {
+        select: { id: true, name: true, unit: true },
+      },
+    },
+  });
+
+  const definitions = conditions.flatMap((c) =>
+    c.symptomDefinitions.map((def) => ({
+      ...def,
+      conditionName: c.name,
+    }))
+  );
 
   return (
     <div className="max-w-xl mx-auto space-y-8">
@@ -13,7 +41,7 @@ export default async function NewSymptomLogPage() {
         <p className="text-muted-foreground mt-1">{tr.symptoms.newSubtitle}</p>
       </div>
 
-      <SymptomForm />
+      <SymptomForm definitions={definitions} />
     </div>
   );
 }

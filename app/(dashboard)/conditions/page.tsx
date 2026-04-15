@@ -75,8 +75,23 @@ export default async function ConditionsPage() {
             <Card key={c.id}>
               <CardHeader className="pb-2">
                 <div className="flex items-start justify-between gap-3">
-                  <CardTitle className="font-heading italic text-lg">{c.name}</CardTitle>
-                  <DeleteConditionButton conditionId={c.id} />
+                  <CardTitle className="font-heading italic text-lg">
+                    <Link
+                      href={`/conditions/${c.id}`}
+                      className="hover:text-primary transition-colors"
+                    >
+                      {c.name}
+                    </Link>
+                  </CardTitle>
+                  <div className="flex items-center gap-3">
+                    <Link
+                      href={`/conditions/${c.id}`}
+                      className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {tr.conditions.manageSymptoms}
+                    </Link>
+                    <DeleteConditionButton conditionId={c.id} />
+                  </div>
                 </div>
               </CardHeader>
               <CardContent className="text-sm text-muted-foreground space-y-0.5">
