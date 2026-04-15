@@ -4,7 +4,9 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { WellbeingChart, SleepChart, type ChartDataPoint } from "@/components/patterns/HealthCharts";
-import { getT } from "@/lib/i18n";
+import { getT, getLocale } from "@/lib/i18n";
+import { computeCorrelations } from "@/lib/correlations";
+import { cn } from "@/lib/utils";
 
 function avg(values: (number | null)[]): string | null {
   const nums = values.filter((v): v is number => v !== null);
@@ -13,9 +15,10 @@ function avg(values: (number | null)[]): string | null {
 }
 
 export default async function PatternsPage() {
-  const [session, tr] = await Promise.all([
+  const [session, tr, locale] = await Promise.all([
     auth.api.getSession({ headers: await headers() }),
     getT(),
+    getLocale(),
   ]);
 
   if (!session?.user?.id) {
@@ -40,6 +43,8 @@ export default async function PatternsPage() {
       sleepQuality: true,
     },
   });
+
+  const correlations = computeCorrelations(logs, locale);
 
   function shortDate(date: Date) {
     return date.toLocaleDateString(tr.dateLocale, { month: "short", day: "numeric" });
@@ -116,6 +121,45 @@ export default async function PatternsPage() {
         </CardHeader>
         <CardContent>
           <SleepChart data={chartData} />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="font-heading italic text-lg">
+            {tr.patterns.correlationsTitle}
+          </CardTitle>
+          <p className="text-sm text-muted-foreground mt-1">
+            {tr.patterns.correlationsSubtitle}
+          </p>
+        </CardHeader>
+        <CardContent>
+          {correlations.length === 0 ? (
+            <p className="text-sm text-muted-foreground">{tr.patterns.correlationsEmpty}</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {correlations.map((insight, i) => (
+                <div
+                  key={i}
+                  className={cn(
+                    "rounded-xl border px-4 py-3 space-y-1.5",
+                    insight.impact === "positive" && "border-primary/30 bg-primary/5",
+                    insight.impact === "alert" && "border-amber-500/30 bg-amber-500/5",
+                    insight.impact === "negative" && "border-destructive/30 bg-destructive/5",
+                    insight.impact === "info" && "border-border bg-muted/20"
+                  )}
+                >
+                  <p className="flex items-center gap-2 text-sm font-medium">
+                    <span>{insight.icon}</span>
+                    <span>{insight.title}</span>
+                  </p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    {insight.body}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
 
