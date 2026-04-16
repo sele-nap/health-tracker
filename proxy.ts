@@ -14,7 +14,7 @@ function safeCallbackUrl(url: string): string {
   return "/";
 }
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const authenticated = hasSession(request);
 

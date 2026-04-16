@@ -96,4 +96,39 @@
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
   }
+
+  input[type="range"] {
+    background: var(--border);
+    height: 6px;
+    border-radius: 9999px;
+  }
+  input[type="range"]::-webkit-slider-runnable-track {
+    background: var(--border);
+    height: 6px;
+    border-radius: 9999px;
+  }
+  input[type="range"]::-moz-range-track {
+    background: var(--border);
+    height: 6px;
+    border-radius: 9999px;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 9999px;
+    background: var(--primary);
+    cursor: pointer;
+    margin-top: -6px;
+    box-shadow: 0 0 0 3px oklch(from var(--primary) l c h / 0.2);
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 9999px;
+    background: var(--primary);
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 0 0 3px oklch(from var(--primary) l c h / 0.2);
+  }
 }

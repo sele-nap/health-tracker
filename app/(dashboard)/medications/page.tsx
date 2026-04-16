@@ -15,7 +15,7 @@ import { Plus, Pill } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ToggleActiveButton } from "@/components/medications/ToggleActiveButton";
-import { getT } from "@/lib/i18n";
+import { getT } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
 export default async function MedicationsPage({

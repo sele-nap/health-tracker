@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist_Mono, Geist } from "next/font/google";
 import { Playfair_Display } from "next/font/google";
 import { LocaleProvider } from "@/components/providers/LocaleProvider";
-import { getLocale } from "@/lib/i18n";
+import { getLocale } from "@/lib/locale";
 import "./globals.css";
 
 const geistSans = Geist({

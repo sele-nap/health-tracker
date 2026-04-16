@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { notFound, redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SymptomDefinitionManager } from "@/components/conditions/SymptomDefinitionManager";
-import { getT } from "@/lib/i18n";
+import { getT } from "@/lib/locale";
 
 export async function generateMetadata({
   params,

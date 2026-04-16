@@ -1,5 +1,3 @@
-import { cookies } from "next/headers";
-
 export type Locale = "en" | "fr";
 
 // ---------------------------------------------------------------------------
@@ -158,12 +156,27 @@ export const en = {
     statusDelayed: "Delayed",
     statusPending: "Pending",
     nameLabel: "Medication name",
+    namePlaceholder: "e.g. Hydroxychloroquine",
     dosageLabel: "Dosage",
+    dosagePlaceholder: "e.g. 200mg",
     formLabel: "Form",
     formPlaceholder: "tablet, capsule, liquid…",
+    forms: {
+      tablet: "Tablet",
+      capsule: "Capsule",
+      pill: "Pill",
+      liquid: "Liquid",
+      injection: "Injection",
+      patch: "Patch",
+      cream: "Cream",
+      inhaler: "Inhaler",
+      drops: "Drops",
+      other: "Other",
+    } as Record<string, string>,
     startDateLabel: "Start date",
     endDateLabel: "End date",
     prescribedByLabel: "Prescribed by",
+    prescribedByPlaceholder: "e.g. Dr. Martin",
     instructionsLabel: "Instructions",
     instructionsPlaceholder: "With food, at night…",
     newTitle: "Add a medication",
@@ -338,6 +351,9 @@ export const en = {
     deleteConfirm: "Delete this reminder?",
     toggle: "Toggle",
     days: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as string[],
+    errorNoTime: "Add at least one time.",
+    errorNoDay: "Select at least one day.",
+    errorSave: "Failed to save reminder.",
   },
 
   // Settings
@@ -537,12 +553,27 @@ export const fr: typeof en = {
     statusDelayed: "Retardé",
     statusPending: "En attente",
     nameLabel: "Nom du médicament",
+    namePlaceholder: "ex. Hydroxychloroquine",
     dosageLabel: "Dosage",
+    dosagePlaceholder: "ex. 200 mg",
     formLabel: "Forme",
     formPlaceholder: "comprimé, gélule, liquide…",
+    forms: {
+      tablet: "Comprimé",
+      capsule: "Gélule",
+      pill: "Pilule",
+      liquid: "Liquide",
+      injection: "Injection",
+      patch: "Patch",
+      cream: "Crème",
+      inhaler: "Inhalateur",
+      drops: "Gouttes",
+      other: "Autre",
+    } as Record<string, string>,
     startDateLabel: "Date de début",
     endDateLabel: "Date de fin",
     prescribedByLabel: "Prescrit par",
+    prescribedByPlaceholder: "ex. Dr Martin",
     instructionsLabel: "Instructions",
     instructionsPlaceholder: "Avec de la nourriture, le soir…",
     newTitle: "Ajouter un médicament",
@@ -715,6 +746,9 @@ export const fr: typeof en = {
     deleteConfirm: "Supprimer ce rappel ?",
     toggle: "Activer/Désactiver",
     days: ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"] as string[],
+    errorNoTime: "Ajoutez au moins une heure.",
+    errorNoDay: "Sélectionnez au moins un jour.",
+    errorSave: "Erreur lors de l'enregistrement du rappel.",
   },
 
   settings: {
@@ -763,18 +797,3 @@ export const fr: typeof en = {
   },
 };
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-const translations = { en, fr } as const;
-
-export async function getLocale(): Promise<Locale> {
-  const cookieStore = await cookies();
-  const val = cookieStore.get("locale")?.value;
-  return val === "en" || val === "fr" ? val : "en";
-}
-
-export async function getT() {
-  const locale = await getLocale();
-  return translations[locale];
-}

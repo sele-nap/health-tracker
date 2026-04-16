@@ -1,7 +1,9 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { createSymptomLog, type SymptomLogState } from "@/server/actions/symptoms";
+import { createSymptomLog } from "@/server/actions/symptoms";
+import type { SymptomLogState } from "@/types/actions";
+import type { SymptomDefinitionProp } from "@/types/symptoms";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -49,7 +51,7 @@ function SliderField({ id, name, label, value, onChange, error, sliderLabels }: 
           step={1}
           value={value}
           onChange={(e) => onChange(Number(e.target.value))}
-          className="flex-1 h-1.5 rounded-full appearance-none cursor-pointer accent-primary"
+          className="flex-1 appearance-none cursor-pointer"
         />
         <span className="text-xs text-muted-foreground w-3">10</span>
       </div>
@@ -60,12 +62,7 @@ function SliderField({ id, name, label, value, onChange, error, sliderLabels }: 
 
 const initialState: SymptomLogState = {};
 
-export type SymptomDefinitionProp = {
-  id: string;
-  name: string;
-  unit: string | null;
-  conditionName: string;
-};
+export type { SymptomDefinitionProp };
 
 type Props = {
   defaultDate?: string;

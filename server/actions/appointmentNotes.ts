@@ -6,11 +6,9 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { encrypt } from "@/lib/crypto";
 import { rateLimit } from "@/lib/rate-limit";
+import type { NoteState } from "@/types/actions";
 
-export type NoteState = {
-  success?: boolean;
-  errors?: { content?: string[]; _form?: string[] };
-};
+export type { NoteState };
 
 export async function addAppointmentNote(
   appointmentId: string,

@@ -1,9 +1,6 @@
-export type CorrelationInsight = {
-  icon: string;
-  title: string;
-  body: string;
-  impact: "positive" | "negative" | "alert" | "info";
-};
+import type { CorrelationInsight } from "@/types/patterns";
+
+export type { CorrelationInsight };
 
 type LogEntry = {
   loggedAt: Date;

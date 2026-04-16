@@ -8,19 +8,9 @@ import { prisma } from "@/lib/prisma";
 import { encryptIfPresent } from "@/lib/crypto";
 import { medicationSchema } from "@/lib/validations/medications";
 import { rateLimit } from "@/lib/rate-limit";
+import type { MedicationState } from "@/types/actions";
 
-export type MedicationState = {
-  errors?: {
-    name?: string[];
-    dosage?: string[];
-    form?: string[];
-    prescribedBy?: string[];
-    startDate?: string[];
-    endDate?: string[];
-    instructions?: string[];
-    _form?: string[];
-  };
-};
+export type { MedicationState };
 
 export async function createMedication(
   _prevState: MedicationState,

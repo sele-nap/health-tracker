@@ -7,10 +7,9 @@ import { prisma } from "@/lib/prisma";
 import { conditionSchema } from "@/lib/validations/conditions";
 import { rateLimit } from "@/lib/rate-limit";
 import { revalidatePath } from "next/cache";
+import type { ConditionState } from "@/types/actions";
 
-export type ConditionState = {
-  errors?: { name?: string[]; diagnosedAt?: string[]; _form?: string[] };
-};
+export type { ConditionState };
 
 export async function createCondition(
   _prevState: ConditionState,

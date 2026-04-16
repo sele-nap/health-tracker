@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { decryptIfPresent } from "@/lib/crypto";
 import { notFound, redirect } from "next/navigation";
 import { SymptomEditForm } from "@/components/symptoms/SymptomEditForm";
-import { getT } from "@/lib/i18n";
+import { getT } from "@/lib/locale";
 
 export async function generateMetadata({
   params,

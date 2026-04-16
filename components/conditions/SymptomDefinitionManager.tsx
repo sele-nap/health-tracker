@@ -6,12 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createSymptomDefinition, deleteSymptomDefinition } from "@/server/actions/symptomDefinitions";
 import { useLocale } from "@/components/providers/LocaleProvider";
+import type { SymptomDefinition } from "@/types/symptoms";
 
-export type SymptomDefinition = {
-  id: string;
-  name: string;
-  unit: string | null;
-};
+export type { SymptomDefinition };
 
 type Props = {
   conditionId: string;

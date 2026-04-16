@@ -8,7 +8,7 @@ import { notFound, redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MedicationStatus } from "@/generated/prisma/client";
-import { getT } from "@/lib/i18n";
+import { getT } from "@/lib/locale";
 import { ReminderScheduleSection } from "@/components/medications/ReminderScheduleSection";
 
 export async function generateMetadata({

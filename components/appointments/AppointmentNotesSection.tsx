@@ -7,12 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { addAppointmentNote, deleteAppointmentNote } from "@/server/actions/appointmentNotes";
 import { useLocale } from "@/components/providers/LocaleProvider";
+import type { AppointmentNote } from "@/types/appointments";
 
-export type AppointmentNote = {
-  id: string;
-  content: string;
-  createdAt: string;
-};
+export type { AppointmentNote };
 
 export function AppointmentNotesSection({
   appointmentId,

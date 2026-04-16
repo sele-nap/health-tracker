@@ -20,7 +20,7 @@ import {
   AppointmentCalendar,
   type CalendarAppointment,
 } from "@/components/appointments/AppointmentCalendar";
-import { getT } from "@/lib/i18n";
+import { getT } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
 export default async function AppointmentsPage({

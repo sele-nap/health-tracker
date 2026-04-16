@@ -13,7 +13,7 @@ import { redirect } from "next/navigation";
 import { Plus, HeartPulse } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DeleteConditionButton } from "@/components/conditions/DeleteConditionButton";
-import { getT } from "@/lib/i18n";
+import { getT } from "@/lib/locale";
 
 export default async function ConditionsPage() {
   const [session, tr] = await Promise.all([

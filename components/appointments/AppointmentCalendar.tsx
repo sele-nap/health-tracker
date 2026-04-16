@@ -6,14 +6,9 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useLocale } from "@/components/providers/LocaleProvider";
+import type { CalendarAppointment } from "@/types/appointments";
 
-export type CalendarAppointment = {
-  id: string;
-  title: string;
-  scheduledAt: string;
-  status: string;
-  doctorName: string | null;
-};
+export type { CalendarAppointment };
 
 type Props = {
   appointments: CalendarAppointment[];

@@ -14,7 +14,7 @@ import { redirect } from "next/navigation";
 import { Plus, Activity } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DeleteSymptomLogButton } from "@/components/symptoms/DeleteSymptomLogButton";
-import { getT } from "@/lib/i18n";
+import { getT } from "@/lib/locale";
 import { moodEmoji } from "@/lib/utils";
 
 export default async function SymptomsPage({

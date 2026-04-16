@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
-import { getT } from "@/lib/i18n";
+import { getT } from "@/lib/locale";
 import { SymptomForm } from "@/components/symptoms/SymptomForm";
 
 export default async function NewSymptomLogPage() {

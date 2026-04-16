@@ -21,7 +21,7 @@ export async function generateMetadata({
   };
 }
 import { MedicationEditForm } from "@/components/medications/MedicationEditForm";
-import { getT } from "@/lib/i18n";
+import { getT } from "@/lib/locale";
 
 export default async function EditMedicationPage({
   params,

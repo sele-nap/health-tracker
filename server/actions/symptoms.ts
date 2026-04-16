@@ -8,6 +8,9 @@ import { prisma } from "@/lib/prisma";
 import { encryptIfPresent } from "@/lib/crypto";
 import { symptomLogSchema } from "@/lib/validations/symptoms";
 import { rateLimit } from "@/lib/rate-limit";
+import type { SymptomLogState } from "@/types/actions";
+
+export type { SymptomLogState };
 
 function extractCustomEntries(
   formData: FormData,
@@ -34,19 +37,6 @@ async function getAllowedDefinitionIds(userId: string): Promise<Set<string>> {
   });
   return new Set(definitions.map((d) => d.id));
 }
-
-export type SymptomLogState = {
-  errors?: {
-    loggedAt?: string[];
-    overallMood?: string[];
-    energyLevel?: string[];
-    sleepHours?: string[];
-    sleepQuality?: string[];
-    stressLevel?: string[];
-    notes?: string[];
-    _form?: string[];
-  };
-};
 
 export async function createSymptomLog(
   _prevState: SymptomLogState,

@@ -92,7 +92,7 @@ export function MedicationEditForm({ medication }: { medication: MedicationData 
             <SelectContent>
               {MEDICATION_FORMS.map((f) => (
                 <SelectItem key={f} value={f}>
-                  {f.charAt(0).toUpperCase() + f.slice(1)}
+                  {tr.medications.forms[f] ?? f}
                 </SelectItem>
               ))}
             </SelectContent>

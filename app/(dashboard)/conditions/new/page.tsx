@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getT } from "@/lib/i18n";
+import { getT } from "@/lib/locale";
 import { ConditionForm } from "@/components/conditions/ConditionForm";
 
 export const metadata: Metadata = {

@@ -10,14 +10,9 @@ import {
   toggleReminderEnabled,
 } from "@/server/actions/reminders";
 import { useLocale } from "@/components/providers/LocaleProvider";
+import type { ReminderSchedule } from "@/types/medications";
 
-export type ReminderSchedule = {
-  id: string;
-  frequency: string;
-  times: string[];
-  daysOfWeek: number[];
-  reminderEnabled: boolean;
-};
+export type { ReminderSchedule };
 
 type Props = {
   medicationId: string;
@@ -58,11 +53,11 @@ export function ReminderScheduleSection({ medicationId, schedules }: Props) {
     e.preventDefault();
     setError(null);
     if (times.length === 0) {
-      setError("Add at least one time.");
+      setError(rtr.errorNoTime);
       return;
     }
     if (frequency === "weekly" && daysOfWeek.length === 0) {
-      setError("Select at least one day.");
+      setError(rtr.errorNoDay);
       return;
     }
     startTransition(async () => {
@@ -73,7 +68,7 @@ export function ReminderScheduleSection({ medicationId, schedules }: Props) {
         setDaysOfWeek([1, 2, 3, 4, 5]);
         setFrequency("daily");
       } catch {
-        setError("Failed to save reminder.");
+        setError(rtr.errorSave);
       }
     });
   }

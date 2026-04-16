@@ -13,15 +13,9 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useLocale } from "@/components/providers/LocaleProvider";
+import type { ChartDataPoint } from "@/types/patterns";
 
-export type ChartDataPoint = {
-  date: string;
-  mood: number | null;
-  energy: number | null;
-  stress: number | null;
-  sleepHours: number | null;
-  sleepQuality: number | null;
-};
+export type { ChartDataPoint };
 
 type Props = {
   data: ChartDataPoint[];

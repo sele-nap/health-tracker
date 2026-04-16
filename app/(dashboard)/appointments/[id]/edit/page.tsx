@@ -7,7 +7,7 @@ import { notFound, redirect } from "next/navigation";
 import { AppointmentEditForm } from "@/components/appointments/AppointmentEditForm";
 import { AppointmentNotesSection } from "@/components/appointments/AppointmentNotesSection";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getT } from "@/lib/i18n";
+import { getT } from "@/lib/locale";
 
 export async function generateMetadata({
   params,

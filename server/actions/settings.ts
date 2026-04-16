@@ -6,20 +6,9 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { rateLimit } from "@/lib/rate-limit";
 import type { Locale } from "@/lib/i18n";
+import type { UpdateNameState, ChangePasswordState } from "@/types/actions";
 
-export type UpdateNameState = {
-  success?: boolean;
-  errors?: { name?: string[]; _form?: string[] };
-};
-
-export type ChangePasswordState = {
-  success?: boolean;
-  errors?: {
-    currentPassword?: string[];
-    newPassword?: string[];
-    _form?: string[];
-  };
-};
+export type { UpdateNameState, ChangePasswordState };
 
 export async function updateName(
   _prevState: UpdateNameState,

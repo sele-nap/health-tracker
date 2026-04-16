@@ -1,5 +1,8 @@
 import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
 import type { en } from "@/lib/i18n";
+import type { ReportMedication, ReportSymptomLog, ReportAppointment } from "@/types/pdf";
+
+export type { ReportMedication, ReportSymptomLog, ReportAppointment };
 
 const styles = StyleSheet.create({
   page: {
@@ -122,32 +125,6 @@ function formatDateTime(date: Date, locale: string) {
     minute: "2-digit",
   });
 }
-
-export type ReportMedication = {
-  name: string;
-  dosage: string;
-  form: string | null;
-  prescribedBy: string | null;
-  startDate: Date;
-  instructions: string | null;
-};
-
-export type ReportSymptomLog = {
-  loggedAt: Date;
-  overallMood: number | null;
-  energyLevel: number | null;
-  stressLevel: number | null;
-  sleepHours: number | null;
-  notes: string | null;
-};
-
-export type ReportAppointment = {
-  title: string;
-  doctorName: string | null;
-  specialty: string | null;
-  scheduledAt: Date;
-  purpose: string | null;
-};
 
 type Props = {
   generatedAt: Date;

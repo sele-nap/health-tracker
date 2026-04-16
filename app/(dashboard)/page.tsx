@@ -13,7 +13,7 @@ import { redirect } from "next/navigation";
 import { CalendarDays, Pill, Activity, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MedicationChecklist } from "@/components/medications/MedicationChecklist";
-import { getT } from "@/lib/i18n";
+import { getT } from "@/lib/locale";
 import { moodEmoji } from "@/lib/utils";
 
 export default async function DashboardPage() {

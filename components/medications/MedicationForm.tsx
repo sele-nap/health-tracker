@@ -42,7 +42,7 @@ export function MedicationForm() {
           <Input
             id="name"
             name="name"
-            placeholder="e.g. Hydroxychloroquine"
+            placeholder={tr.medications.namePlaceholder}
             className={cn(state.errors?.name && "border-destructive")}
           />
           {state.errors?.name && (
@@ -55,7 +55,7 @@ export function MedicationForm() {
           <Input
             id="dosage"
             name="dosage"
-            placeholder="e.g. 200mg"
+            placeholder={tr.medications.dosagePlaceholder}
             className={cn(state.errors?.dosage && "border-destructive")}
           />
           {state.errors?.dosage && (
@@ -74,7 +74,7 @@ export function MedicationForm() {
             <SelectContent>
               {MEDICATION_FORMS.map((f) => (
                 <SelectItem key={f} value={f}>
-                  {f.charAt(0).toUpperCase() + f.slice(1)}
+                  {tr.medications.forms[f] ?? f}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -89,7 +89,7 @@ export function MedicationForm() {
           <Input
             id="prescribedBy"
             name="prescribedBy"
-            placeholder="e.g. Dr. Martin"
+            placeholder={tr.medications.prescribedByPlaceholder}
             className={cn(state.errors?.prescribedBy && "border-destructive")}
           />
           {state.errors?.prescribedBy && (

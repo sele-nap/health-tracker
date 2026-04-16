@@ -2,7 +2,7 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { decryptIfPresent } from "@/lib/crypto";
-import { getT } from "@/lib/i18n";
+import { getT } from "@/lib/locale";
 import { rateLimit } from "@/lib/rate-limit";
 import { renderToBuffer } from "@react-pdf/renderer";
 import { HealthReportDocument } from "@/components/pdf/HealthReportDocument";

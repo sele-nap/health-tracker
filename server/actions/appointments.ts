@@ -8,19 +8,9 @@ import { prisma } from "@/lib/prisma";
 import { encryptIfPresent } from "@/lib/crypto";
 import { appointmentSchema } from "@/lib/validations/appointments";
 import { rateLimit } from "@/lib/rate-limit";
+import type { AppointmentState, AppointmentSummaryState } from "@/types/actions";
 
-export type AppointmentState = {
-  errors?: {
-    title?: string[];
-    doctorName?: string[];
-    specialty?: string[];
-    location?: string[];
-    scheduledAt?: string[];
-    durationMin?: string[];
-    purpose?: string[];
-    _form?: string[];
-  };
-};
+export type { AppointmentState, AppointmentSummaryState };
 
 export async function createAppointment(
   _prevState: AppointmentState,
@@ -100,11 +90,6 @@ export async function updateAppointmentStatus(
     data: { status },
   });
 }
-
-export type AppointmentSummaryState = {
-  success?: boolean;
-  errors?: { summary?: string[]; _form?: string[] };
-};
 
 export async function saveAppointmentSummary(
   appointmentId: string,

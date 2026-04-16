@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getT } from "@/lib/i18n";
+import { getT } from "@/lib/locale";
 
 export default async function NotFound() {
   const tr = await getT();
