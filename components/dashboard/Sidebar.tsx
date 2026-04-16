@@ -33,7 +33,11 @@ export default function Sidebar() {
   ];
 
   async function handleSignOut() {
-    await signOut();
+    try {
+      await signOut();
+    } catch {
+      // Sign-out failed (network error etc.) — redirect anyway so the UI is consistent
+    }
     router.push("/login");
   }
 
@@ -55,6 +59,7 @@ export default function Sidebar() {
             <Link
               key={href}
               href={href}
+              aria-label={label}
               className={cn(
                 "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors",
                 active
@@ -76,7 +81,6 @@ export default function Sidebar() {
           </div>
         )}
 
-        {/* Language switcher */}
         <button
           onClick={() => setLocale(locale === "en" ? "fr" : "en")}
           className="hidden md:flex w-full items-center justify-between px-3 py-2 rounded-lg text-xs text-muted-foreground hover:bg-sidebar-accent hover:text-foreground transition-colors"

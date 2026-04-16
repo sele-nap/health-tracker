@@ -13,7 +13,9 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
-  const log = await prisma.symptomLog.findUnique({ where: { id }, select: { loggedAt: true } });
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session?.user?.id) return { title: "Health Tracker" };
+  const log = await prisma.symptomLog.findUnique({ where: { id, userId: session.user.id }, select: { loggedAt: true } });
   const date = log
     ? log.loggedAt.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
     : null;

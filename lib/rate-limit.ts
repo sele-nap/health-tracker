@@ -4,42 +4,42 @@ export type RateLimitResult =
   | { limited: false }
   | { limited: true; retryAfter: number };
 
-/**
- * Database-backed rate limiter — works correctly across serverless instances.
- * Uses a transaction to atomically read-and-increment the counter.
- */
 export async function rateLimit(
   key: string,
   limit: number,
   windowSec: number
 ): Promise<RateLimitResult> {
-  const now = new Date();
+  type Row = { count: number; reset_at: Date };
 
-  const result = await prisma.$transaction(async (tx) => {
-    const existing = await tx.rateLimit.findUnique({ where: { key } });
+  const rows = await prisma.$queryRaw<Row[]>`
+    INSERT INTO "RateLimit" (key, count, "resetAt")
+    VALUES (
+      ${key},
+      1,
+      NOW() + (${windowSec} * INTERVAL '1 second')
+    )
+    ON CONFLICT (key) DO UPDATE
+    SET
+      count = CASE
+        WHEN "RateLimit"."resetAt" < NOW() THEN 1
+        ELSE "RateLimit".count + 1
+      END,
+      "resetAt" = CASE
+        WHEN "RateLimit"."resetAt" < NOW()
+          THEN NOW() + (${windowSec} * INTERVAL '1 second')
+        ELSE "RateLimit"."resetAt"
+      END
+    RETURNING count, "resetAt" AS reset_at
+  `;
 
-    if (!existing || existing.resetAt < now) {
-      const resetAt = new Date(now.getTime() + windowSec * 1000);
-      await tx.rateLimit.upsert({
-        where: { key },
-        create: { key, count: 1, resetAt },
-        update: { count: 1, resetAt },
-      });
-      return { count: 1, resetAt };
-    }
+  const row = rows[0];
+  if (!row) return { limited: false };
 
-    const updated = await tx.rateLimit.update({
-      where: { key },
-      data: { count: { increment: 1 } },
-    });
-    return { count: updated.count, resetAt: updated.resetAt };
-  });
-
-  if (result.count > limit) {
-    return {
-      limited: true,
-      retryAfter: Math.ceil((result.resetAt.getTime() - now.getTime()) / 1000),
-    };
+  if (row.count > limit) {
+    const retryAfter = Math.ceil(
+      (new Date(row.reset_at).getTime() - Date.now()) / 1000
+    );
+    return { limited: true, retryAfter: Math.max(1, retryAfter) };
   }
 
   return { limited: false };

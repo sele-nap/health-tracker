@@ -1,7 +1,14 @@
 import { Resend } from "resend";
 
+if (!process.env.RESEND_API_KEY) {
+  throw new Error("RESEND_API_KEY is not set");
+}
+if (!process.env.FROM_EMAIL) {
+  throw new Error("FROM_EMAIL is not set — set it to a verified Resend sender address");
+}
+
 const resend = new Resend(process.env.RESEND_API_KEY);
-const FROM = process.env.FROM_EMAIL ?? "reminders@yourdomain.com";
+const FROM = process.env.FROM_EMAIL;
 
 function escapeHtml(str: string): string {
   return str

@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { encryptIfPresent } from "@/lib/crypto";
+import { encrypt } from "@/lib/crypto";
 import { rateLimit } from "@/lib/rate-limit";
 
 export type NoteState = {
@@ -37,7 +37,7 @@ export async function addAppointmentNote(
   await prisma.appointmentNote.create({
     data: {
       appointmentId,
-      content: encryptIfPresent(content) ?? content,
+      content: encrypt(content),
     },
   });
 

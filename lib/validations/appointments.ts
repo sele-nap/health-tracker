@@ -26,7 +26,7 @@ export const appointmentSchema = z.object({
   doctorName: z.string().max(200).optional(),
   specialty: z.enum(SPECIALTIES).optional(),
   location: z.string().max(300).optional(),
-  scheduledAt: z.string().min(1, "Date and time are required"),
+  scheduledAt: z.string().min(1, "Date and time are required").refine((v) => !isNaN(Date.parse(v)), "Invalid date"),
   durationMin: z.coerce.number().int().min(1).max(480).optional(),
   purpose: z.string().max(1000).optional(),
 });

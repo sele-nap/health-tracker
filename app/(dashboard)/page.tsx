@@ -14,14 +14,7 @@ import { CalendarDays, Pill, Activity, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MedicationChecklist } from "@/components/medications/MedicationChecklist";
 import { getT } from "@/lib/i18n";
-
-function moodEmoji(value: number) {
-  if (value <= 2) return "😞";
-  if (value <= 4) return "😕";
-  if (value <= 6) return "😐";
-  if (value <= 8) return "🙂";
-  return "😊";
-}
+import { moodEmoji } from "@/lib/utils";
 
 export default async function DashboardPage() {
   const [session, tr] = await Promise.all([

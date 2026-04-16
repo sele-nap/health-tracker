@@ -1,21 +1,36 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const PROTECTED = [
-  "/",
-  "/symptoms",
-  "/medications",
-  "/appointments",
-  "/conditions",
-  "/patterns",
-  "/settings",
-];
+const PUBLIC_PATHS = ["/login", "/register"];
+
+function hasSession(request: NextRequest): boolean {
+  return (
+    !!request.cookies.get("better-auth.session_token")?.value ||
+    !!request.cookies.get("__Secure-better-auth.session_token")?.value
+  );
+}
+
+function safeCallbackUrl(url: string): string {
+  if (url.startsWith("/") && !url.startsWith("//")) return url;
+  return "/";
+}
 
 export function middleware(request: NextRequest) {
-  const session = request.cookies.get("better-auth.session_token");
+  const { pathname } = request.nextUrl;
+  const authenticated = hasSession(request);
 
-  if (!session?.value) {
+  if (PUBLIC_PATHS.some((p) => pathname.startsWith(p))) {
+    if (authenticated) {
+      const callbackUrl = request.nextUrl.searchParams.get("callbackUrl");
+      return NextResponse.redirect(
+        new URL(callbackUrl ? safeCallbackUrl(callbackUrl) : "/", request.url)
+      );
+    }
+    return NextResponse.next();
+  }
+
+  if (!authenticated) {
     const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("callbackUrl", request.nextUrl.pathname);
+    loginUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
@@ -24,11 +39,8 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Protect all dashboard routes. The cookie presence check is a fast
-     * first-layer guard; each page still verifies the session properly
-     * via auth.api.getSession() for authorization decisions.
-     */
+    "/login",
+    "/register",
     "/",
     "/symptoms/:path*",
     "/medications/:path*",

@@ -15,7 +15,9 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
-  const appt = await prisma.appointment.findUnique({ where: { id }, select: { title: true } });
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session?.user?.id) return { title: "Health Tracker" };
+  const appt = await prisma.appointment.findUnique({ where: { id, userId: session.user.id }, select: { title: true } });
   const title = appt ? appt.title : "Edit appointment";
   return {
     title,

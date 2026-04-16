@@ -11,7 +11,7 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { WellbeingChart, SleepChart, type ChartDataPoint } from "@/components/patterns/HealthCharts";
-import { getT, getLocale } from "@/lib/i18n";
+import { getLocale, en, fr } from "@/lib/i18n";
 import { computeCorrelations } from "@/lib/correlations";
 import { cn } from "@/lib/utils";
 
@@ -22,11 +22,11 @@ function avg(values: (number | null)[]): string | null {
 }
 
 export default async function PatternsPage() {
-  const [session, tr, locale] = await Promise.all([
+  const [session, locale] = await Promise.all([
     auth.api.getSession({ headers: await headers() }),
-    getT(),
     getLocale(),
   ]);
+  const tr = locale === "fr" ? fr : en;
 
   if (!session?.user?.id) {
     redirect("/login");

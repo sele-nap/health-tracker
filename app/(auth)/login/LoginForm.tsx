@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { signIn } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
@@ -10,8 +10,14 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { useLocale } from "@/components/providers/LocaleProvider";
 
+function safeRedirect(url: string | null): string {
+  if (url && url.startsWith("/") && !url.startsWith("//")) return url;
+  return "/";
+}
+
 export function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { tr } = useLocale();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,7 +37,7 @@ export function LoginForm() {
       return;
     }
 
-    router.push("/");
+    router.push(safeRedirect(searchParams.get("callbackUrl")));
   }
 
   return (
@@ -47,7 +53,7 @@ export function LoginForm() {
           <CardHeader className="pb-4" />
           <CardContent className="space-y-4">
             {error && (
-              <p className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded-lg">
+              <p role="alert" className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded-lg">
                 {error}
               </p>
             )}

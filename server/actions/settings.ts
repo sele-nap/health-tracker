@@ -91,7 +91,7 @@ export async function changePassword(
   try {
     await auth.api.changePassword({
       headers: reqHeaders,
-      body: { currentPassword, newPassword, revokeOtherSessions: false },
+      body: { currentPassword, newPassword, revokeOtherSessions: true },
     });
   } catch {
     return { errors: { _form: ["Current password is incorrect"] } };

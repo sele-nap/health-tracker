@@ -27,6 +27,7 @@ export function ToggleActiveButton({ medicationId, isActive }: Props) {
     <button
       onClick={handleClick}
       disabled={pending}
+      aria-label={isActive ? tr.medications.deactivate : tr.medications.activate}
       className={cn(
         "text-xs px-2.5 py-1 rounded-md border transition-colors",
         isActive

@@ -70,6 +70,7 @@ export default async function AppointmentsPage({
   const appointments = await prisma.appointment.findMany({
     where: { userId: session.user.id },
     orderBy: { scheduledAt: "desc" },
+    take: 200,
   });
 
   const decrypted = appointments.map((appt) => ({
@@ -152,10 +153,11 @@ export default async function AppointmentsPage({
       >
         <input type="hidden" name="view" value={view} />
         <div className="flex flex-col gap-1 flex-1 min-w-48">
-          <label className="text-xs text-muted-foreground">
+          <label htmlFor="doctor-search" className="text-xs text-muted-foreground">
             {tr.appointments.searchDoctor}
           </label>
           <input
+            id="doctor-search"
             type="text"
             name="doctor"
             defaultValue={doctorQuery}

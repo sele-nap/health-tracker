@@ -33,31 +33,27 @@ export async function logMedicationStatus(
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
 
-  const existing = await prisma.medicationLog.findFirst({
-    where: {
-      medicationId,
-      scheduledFor: { gte: todayStart, lt: todayEnd },
-    },
-  });
+  await prisma.$transaction(async (tx) => {
+    const existing = await tx.medicationLog.findFirst({
+      where: { medicationId, scheduledFor: { gte: todayStart, lt: todayEnd } },
+    });
 
-  if (existing) {
-    await prisma.medicationLog.update({
-      where: { id: existing.id },
-      data: {
-        status,
-        takenAt: status === MedicationStatus.TAKEN ? now : null,
-      },
-    });
-  } else {
-    await prisma.medicationLog.create({
-      data: {
-        medicationId,
-        scheduledFor: now,
-        takenAt: status === MedicationStatus.TAKEN ? now : null,
-        status,
-      },
-    });
-  }
+    if (existing) {
+      await tx.medicationLog.update({
+        where: { id: existing.id },
+        data: { status, takenAt: status === MedicationStatus.TAKEN ? now : null },
+      });
+    } else {
+      await tx.medicationLog.create({
+        data: {
+          medicationId,
+          scheduledFor: now,
+          takenAt: status === MedicationStatus.TAKEN ? now : null,
+          status,
+        },
+      });
+    }
+  }, { isolationLevel: "Serializable" });
 
   revalidatePath("/");
   revalidatePath("/medications");

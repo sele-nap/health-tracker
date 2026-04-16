@@ -91,6 +91,7 @@ export const UserScalarFieldEnum = {
   name: 'name',
   image: 'image',
   locale: 'locale',
+  timezone: 'timezone',
   twoFactorEnabled: 'twoFactorEnabled',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -248,7 +249,6 @@ export const AppointmentScalarFieldEnum = {
   status: 'status',
   purpose: 'purpose',
   summary: 'summary',
-  followUpDate: 'followUpDate',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

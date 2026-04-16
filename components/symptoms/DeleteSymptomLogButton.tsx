@@ -19,6 +19,7 @@ export function DeleteSymptomLogButton({ logId }: { logId: string }) {
     <button
       onClick={handleClick}
       disabled={pending}
+      aria-label={tr.symptoms.deleteEntry}
       className="text-xs text-muted-foreground hover:text-destructive transition-colors disabled:opacity-50"
     >
       {pending ? tr.deleting : tr.delete}
