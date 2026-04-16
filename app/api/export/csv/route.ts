@@ -35,31 +35,50 @@ export async function GET(request: Request) {
 
   switch (sheet) {
     case "symptoms": {
-      const logs = await prisma.symptomLog.findMany({
-        where: { userId: session.user.id },
-        orderBy: { loggedAt: "desc" },
-        select: {
-          loggedAt: true,
-          overallMood: true,
-          energyLevel: true,
-          stressLevel: true,
-          sleepHours: true,
-          sleepQuality: true,
-          notes: true,
-        },
-      });
+      const [definitions, logs] = await Promise.all([
+        prisma.symptomDefinition.findMany({
+          where: { condition: { userId: session.user.id } },
+          select: { id: true, name: true, unit: true },
+          orderBy: { name: "asc" },
+        }),
+        prisma.symptomLog.findMany({
+          where: { userId: session.user.id },
+          orderBy: { loggedAt: "desc" },
+          select: {
+            loggedAt: true,
+            overallMood: true,
+            energyLevel: true,
+            stressLevel: true,
+            sleepHours: true,
+            sleepQuality: true,
+            notes: true,
+            entries: {
+              select: { symptomDefinitionId: true, severity: true, value: true },
+            },
+          },
+        }),
+      ]);
+
+      const defColumns = definitions.map((d) =>
+        d.name.toLowerCase().replace(/\s+/g, "_") +
+        (d.unit ? `_${d.unit.toLowerCase().replace(/\s+/g, "_")}` : "_severity")
+      );
 
       const csv = toCsv(
-        ["date", "mood", "energy", "stress", "sleep_hours", "sleep_quality", "notes"],
-        logs.map((l) => [
-          l.loggedAt.toISOString(),
-          l.overallMood,
-          l.energyLevel,
-          l.stressLevel,
-          l.sleepHours,
-          l.sleepQuality,
-          decryptIfPresent(l.notes),
-        ])
+        ["date", "mood", "energy", "stress", "sleep_hours", "sleep_quality", "notes", ...defColumns],
+        logs.map((l) => {
+          const entryMap = new Map(l.entries.map((e) => [e.symptomDefinitionId, e.severity ?? Number(e.value)]));
+          return [
+            l.loggedAt.toISOString(),
+            l.overallMood,
+            l.energyLevel,
+            l.stressLevel,
+            l.sleepHours,
+            l.sleepQuality,
+            decryptIfPresent(l.notes),
+            ...definitions.map((d) => entryMap.get(d.id) ?? null),
+          ];
+        })
       );
 
       return csvResponse(csv, `health-symptoms-${date}.csv`);

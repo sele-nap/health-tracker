@@ -54,6 +54,23 @@ export default async function SymptomsPage({
       },
     },
     orderBy: { loggedAt: "desc" },
+    select: {
+      id: true,
+      loggedAt: true,
+      overallMood: true,
+      energyLevel: true,
+      stressLevel: true,
+      sleepHours: true,
+      sleepQuality: true,
+      notes: true,
+      entries: {
+        select: {
+          severity: true,
+          value: true,
+          symptomDefinition: { select: { name: true, unit: true } },
+        },
+      },
+    },
   });
 
   const decryptedLogs = logs.map((log) => ({
@@ -202,6 +219,15 @@ export default async function SymptomsPage({
                       <span className="font-medium">{log.sleepQuality}/10</span>
                     </span>
                   )}
+                  {log.entries.map((e) => (
+                    <span key={e.symptomDefinition.name}>
+                      <span className="text-muted-foreground">{e.symptomDefinition.name} </span>
+                      <span className="font-medium">
+                        {e.severity ?? Number(e.value)}
+                        {e.symptomDefinition.unit ? ` ${e.symptomDefinition.unit}` : "/10"}
+                      </span>
+                    </span>
+                  ))}
                 </div>
                 {log.notes && (
                   <p className="text-xs text-muted-foreground italic mt-2 line-clamp-2">
