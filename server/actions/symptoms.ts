@@ -9,11 +9,15 @@ import { encryptIfPresent } from "@/lib/crypto";
 import { symptomLogSchema } from "@/lib/validations/symptoms";
 import { rateLimit } from "@/lib/rate-limit";
 
-function extractCustomEntries(formData: FormData) {
+function extractCustomEntries(
+  formData: FormData,
+  allowedDefinitionIds: Set<string>
+) {
   const entries: { symptomDefinitionId: string; severity: number; value: string }[] = [];
   for (const [key, val] of formData.entries()) {
     if (key.startsWith("custom_") && typeof val === "string" && val !== "") {
       const definitionId = key.slice("custom_".length);
+      if (!allowedDefinitionIds.has(definitionId)) continue;
       const severity = Math.min(10, Math.max(1, Math.round(Number(val))));
       if (!isNaN(severity)) {
         entries.push({ symptomDefinitionId: definitionId, severity, value: String(severity) });
@@ -21,6 +25,14 @@ function extractCustomEntries(formData: FormData) {
     }
   }
   return entries;
+}
+
+async function getAllowedDefinitionIds(userId: string): Promise<Set<string>> {
+  const definitions = await prisma.symptomDefinition.findMany({
+    where: { condition: { userId } },
+    select: { id: true },
+  });
+  return new Set(definitions.map((d) => d.id));
 }
 
 export type SymptomLogState = {
@@ -70,7 +82,8 @@ export async function createSymptomLog(
   const { loggedAt, overallMood, energyLevel, sleepHours, sleepQuality, stressLevel, notes } =
     parsed.data;
 
-  const customEntries = extractCustomEntries(formData);
+  const allowedDefinitionIds = await getAllowedDefinitionIds(session.user.id);
+  const customEntries = extractCustomEntries(formData, allowedDefinitionIds);
 
   await prisma.symptomLog.create({
     data: {
@@ -135,7 +148,8 @@ export async function updateSymptomLog(
   const { loggedAt, overallMood, energyLevel, sleepHours, sleepQuality, stressLevel, notes } =
     parsed.data;
 
-  const customEntries = extractCustomEntries(formData);
+  const allowedDefinitionIds = await getAllowedDefinitionIds(session.user.id);
+  const customEntries = extractCustomEntries(formData, allowedDefinitionIds);
 
   await prisma.$transaction(async (tx) => {
     await tx.symptomLogEntry.deleteMany({ where: { symptomLogId: logId } });
