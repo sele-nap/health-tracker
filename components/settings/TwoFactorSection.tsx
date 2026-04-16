@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useCallback } from "react";
 import Image from "next/image";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,15 @@ export function TwoFactorSection({ twoFactorEnabled }: Props) {
   const [error, setError] = useState("");
   const [enabled, setEnabled] = useState(twoFactorEnabled);
   const [pending, startTransition] = useTransition();
+  const [copied, setCopied] = useState(false);
+
+  const copyUri = useCallback(() => {
+    if (!totpUri) return;
+    navigator.clipboard.writeText(totpUri).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }, [totpUri]);
 
   function handleEnable() {
     setError("");
@@ -146,7 +155,13 @@ export function TwoFactorSection({ twoFactorEnabled }: Props) {
                   height={160}
                 />
               </div>
-              <p className="text-xs text-muted-foreground break-all font-mono">{totpUri}</p>
+              <button
+                type="button"
+                onClick={copyUri}
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-2"
+              >
+                {copied ? tr.settings.uriCopied : tr.settings.copyUri}
+              </button>
               <div className="space-y-2">
                 <Label htmlFor="totp-code">{tr.settings.digitCode}</Label>
                 <Input

@@ -200,7 +200,6 @@ model Appointment {
   status         AppointmentStatus @default(UPCOMING)
   purpose        String?
   summary        String?
-  followUpDate   DateTime?
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
 

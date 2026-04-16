@@ -41,8 +41,9 @@ export default async function SymptomsPage({
     redirect("/login");
   }
 
-  const from = params.from ?? "";
-  const to = params.to ?? "";
+  const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+  const from = ISO_DATE.test(params.from ?? "") ? (params.from ?? "") : "";
+  const to = ISO_DATE.test(params.to ?? "") ? (params.to ?? "") : "";
   const isFiltered = Boolean(from || to);
 
   const logs = await prisma.symptomLog.findMany({
@@ -112,8 +113,9 @@ export default async function SymptomsPage({
         className="flex flex-wrap items-end gap-3 p-4 rounded-xl border border-border bg-card"
       >
         <div className="flex flex-col gap-1">
-          <label className="text-xs text-muted-foreground">{tr.from}</label>
+          <label htmlFor="filter-from" className="text-xs text-muted-foreground">{tr.from}</label>
           <input
+            id="filter-from"
             type="date"
             name="from"
             defaultValue={from}
@@ -122,8 +124,9 @@ export default async function SymptomsPage({
           />
         </div>
         <div className="flex flex-col gap-1">
-          <label className="text-xs text-muted-foreground">{tr.to}</label>
+          <label htmlFor="filter-to" className="text-xs text-muted-foreground">{tr.to}</label>
           <input
+            id="filter-to"
             type="date"
             name="to"
             defaultValue={to}
