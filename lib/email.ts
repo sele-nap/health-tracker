@@ -3,6 +3,15 @@ import { Resend } from "resend";
 const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM = process.env.FROM_EMAIL ?? "reminders@yourdomain.com";
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 export async function sendReminderEmail({
   to,
   medicationName,
@@ -16,6 +25,9 @@ export async function sendReminderEmail({
 }) {
   const isFr = locale === "fr";
 
+  const safeName = escapeHtml(medicationName);
+  const safeDosage = escapeHtml(dosage);
+
   const subject = isFr
     ? `Rappel : ${medicationName}`
     : `Reminder: ${medicationName}`;
@@ -25,8 +37,8 @@ export async function sendReminderEmail({
     : `Time to take your medication`;
 
   const body = isFr
-    ? `<strong>${medicationName}</strong> — ${dosage}`
-    : `<strong>${medicationName}</strong> — ${dosage}`;
+    ? `<strong>${safeName}</strong> — ${safeDosage}`
+    : `<strong>${safeName}</strong> — ${safeDosage}`;
 
   const footer = isFr
     ? `Ce message a été envoyé automatiquement par Health Tracker.`

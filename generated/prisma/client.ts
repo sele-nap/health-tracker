@@ -111,3 +111,8 @@ export type AppointmentNote = Prisma.AppointmentNoteModel
  * 
  */
 export type TwoFactor = Prisma.TwoFactorModel
+/**
+ * Model RateLimit
+ * 
+ */
+export type RateLimit = Prisma.RateLimitModel

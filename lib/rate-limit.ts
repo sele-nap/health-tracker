@@ -1,42 +1,46 @@
-type WindowEntry = {
-  count: number;
-  resetAt: number;
-};
-
-const store = new Map<string, WindowEntry>();
-let lastCleanup = Date.now();
-
-function cleanup() {
-  const now = Date.now();
-  if (now - lastCleanup < 30_000) return;
-  lastCleanup = now;
-  for (const [key, entry] of store) {
-    if (entry.resetAt < now) store.delete(key);
-  }
-}
+import { prisma } from "@/lib/prisma";
 
 export type RateLimitResult =
   | { limited: false }
   | { limited: true; retryAfter: number };
 
-export function rateLimit(
+/**
+ * Database-backed rate limiter — works correctly across serverless instances.
+ * Uses a transaction to atomically read-and-increment the counter.
+ */
+export async function rateLimit(
   key: string,
   limit: number,
   windowSec: number
-): RateLimitResult {
-  cleanup();
-  const now = Date.now();
-  const entry = store.get(key);
+): Promise<RateLimitResult> {
+  const now = new Date();
 
-  if (!entry || entry.resetAt < now) {
-    store.set(key, { count: 1, resetAt: now + windowSec * 1000 });
-    return { limited: false };
+  const result = await prisma.$transaction(async (tx) => {
+    const existing = await tx.rateLimit.findUnique({ where: { key } });
+
+    if (!existing || existing.resetAt < now) {
+      const resetAt = new Date(now.getTime() + windowSec * 1000);
+      await tx.rateLimit.upsert({
+        where: { key },
+        create: { key, count: 1, resetAt },
+        update: { count: 1, resetAt },
+      });
+      return { count: 1, resetAt };
+    }
+
+    const updated = await tx.rateLimit.update({
+      where: { key },
+      data: { count: { increment: 1 } },
+    });
+    return { count: updated.count, resetAt: updated.resetAt };
+  });
+
+  if (result.count > limit) {
+    return {
+      limited: true,
+      retryAfter: Math.ceil((result.resetAt.getTime() - now.getTime()) / 1000),
+    };
   }
 
-  if (entry.count >= limit) {
-    return { limited: true, retryAfter: Math.ceil((entry.resetAt - now) / 1000) };
-  }
-
-  entry.count++;
   return { limited: false };
 }

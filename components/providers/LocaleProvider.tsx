@@ -9,6 +9,7 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import { en, fr, type Locale } from "@/lib/i18n";
+import { persistLocale } from "@/server/actions/settings";
 
 type Translations = typeof en;
 
@@ -34,6 +35,7 @@ export function LocaleProvider({
     (next: Locale) => {
       document.cookie = `locale=${next}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
       setLocaleState(next);
+      persistLocale(next).catch(() => {});
       router.refresh();
     },
     [router]

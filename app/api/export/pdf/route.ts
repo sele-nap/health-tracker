@@ -18,7 +18,7 @@ export async function GET() {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const rl = rateLimit(`pdf:${session.user.id}`, 5, 60);
+  const rl = await rateLimit(`pdf:${session.user.id}`, 5, 60);
   if (rl.limited) {
     return new Response("Too many requests", {
       status: 429,

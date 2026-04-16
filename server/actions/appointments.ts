@@ -32,7 +32,7 @@ export async function createAppointment(
     return { errors: { _form: ["Unauthorized"] } };
   }
 
-  const rl = rateLimit(`appointments:write:${session.user.id}`, 20, 60);
+  const rl = await rateLimit(`appointments:write:${session.user.id}`, 20, 60);
   if (rl.limited) {
     return { errors: { _form: ["Too many requests. Please try again shortly."] } };
   }
@@ -83,7 +83,7 @@ export async function updateAppointmentStatus(
     throw new Error("Unauthorized");
   }
 
-  const rl = rateLimit(`appointments:write:${session.user.id}`, 20, 60);
+  const rl = await rateLimit(`appointments:write:${session.user.id}`, 20, 60);
   if (rl.limited) throw new Error("Too many requests");
 
   const appointment = await prisma.appointment.findUnique({
@@ -117,7 +117,7 @@ export async function saveAppointmentSummary(
     return { errors: { _form: ["Unauthorized"] } };
   }
 
-  const rl = rateLimit(`appointments:write:${session.user.id}`, 20, 60);
+  const rl = await rateLimit(`appointments:write:${session.user.id}`, 20, 60);
   if (rl.limited) {
     return { errors: { _form: ["Too many requests. Please try again shortly."] } };
   }
@@ -157,7 +157,7 @@ export async function updateAppointment(
     return { errors: { _form: ["Unauthorized"] } };
   }
 
-  const rl = rateLimit(`appointments:write:${session.user.id}`, 20, 60);
+  const rl = await rateLimit(`appointments:write:${session.user.id}`, 20, 60);
   if (rl.limited) {
     return { errors: { _form: ["Too many requests. Please try again shortly."] } };
   }
@@ -212,7 +212,7 @@ export async function deleteAppointment(appointmentId: string) {
 
   if (!session?.user?.id) throw new Error("Unauthorized");
 
-  const rl = rateLimit(`appointments:delete:${session.user.id}`, 10, 60);
+  const rl = await rateLimit(`appointments:delete:${session.user.id}`, 10, 60);
   if (rl.limited) throw new Error("Too many requests");
 
   const appointment = await prisma.appointment.findUnique({

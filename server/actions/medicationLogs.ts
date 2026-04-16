@@ -17,7 +17,7 @@ export async function logMedicationStatus(
     throw new Error("Unauthorized");
   }
 
-  const rl = rateLimit(`medicationLogs:${session.user.id}`, 60, 60);
+  const rl = await rateLimit(`medicationLogs:${session.user.id}`, 60, 60);
   if (rl.limited) throw new Error("Too many requests");
 
   const medication = await prisma.medication.findUnique({

@@ -30,6 +30,7 @@ export type UserMinAggregateOutputType = {
   emailVerified: boolean | null
   name: string | null
   image: string | null
+  locale: string | null
   twoFactorEnabled: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -41,6 +42,7 @@ export type UserMaxAggregateOutputType = {
   emailVerified: boolean | null
   name: string | null
   image: string | null
+  locale: string | null
   twoFactorEnabled: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -52,6 +54,7 @@ export type UserCountAggregateOutputType = {
   emailVerified: number
   name: number
   image: number
+  locale: number
   twoFactorEnabled: number
   createdAt: number
   updatedAt: number
@@ -65,6 +68,7 @@ export type UserMinAggregateInputType = {
   emailVerified?: true
   name?: true
   image?: true
+  locale?: true
   twoFactorEnabled?: true
   createdAt?: true
   updatedAt?: true
@@ -76,6 +80,7 @@ export type UserMaxAggregateInputType = {
   emailVerified?: true
   name?: true
   image?: true
+  locale?: true
   twoFactorEnabled?: true
   createdAt?: true
   updatedAt?: true
@@ -87,6 +92,7 @@ export type UserCountAggregateInputType = {
   emailVerified?: true
   name?: true
   image?: true
+  locale?: true
   twoFactorEnabled?: true
   createdAt?: true
   updatedAt?: true
@@ -171,6 +177,7 @@ export type UserGroupByOutputType = {
   emailVerified: boolean
   name: string | null
   image: string | null
+  locale: string
   twoFactorEnabled: boolean
   createdAt: Date
   updatedAt: Date
@@ -203,6 +210,7 @@ export type UserWhereInput = {
   emailVerified?: Prisma.BoolFilter<"User"> | boolean
   name?: Prisma.StringNullableFilter<"User"> | string | null
   image?: Prisma.StringNullableFilter<"User"> | string | null
+  locale?: Prisma.StringFilter<"User"> | string
   twoFactorEnabled?: Prisma.BoolFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
@@ -221,6 +229,7 @@ export type UserOrderByWithRelationInput = {
   emailVerified?: Prisma.SortOrder
   name?: Prisma.SortOrderInput | Prisma.SortOrder
   image?: Prisma.SortOrderInput | Prisma.SortOrder
+  locale?: Prisma.SortOrder
   twoFactorEnabled?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -242,6 +251,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   emailVerified?: Prisma.BoolFilter<"User"> | boolean
   name?: Prisma.StringNullableFilter<"User"> | string | null
   image?: Prisma.StringNullableFilter<"User"> | string | null
+  locale?: Prisma.StringFilter<"User"> | string
   twoFactorEnabled?: Prisma.BoolFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
@@ -260,6 +270,7 @@ export type UserOrderByWithAggregationInput = {
   emailVerified?: Prisma.SortOrder
   name?: Prisma.SortOrderInput | Prisma.SortOrder
   image?: Prisma.SortOrderInput | Prisma.SortOrder
+  locale?: Prisma.SortOrder
   twoFactorEnabled?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -277,6 +288,7 @@ export type UserScalarWhereWithAggregatesInput = {
   emailVerified?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   name?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   image?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  locale?: Prisma.StringWithAggregatesFilter<"User"> | string
   twoFactorEnabled?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
@@ -288,6 +300,7 @@ export type UserCreateInput = {
   emailVerified?: boolean
   name?: string | null
   image?: string | null
+  locale?: string
   twoFactorEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -306,6 +319,7 @@ export type UserUncheckedCreateInput = {
   emailVerified?: boolean
   name?: string | null
   image?: string | null
+  locale?: string
   twoFactorEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -324,6 +338,7 @@ export type UserUpdateInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locale?: Prisma.StringFieldUpdateOperationsInput | string
   twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -342,6 +357,7 @@ export type UserUncheckedUpdateInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locale?: Prisma.StringFieldUpdateOperationsInput | string
   twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -360,6 +376,7 @@ export type UserCreateManyInput = {
   emailVerified?: boolean
   name?: string | null
   image?: string | null
+  locale?: string
   twoFactorEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -371,6 +388,7 @@ export type UserUpdateManyMutationInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locale?: Prisma.StringFieldUpdateOperationsInput | string
   twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -382,6 +400,7 @@ export type UserUncheckedUpdateManyInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locale?: Prisma.StringFieldUpdateOperationsInput | string
   twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -393,6 +412,7 @@ export type UserCountOrderByAggregateInput = {
   emailVerified?: Prisma.SortOrder
   name?: Prisma.SortOrder
   image?: Prisma.SortOrder
+  locale?: Prisma.SortOrder
   twoFactorEnabled?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -404,6 +424,7 @@ export type UserMaxOrderByAggregateInput = {
   emailVerified?: Prisma.SortOrder
   name?: Prisma.SortOrder
   image?: Prisma.SortOrder
+  locale?: Prisma.SortOrder
   twoFactorEnabled?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -415,6 +436,7 @@ export type UserMinOrderByAggregateInput = {
   emailVerified?: Prisma.SortOrder
   name?: Prisma.SortOrder
   image?: Prisma.SortOrder
+  locale?: Prisma.SortOrder
   twoFactorEnabled?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -545,6 +567,7 @@ export type UserCreateWithoutSessionsInput = {
   emailVerified?: boolean
   name?: string | null
   image?: string | null
+  locale?: string
   twoFactorEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -562,6 +585,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   emailVerified?: boolean
   name?: string | null
   image?: string | null
+  locale?: string
   twoFactorEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -595,6 +619,7 @@ export type UserUpdateWithoutSessionsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locale?: Prisma.StringFieldUpdateOperationsInput | string
   twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -612,6 +637,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locale?: Prisma.StringFieldUpdateOperationsInput | string
   twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -629,6 +655,7 @@ export type UserCreateWithoutAccountsInput = {
   emailVerified?: boolean
   name?: string | null
   image?: string | null
+  locale?: string
   twoFactorEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -646,6 +673,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   emailVerified?: boolean
   name?: string | null
   image?: string | null
+  locale?: string
   twoFactorEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -679,6 +707,7 @@ export type UserUpdateWithoutAccountsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locale?: Prisma.StringFieldUpdateOperationsInput | string
   twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -696,6 +725,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locale?: Prisma.StringFieldUpdateOperationsInput | string
   twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -713,6 +743,7 @@ export type UserCreateWithoutConditionsInput = {
   emailVerified?: boolean
   name?: string | null
   image?: string | null
+  locale?: string
   twoFactorEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -730,6 +761,7 @@ export type UserUncheckedCreateWithoutConditionsInput = {
   emailVerified?: boolean
   name?: string | null
   image?: string | null
+  locale?: string
   twoFactorEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -763,6 +795,7 @@ export type UserUpdateWithoutConditionsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locale?: Prisma.StringFieldUpdateOperationsInput | string
   twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -780,6 +813,7 @@ export type UserUncheckedUpdateWithoutConditionsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locale?: Prisma.StringFieldUpdateOperationsInput | string
   twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -797,6 +831,7 @@ export type UserCreateWithoutSymptomLogsInput = {
   emailVerified?: boolean
   name?: string | null
   image?: string | null
+  locale?: string
   twoFactorEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -814,6 +849,7 @@ export type UserUncheckedCreateWithoutSymptomLogsInput = {
   emailVerified?: boolean
   name?: string | null
   image?: string | null
+  locale?: string
   twoFactorEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -847,6 +883,7 @@ export type UserUpdateWithoutSymptomLogsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locale?: Prisma.StringFieldUpdateOperationsInput | string
   twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -864,6 +901,7 @@ export type UserUncheckedUpdateWithoutSymptomLogsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locale?: Prisma.StringFieldUpdateOperationsInput | string
   twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -881,6 +919,7 @@ export type UserCreateWithoutMedicationsInput = {
   emailVerified?: boolean
   name?: string | null
   image?: string | null
+  locale?: string
   twoFactorEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -898,6 +937,7 @@ export type UserUncheckedCreateWithoutMedicationsInput = {
   emailVerified?: boolean
   name?: string | null
   image?: string | null
+  locale?: string
   twoFactorEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -931,6 +971,7 @@ export type UserUpdateWithoutMedicationsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locale?: Prisma.StringFieldUpdateOperationsInput | string
   twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -948,6 +989,7 @@ export type UserUncheckedUpdateWithoutMedicationsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locale?: Prisma.StringFieldUpdateOperationsInput | string
   twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -965,6 +1007,7 @@ export type UserCreateWithoutAppointmentsInput = {
   emailVerified?: boolean
   name?: string | null
   image?: string | null
+  locale?: string
   twoFactorEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -982,6 +1025,7 @@ export type UserUncheckedCreateWithoutAppointmentsInput = {
   emailVerified?: boolean
   name?: string | null
   image?: string | null
+  locale?: string
   twoFactorEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1015,6 +1059,7 @@ export type UserUpdateWithoutAppointmentsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locale?: Prisma.StringFieldUpdateOperationsInput | string
   twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1032,6 +1077,7 @@ export type UserUncheckedUpdateWithoutAppointmentsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locale?: Prisma.StringFieldUpdateOperationsInput | string
   twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1049,6 +1095,7 @@ export type UserCreateWithoutTwoFactorsInput = {
   emailVerified?: boolean
   name?: string | null
   image?: string | null
+  locale?: string
   twoFactorEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1066,6 +1113,7 @@ export type UserUncheckedCreateWithoutTwoFactorsInput = {
   emailVerified?: boolean
   name?: string | null
   image?: string | null
+  locale?: string
   twoFactorEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1099,6 +1147,7 @@ export type UserUpdateWithoutTwoFactorsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locale?: Prisma.StringFieldUpdateOperationsInput | string
   twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1116,6 +1165,7 @@ export type UserUncheckedUpdateWithoutTwoFactorsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locale?: Prisma.StringFieldUpdateOperationsInput | string
   twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1218,6 +1268,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   emailVerified?: boolean
   name?: boolean
   image?: boolean
+  locale?: boolean
   twoFactorEnabled?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1237,6 +1288,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   emailVerified?: boolean
   name?: boolean
   image?: boolean
+  locale?: boolean
   twoFactorEnabled?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1248,6 +1300,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   emailVerified?: boolean
   name?: boolean
   image?: boolean
+  locale?: boolean
   twoFactorEnabled?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1259,12 +1312,13 @@ export type UserSelectScalar = {
   emailVerified?: boolean
   name?: boolean
   image?: boolean
+  locale?: boolean
   twoFactorEnabled?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "emailVerified" | "name" | "image" | "twoFactorEnabled" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "emailVerified" | "name" | "image" | "locale" | "twoFactorEnabled" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   twoFactors?: boolean | Prisma.User$twoFactorsArgs<ExtArgs>
@@ -1295,6 +1349,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     emailVerified: boolean
     name: string | null
     image: string | null
+    locale: string
     twoFactorEnabled: boolean
     createdAt: Date
     updatedAt: Date
@@ -1733,6 +1788,7 @@ export interface UserFieldRefs {
   readonly emailVerified: Prisma.FieldRef<"User", 'Boolean'>
   readonly name: Prisma.FieldRef<"User", 'String'>
   readonly image: Prisma.FieldRef<"User", 'String'>
+  readonly locale: Prisma.FieldRef<"User", 'String'>
   readonly twoFactorEnabled: Prisma.FieldRef<"User", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>

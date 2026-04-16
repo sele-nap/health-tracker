@@ -32,7 +32,7 @@ export async function createMedication(
     return { errors: { _form: ["Unauthorized"] } };
   }
 
-  const rl = rateLimit(`medications:write:${session.user.id}`, 20, 60);
+  const rl = await rateLimit(`medications:write:${session.user.id}`, 20, 60);
   if (rl.limited) {
     return { errors: { _form: ["Too many requests. Please try again shortly."] } };
   }
@@ -83,7 +83,7 @@ export async function toggleMedicationActive(medicationId: string) {
     throw new Error("Unauthorized");
   }
 
-  const rl = rateLimit(`medications:toggle:${session.user.id}`, 30, 60);
+  const rl = await rateLimit(`medications:toggle:${session.user.id}`, 30, 60);
   if (rl.limited) throw new Error("Too many requests");
 
   const medication = await prisma.medication.findUnique({
@@ -112,7 +112,7 @@ export async function updateMedication(
     return { errors: { _form: ["Unauthorized"] } };
   }
 
-  const rl = rateLimit(`medications:write:${session.user.id}`, 20, 60);
+  const rl = await rateLimit(`medications:write:${session.user.id}`, 20, 60);
   if (rl.limited) {
     return { errors: { _form: ["Too many requests. Please try again shortly."] } };
   }
@@ -170,7 +170,7 @@ export async function deleteMedication(medicationId: string) {
 
   if (!session?.user?.id) throw new Error("Unauthorized");
 
-  const rl = rateLimit(`medications:delete:${session.user.id}`, 10, 60);
+  const rl = await rateLimit(`medications:delete:${session.user.id}`, 10, 60);
   if (rl.limited) throw new Error("Too many requests");
 
   const medication = await prisma.medication.findUnique({

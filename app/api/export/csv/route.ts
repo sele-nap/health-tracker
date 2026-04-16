@@ -12,7 +12,7 @@ export async function GET(request: Request) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const rl = rateLimit(`csv:${session.user.id}`, 10, 60);
+  const rl = await rateLimit(`csv:${session.user.id}`, 10, 60);
   if (rl.limited) {
     return new Response("Too many requests", {
       status: 429,

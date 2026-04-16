@@ -14,7 +14,7 @@ export async function createSymptomDefinition(
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user?.id) throw new Error("Unauthorized");
 
-  const rl = rateLimit(`symptomDefs:write:${session.user.id}`, 20, 60);
+  const rl = await rateLimit(`symptomDefs:write:${session.user.id}`, 20, 60);
   if (rl.limited) throw new Error("Too many requests");
 
   const condition = await prisma.userCondition.findUnique({
@@ -43,7 +43,7 @@ export async function deleteSymptomDefinition(definitionId: string, conditionId:
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user?.id) throw new Error("Unauthorized");
 
-  const rl = rateLimit(`symptomDefs:delete:${session.user.id}`, 10, 60);
+  const rl = await rateLimit(`symptomDefs:delete:${session.user.id}`, 10, 60);
   if (rl.limited) throw new Error("Too many requests");
 
   const def = await prisma.symptomDefinition.findUnique({

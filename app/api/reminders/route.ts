@@ -6,11 +6,14 @@ export const runtime = "nodejs";
 
 export async function GET(req: NextRequest) {
   const secret = process.env.CRON_SECRET;
-  if (secret) {
-    const auth = req.headers.get("authorization");
-    if (auth !== `Bearer ${secret}`) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  if (!secret) {
+    console.error("[reminders] CRON_SECRET is not set — refusing to run");
+    return NextResponse.json({ error: "Server misconfiguration" }, { status: 500 });
+  }
+
+  const auth = req.headers.get("authorization");
+  if (auth !== `Bearer ${secret}`) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const now = new Date();
@@ -29,7 +32,7 @@ export async function GET(req: NextRequest) {
   const dueMedIds = new Set<string>();
   const due = schedules.filter((s) => {
     if (!s.medication.isActive) return false;
-    const timeMatches = s.times.some((t) => t.startsWith(currentHour));
+    const timeMatches = s.times.some((t) => t.startsWith(`${currentHour}:`));
     if (!timeMatches) return false;
     if (s.frequency === "weekly" && !s.daysOfWeek.includes(currentDay)) return false;
     return true;
@@ -42,32 +45,41 @@ export async function GET(req: NextRequest) {
   const userIds = [...new Set(due.map((s) => s.medication.userId))];
   const users = await prisma.user.findMany({
     where: { id: { in: userIds } },
-    select: { id: true, email: true },
+    select: { id: true, email: true, locale: true },
   });
   const userMap = new Map(users.map((u) => [u.id, u]));
 
-  let sent = 0;
-  const errors: string[] = [];
-
-  for (const schedule of due) {
+  // Deduplicate per medication, then send all in parallel
+  const toSend = due.filter((schedule) => {
     const userId = schedule.medication.userId;
-    if (dueMedIds.has(`${userId}:${schedule.medicationId}`)) continue;
-    dueMedIds.add(`${userId}:${schedule.medicationId}`);
+    const dedupKey = `${userId}:${schedule.medicationId}`;
+    if (dueMedIds.has(dedupKey)) return false;
+    dueMedIds.add(dedupKey);
+    return true;
+  });
 
-    const user = userMap.get(userId);
-    if (!user?.email) continue;
+  const results = await Promise.allSettled(
+    toSend.map(async (schedule) => {
+      const user = userMap.get(schedule.medication.userId);
+      if (!user?.email) throw new Error("No email");
 
-    try {
       await sendReminderEmail({
         to: user.email,
         medicationName: schedule.medication.name,
         dosage: schedule.medication.dosage,
+        locale: user.locale,
       });
-      sent++;
-    } catch (err) {
-      errors.push(`${user.email}: ${err instanceof Error ? err.message : "unknown"}`);
-    }
-  }
+    })
+  );
+
+  const sent = results.filter((r) => r.status === "fulfilled").length;
+  const errors = results
+    .map((r, i) =>
+      r.status === "rejected"
+        ? `medication:${toSend[i].medicationId} — ${r.reason instanceof Error ? r.reason.message : "unknown"}`
+        : null
+    )
+    .filter(Boolean) as string[];
 
   return NextResponse.json({ sent, errors: errors.length ? errors : undefined });
 }

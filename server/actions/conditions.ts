@@ -22,7 +22,7 @@ export async function createCondition(
     return { errors: { _form: ["Unauthorized"] } };
   }
 
-  const rl = rateLimit(`conditions:write:${session.user.id}`, 10, 60);
+  const rl = await rateLimit(`conditions:write:${session.user.id}`, 10, 60);
   if (rl.limited) {
     return { errors: { _form: ["Too many requests. Please try again shortly."] } };
   }
@@ -56,7 +56,7 @@ export async function deleteCondition(conditionId: string) {
     throw new Error("Unauthorized");
   }
 
-  const rl = rateLimit(`conditions:delete:${session.user.id}`, 5, 60);
+  const rl = await rateLimit(`conditions:delete:${session.user.id}`, 5, 60);
   if (rl.limited) throw new Error("Too many requests");
 
   const condition = await prisma.userCondition.findUnique({

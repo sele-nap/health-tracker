@@ -15,7 +15,7 @@ export async function createReminderSchedule(
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user?.id) throw new Error("Unauthorized");
 
-  const rl = rateLimit(`reminders:write:${session.user.id}`, 20, 60);
+  const rl = await rateLimit(`reminders:write:${session.user.id}`, 20, 60);
   if (rl.limited) throw new Error("Too many requests");
 
   const med = await prisma.medication.findUnique({
@@ -53,7 +53,7 @@ export async function deleteReminderSchedule(scheduleId: string, medicationId: s
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user?.id) throw new Error("Unauthorized");
 
-  const rl = rateLimit(`reminders:delete:${session.user.id}`, 10, 60);
+  const rl = await rateLimit(`reminders:delete:${session.user.id}`, 10, 60);
   if (rl.limited) throw new Error("Too many requests");
 
   const schedule = await prisma.reminderSchedule.findUnique({
@@ -71,7 +71,7 @@ export async function toggleReminderEnabled(scheduleId: string, medicationId: st
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user?.id) throw new Error("Unauthorized");
 
-  const rl = rateLimit(`reminders:write:${session.user.id}`, 30, 60);
+  const rl = await rateLimit(`reminders:write:${session.user.id}`, 30, 60);
   if (rl.limited) throw new Error("Too many requests");
 
   const schedule = await prisma.reminderSchedule.findUnique({

@@ -20,7 +20,7 @@ export async function addAppointmentNote(
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user?.id) return { errors: { _form: ["Unauthorized"] } };
 
-  const rl = rateLimit(`apptNotes:write:${session.user.id}`, 30, 60);
+  const rl = await rateLimit(`apptNotes:write:${session.user.id}`, 30, 60);
   if (rl.limited) return { errors: { _form: ["Too many requests."] } };
 
   const content = (formData.get("content") as string | null)?.trim() ?? "";
@@ -49,7 +49,7 @@ export async function deleteAppointmentNote(noteId: string, appointmentId: strin
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user?.id) throw new Error("Unauthorized");
 
-  const rl = rateLimit(`apptNotes:delete:${session.user.id}`, 20, 60);
+  const rl = await rateLimit(`apptNotes:delete:${session.user.id}`, 20, 60);
   if (rl.limited) throw new Error("Too many requests");
 
   const note = await prisma.appointmentNote.findUnique({

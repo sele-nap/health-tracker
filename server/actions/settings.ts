@@ -2,8 +2,10 @@
 
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { rateLimit } from "@/lib/rate-limit";
+import type { Locale } from "@/lib/i18n";
 
 export type UpdateNameState = {
   success?: boolean;
@@ -40,7 +42,7 @@ export async function updateName(
     return { errors: { _form: ["Unauthorized"] } };
   }
 
-  const rl = rateLimit(`settings:name:${session.user.id}`, 10, 60);
+  const rl = await rateLimit(`settings:name:${session.user.id}`, 10, 60);
   if (rl.limited) {
     return { errors: { _form: ["Too many requests. Please try again shortly."] } };
   }
@@ -81,7 +83,7 @@ export async function changePassword(
     return { errors: { _form: ["Unauthorized"] } };
   }
 
-  const rl = rateLimit(`settings:password:${session.user.id}`, 5, 60);
+  const rl = await rateLimit(`settings:password:${session.user.id}`, 5, 60);
   if (rl.limited) {
     return { errors: { _form: ["Too many requests. Please try again shortly."] } };
   }
@@ -96,4 +98,15 @@ export async function changePassword(
   }
 
   return { success: true };
+}
+
+export async function persistLocale(locale: Locale): Promise<void> {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session?.user?.id) return;
+  if (locale !== "en" && locale !== "fr") return;
+
+  await prisma.user.update({
+    where: { id: session.user.id },
+    data: { locale },
+  });
 }
