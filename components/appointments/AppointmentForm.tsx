@@ -1,21 +1,24 @@
-"use client";
+'use client';
 
-import { useActionState } from "react";
-import { createAppointment, type AppointmentState } from "@/server/actions/appointments";
-import { SPECIALTIES } from "@/lib/validations/appointments";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { useLocale } from '@/components/providers/LocaleProvider';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { cn } from "@/lib/utils";
-import { useLocale } from "@/components/providers/LocaleProvider";
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { cn } from '@/lib/utils';
+import { SPECIALTIES } from '@/lib/validations/appointments';
+import {
+  createAppointment,
+  type AppointmentState,
+} from '@/server/actions/appointments';
+import { useActionState } from 'react';
 
 function defaultDateTimeLocal() {
   const d = new Date();
@@ -27,7 +30,10 @@ const initialState: AppointmentState = {};
 
 export function AppointmentForm() {
   const { tr } = useLocale();
-  const [state, formAction, pending] = useActionState(createAppointment, initialState);
+  const [state, formAction, pending] = useActionState(
+    createAppointment,
+    initialState,
+  );
 
   return (
     <form action={formAction} className="space-y-6">
@@ -43,7 +49,7 @@ export function AppointmentForm() {
           id="title"
           name="title"
           placeholder="e.g. Rheumatology follow-up"
-          className={cn(state.errors?.title && "border-destructive")}
+          className={cn(state.errors?.title && 'border-destructive')}
         />
         {state.errors?.title && (
           <p className="text-xs text-destructive">{state.errors.title[0]}</p>
@@ -53,24 +59,30 @@ export function AppointmentForm() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="doctorName">
-            {tr.appointments.doctorLabel}{" "}
-            <span className="text-muted-foreground font-normal text-xs">{tr.optional}</span>
+            {tr.appointments.doctorLabel}{' '}
+            <span className="text-muted-foreground font-normal text-xs">
+              {tr.optional}
+            </span>
           </Label>
           <Input
             id="doctorName"
             name="doctorName"
             placeholder="e.g. Dr. Dubois"
-            className={cn(state.errors?.doctorName && "border-destructive")}
+            className={cn(state.errors?.doctorName && 'border-destructive')}
           />
           {state.errors?.doctorName && (
-            <p className="text-xs text-destructive">{state.errors.doctorName[0]}</p>
+            <p className="text-xs text-destructive">
+              {state.errors.doctorName[0]}
+            </p>
           )}
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="specialty">
-            {tr.appointments.specialtyLabel}{" "}
-            <span className="text-muted-foreground font-normal text-xs">{tr.optional}</span>
+            {tr.appointments.specialtyLabel}{' '}
+            <span className="text-muted-foreground font-normal text-xs">
+              {tr.optional}
+            </span>
           </Label>
           <Select name="specialty">
             <SelectTrigger id="specialty" className="w-full">
@@ -85,7 +97,9 @@ export function AppointmentForm() {
             </SelectContent>
           </Select>
           {state.errors?.specialty && (
-            <p className="text-xs text-destructive">{state.errors.specialty[0]}</p>
+            <p className="text-xs text-destructive">
+              {state.errors.specialty[0]}
+            </p>
           )}
         </div>
       </div>
@@ -98,17 +112,21 @@ export function AppointmentForm() {
             name="scheduledAt"
             type="datetime-local"
             defaultValue={defaultDateTimeLocal()}
-            className={cn(state.errors?.scheduledAt && "border-destructive")}
+            className={cn(state.errors?.scheduledAt && 'border-destructive')}
           />
           {state.errors?.scheduledAt && (
-            <p className="text-xs text-destructive">{state.errors.scheduledAt[0]}</p>
+            <p className="text-xs text-destructive">
+              {state.errors.scheduledAt[0]}
+            </p>
           )}
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="durationMin">
-            {tr.appointments.durationLabel}{" "}
-            <span className="text-muted-foreground font-normal text-xs">{tr.optional}</span>
+            {tr.appointments.durationLabel}{' '}
+            <span className="text-muted-foreground font-normal text-xs">
+              {tr.optional}
+            </span>
           </Label>
           <Input
             id="durationMin"
@@ -117,24 +135,31 @@ export function AppointmentForm() {
             min={1}
             max={480}
             placeholder="e.g. 30"
-            className={cn("w-full", state.errors?.durationMin && "border-destructive")}
+            className={cn(
+              'w-full',
+              state.errors?.durationMin && 'border-destructive',
+            )}
           />
           {state.errors?.durationMin && (
-            <p className="text-xs text-destructive">{state.errors.durationMin[0]}</p>
+            <p className="text-xs text-destructive">
+              {state.errors.durationMin[0]}
+            </p>
           )}
         </div>
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="location">
-          {tr.appointments.locationLabel}{" "}
-          <span className="text-muted-foreground font-normal text-xs">{tr.optional}</span>
+          {tr.appointments.locationLabel}{' '}
+          <span className="text-muted-foreground font-normal text-xs">
+            {tr.optional}
+          </span>
         </Label>
         <Input
           id="location"
           name="location"
           placeholder="e.g. Paris Hospital, Room 12"
-          className={cn(state.errors?.location && "border-destructive")}
+          className={cn(state.errors?.location && 'border-destructive')}
         />
         {state.errors?.location && (
           <p className="text-xs text-destructive">{state.errors.location[0]}</p>
@@ -143,15 +168,17 @@ export function AppointmentForm() {
 
       <div className="space-y-2">
         <Label htmlFor="purpose">
-          {tr.appointments.purposeLabel}{" "}
-          <span className="text-muted-foreground font-normal text-xs">{tr.optional}</span>
+          {tr.appointments.purposeLabel}{' '}
+          <span className="text-muted-foreground font-normal text-xs">
+            {tr.optional}
+          </span>
         </Label>
         <Textarea
           id="purpose"
           name="purpose"
           placeholder="What you want to discuss or check…"
           rows={3}
-          className={cn(state.errors?.purpose && "border-destructive")}
+          className={cn(state.errors?.purpose && 'border-destructive')}
         />
         {state.errors?.purpose && (
           <p className="text-xs text-destructive">{state.errors.purpose[0]}</p>

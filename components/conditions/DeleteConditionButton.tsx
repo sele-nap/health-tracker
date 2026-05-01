@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useTransition } from "react";
-import { deleteCondition } from "@/server/actions/conditions";
-import { useLocale } from "@/components/providers/LocaleProvider";
+import { useLocale } from '@/components/providers/LocaleProvider';
+import { deleteCondition } from '@/server/actions/conditions';
+import { useTransition } from 'react';
 
 type Props = {
   conditionId: string;

@@ -11,5 +11,5 @@ export type CorrelationInsight = {
   icon: string;
   title: string;
   body: string;
-  impact: "positive" | "negative" | "alert" | "info";
+  impact: 'positive' | 'negative' | 'alert' | 'info';
 };

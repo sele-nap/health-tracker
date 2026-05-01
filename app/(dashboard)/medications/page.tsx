@@ -1,22 +1,25 @@
-import type { Metadata } from "next";
-import Link from "next/link";
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
+import { ToggleActiveButton } from '@/components/medications/ToggleActiveButton';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { auth } from '@/lib/auth';
+import { decryptIfPresent } from '@/lib/crypto';
+import { getT } from '@/lib/locale';
+import { prisma } from '@/lib/prisma';
+import { cn } from '@/lib/utils';
+import { Pill, Plus } from 'lucide-react';
+import type { Metadata } from 'next';
+import { headers } from 'next/headers';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = {
-  title: "Medications",
-  description: "Manage your medications and monitor adherence.",
-  openGraph: { title: "Medications · Health Tracker", description: "Manage your medications and monitor adherence." },
+  title: 'Medications',
+  description: 'Manage your medications and monitor adherence.',
+  openGraph: {
+    title: 'Medications · Health Tracker',
+    description: 'Manage your medications and monitor adherence.',
+  },
 };
-import { prisma } from "@/lib/prisma";
-import { decryptIfPresent } from "@/lib/crypto";
-import { redirect } from "next/navigation";
-import { Plus, Pill } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { ToggleActiveButton } from "@/components/medications/ToggleActiveButton";
-import { getT } from "@/lib/locale";
-import { cn } from "@/lib/utils";
 
 export default async function MedicationsPage({
   searchParams,
@@ -31,10 +34,15 @@ export default async function MedicationsPage({
   ]);
 
   if (!session?.user?.id) {
-    redirect("/login");
+    redirect('/login');
   }
 
-  const statusFilter = params.status === "active" ? true : params.status === "inactive" ? false : undefined;
+  const statusFilter =
+    params.status === 'active'
+      ? true
+      : params.status === 'inactive'
+        ? false
+        : undefined;
   const isFiltered = statusFilter !== undefined;
 
   const medications = await prisma.medication.findMany({
@@ -42,7 +50,7 @@ export default async function MedicationsPage({
       userId: session.user.id,
       ...(statusFilter !== undefined ? { isActive: statusFilter } : {}),
     },
-    orderBy: [{ isActive: "desc" }, { name: "asc" }],
+    orderBy: [{ isActive: 'desc' }, { name: 'asc' }],
   });
 
   const decrypted = medications.map((med) => ({
@@ -53,20 +61,20 @@ export default async function MedicationsPage({
 
   function formatDate(date: Date) {
     return date.toLocaleDateString(tr.dateLocale, {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
     });
   }
 
   const activeCount = decrypted.filter((m) => m.isActive).length;
 
   const filterTabs = [
-    { label: tr.medications.filterAll, href: "/medications" },
-    { label: tr.medications.active, href: "/medications?status=active" },
-    { label: tr.medications.inactive, href: "/medications?status=inactive" },
+    { label: tr.medications.filterAll, href: '/medications' },
+    { label: tr.medications.active, href: '/medications?status=active' },
+    { label: tr.medications.inactive, href: '/medications?status=inactive' },
   ];
-  const currentStatus = params.status ?? "";
+  const currentStatus = params.status ?? '';
 
   return (
     <div className="max-w-3xl mx-auto space-y-8">
@@ -90,18 +98,18 @@ export default async function MedicationsPage({
 
       <div className="flex rounded-lg border border-border overflow-hidden text-sm w-fit">
         {filterTabs.map(({ label, href }, i) => {
-          const tabStatus = i === 0 ? "" : i === 1 ? "active" : "inactive";
+          const tabStatus = i === 0 ? '' : i === 1 ? 'active' : 'inactive';
           const isActive = currentStatus === tabStatus;
           return (
             <Link
               key={href}
               href={href}
               className={cn(
-                "px-4 py-1.5 transition-colors",
-                i > 0 && "border-l border-border",
+                'px-4 py-1.5 transition-colors',
+                i > 0 && 'border-l border-border',
                 isActive
-                  ? "bg-accent text-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                  ? 'bg-accent text-foreground'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-accent/50',
               )}
             >
               {label}
@@ -130,7 +138,7 @@ export default async function MedicationsPage({
       ) : (
         <div className="space-y-3">
           {decrypted.map((med) => (
-            <Card key={med.id} className={med.isActive ? "" : "opacity-60"}>
+            <Card key={med.id} className={med.isActive ? '' : 'opacity-60'}>
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between gap-3">
                   <CardTitle className="font-heading italic text-lg">
@@ -142,10 +150,15 @@ export default async function MedicationsPage({
                     </Link>
                   </CardTitle>
                   <div className="flex items-center gap-2">
-                    <Badge variant={med.isActive ? "default" : "secondary"}>
-                      {med.isActive ? tr.medications.active : tr.medications.inactive}
+                    <Badge variant={med.isActive ? 'default' : 'secondary'}>
+                      {med.isActive
+                        ? tr.medications.active
+                        : tr.medications.inactive}
                     </Badge>
-                    <ToggleActiveButton medicationId={med.id} isActive={med.isActive} />
+                    <ToggleActiveButton
+                      medicationId={med.id}
+                      isActive={med.isActive}
+                    />
                     <Link
                       href={`/medications/${med.id}/edit`}
                       className="text-xs text-muted-foreground hover:text-foreground transition-colors"
@@ -157,15 +170,20 @@ export default async function MedicationsPage({
               </CardHeader>
               <CardContent className="space-y-1 text-sm text-muted-foreground">
                 <p>
-                  <span className="text-foreground font-medium">{med.dosage}</span>
+                  <span className="text-foreground font-medium">
+                    {med.dosage}
+                  </span>
                   {med.form && <span className="ml-1">· {med.form}</span>}
                 </p>
                 {med.prescribedBy && (
-                  <p>{tr.medications.prescribedBy} {med.prescribedBy}</p>
+                  <p>
+                    {tr.medications.prescribedBy} {med.prescribedBy}
+                  </p>
                 )}
                 <p>
                   {tr.medications.since} {formatDate(med.startDate)}
-                  {med.endDate && ` · ${tr.medications.until} ${formatDate(med.endDate)}`}
+                  {med.endDate &&
+                    ` · ${tr.medications.until} ${formatDate(med.endDate)}`}
                 </p>
                 {med.instructions && (
                   <p className="italic text-xs mt-1">{med.instructions}</p>

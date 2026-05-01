@@ -1,16 +1,19 @@
-import type { Metadata } from "next";
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
+import { SymptomForm } from '@/components/symptoms/SymptomForm';
+import { auth } from '@/lib/auth';
+import { getT } from '@/lib/locale';
+import { prisma } from '@/lib/prisma';
+import type { Metadata } from 'next';
+import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = {
-  title: "Log symptoms",
-  description: "Log how you feel today.",
-  openGraph: { title: "Log symptoms · Health Tracker", description: "Log how you feel today." },
+  title: 'Log symptoms',
+  description: 'Log how you feel today.',
+  openGraph: {
+    title: 'Log symptoms · Health Tracker',
+    description: 'Log how you feel today.',
+  },
 };
-import { prisma } from "@/lib/prisma";
-import { redirect } from "next/navigation";
-import { getT } from "@/lib/locale";
-import { SymptomForm } from "@/components/symptoms/SymptomForm";
 
 export default async function NewSymptomLogPage() {
   const [session, tr] = await Promise.all([
@@ -19,7 +22,7 @@ export default async function NewSymptomLogPage() {
   ]);
 
   if (!session?.user?.id) {
-    redirect("/login");
+    redirect('/login');
   }
 
   const conditions = await prisma.userCondition.findMany({
@@ -36,7 +39,7 @@ export default async function NewSymptomLogPage() {
     c.symptomDefinitions.map((def) => ({
       ...def,
       conditionName: c.name,
-    }))
+    })),
   );
 
   return (

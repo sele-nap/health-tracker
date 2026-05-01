@@ -1,11 +1,11 @@
-import type { Metadata } from "next";
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { decryptIfPresent } from "@/lib/crypto";
-import { notFound, redirect } from "next/navigation";
-import { SymptomEditForm } from "@/components/symptoms/SymptomEditForm";
-import { getT } from "@/lib/locale";
+import { SymptomEditForm } from '@/components/symptoms/SymptomEditForm';
+import { auth } from '@/lib/auth';
+import { decryptIfPresent } from '@/lib/crypto';
+import { getT } from '@/lib/locale';
+import { prisma } from '@/lib/prisma';
+import type { Metadata } from 'next';
+import { headers } from 'next/headers';
+import { notFound, redirect } from 'next/navigation';
 
 export async function generateMetadata({
   params,
@@ -14,18 +14,24 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session?.user?.id) return { title: "Health Tracker" };
-  const log = await prisma.symptomLog.findUnique({ where: { id, userId: session.user.id }, select: { loggedAt: true } });
+  if (!session?.user?.id) return { title: 'Health Tracker' };
+  const log = await prisma.symptomLog.findUnique({
+    where: { id, userId: session.user.id },
+    select: { loggedAt: true },
+  });
   const date = log
-    ? log.loggedAt.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+    ? log.loggedAt.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      })
     : null;
-  const title = date ? `Edit entry · ${date}` : "Edit entry";
+  const title = date ? `Edit entry · ${date}` : 'Edit entry';
   return {
     title,
     openGraph: { title: `${title} · Health Tracker` },
   };
 }
-
 
 export default async function EditSymptomLogPage({
   params,
@@ -39,7 +45,7 @@ export default async function EditSymptomLogPage({
   ]);
 
   if (!session?.user?.id) {
-    redirect("/login");
+    redirect('/login');
   }
 
   const [log, conditions] = await Promise.all([
@@ -74,7 +80,7 @@ export default async function EditSymptomLogPage({
   }
 
   const definitions = conditions.flatMap((c) =>
-    c.symptomDefinitions.map((def) => ({ ...def, conditionName: c.name }))
+    c.symptomDefinitions.map((def) => ({ ...def, conditionName: c.name })),
   );
 
   const defaultCustomEntries: Record<string, number> = {};
@@ -90,13 +96,13 @@ export default async function EditSymptomLogPage({
     stress: log.stressLevel ?? 5,
     sleepHours: log.sleepHours,
     sleepQuality: log.sleepQuality ?? 5,
-    notes: decryptIfPresent(log.notes) ?? "",
+    notes: decryptIfPresent(log.notes) ?? '',
   };
 
   const formattedDate = log.loggedAt.toLocaleDateString(tr.dateLocale, {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
   });
 
   return (

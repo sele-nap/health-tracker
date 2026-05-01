@@ -1,11 +1,14 @@
-import type { Metadata } from "next";
-import { getT } from "@/lib/locale";
-import { MedicationForm } from "@/components/medications/MedicationForm";
+import { MedicationForm } from '@/components/medications/MedicationForm';
+import { getT } from '@/lib/locale';
+import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: "Add medication",
-  description: "Add a new medication to track.",
-  openGraph: { title: "Add medication · Health Tracker", description: "Add a new medication to track." },
+  title: 'Add medication',
+  description: 'Add a new medication to track.',
+  openGraph: {
+    title: 'Add medication · Health Tracker',
+    description: 'Add a new medication to track.',
+  },
 };
 
 export default async function NewMedicationPage() {
@@ -17,7 +20,9 @@ export default async function NewMedicationPage() {
         <h1 className="font-heading italic text-3xl text-foreground">
           {tr.medications.newTitle} 🌿
         </h1>
-        <p className="text-muted-foreground mt-1">{tr.medications.newSubtitle}</p>
+        <p className="text-muted-foreground mt-1">
+          {tr.medications.newSubtitle}
+        </p>
       </div>
 
       <MedicationForm />

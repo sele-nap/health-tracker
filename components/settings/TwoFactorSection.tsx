@@ -1,28 +1,28 @@
-"use client";
+'use client';
 
-import { useState, useTransition, useCallback } from "react";
-import Image from "next/image";
-import { authClient } from "@/lib/auth-client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useLocale } from "@/components/providers/LocaleProvider";
+import { useLocale } from '@/components/providers/LocaleProvider';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { authClient } from '@/lib/auth-client';
+import Image from 'next/image';
+import { useCallback, useState, useTransition } from 'react';
 
 type Props = {
   twoFactorEnabled: boolean;
 };
 
-type Step = "idle" | "setup" | "verify" | "backupcodes";
+type Step = 'idle' | 'setup' | 'verify' | 'backupcodes';
 
 export function TwoFactorSection({ twoFactorEnabled }: Props) {
   const { tr } = useLocale();
-  const [step, setStep] = useState<Step>("idle");
+  const [step, setStep] = useState<Step>('idle');
   const [totpUri, setTotpUri] = useState<string | null>(null);
   const [backupCodes, setBackupCodes] = useState<string[]>([]);
-  const [code, setCode] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [code, setCode] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const [enabled, setEnabled] = useState(twoFactorEnabled);
   const [pending, startTransition] = useTransition();
   const [copied, setCopied] = useState(false);
@@ -36,8 +36,8 @@ export function TwoFactorSection({ twoFactorEnabled }: Props) {
   }, [totpUri]);
 
   function handleEnable() {
-    setError("");
-    setStep("setup");
+    setError('');
+    setStep('setup');
   }
 
   function handleGetUri() {
@@ -45,7 +45,7 @@ export function TwoFactorSection({ twoFactorEnabled }: Props) {
       setError(tr.settings.passwordRequired);
       return;
     }
-    setError("");
+    setError('');
     startTransition(async () => {
       const res = await authClient.twoFactor.getTotpUri({ password });
       if (res.error) {
@@ -57,24 +57,26 @@ export function TwoFactorSection({ twoFactorEnabled }: Props) {
   }
 
   function handleVerify() {
-    setError("");
+    setError('');
     startTransition(async () => {
       const res = await authClient.twoFactor.verifyTotp({ code });
       if (res.error) {
         setError(res.error.message ?? tr.settings.invalidCode);
         return;
       }
-      const backupRes = await authClient.twoFactor.generateBackupCodes({ password });
+      const backupRes = await authClient.twoFactor.generateBackupCodes({
+        password,
+      });
       if (backupRes.data?.backupCodes) {
         setBackupCodes(backupRes.data.backupCodes);
       }
       setEnabled(true);
-      setStep("backupcodes");
+      setStep('backupcodes');
     });
   }
 
   function handleDisable() {
-    setError("");
+    setError('');
     startTransition(async () => {
       const res = await authClient.twoFactor.disable({ password });
       if (res.error) {
@@ -82,16 +84,18 @@ export function TwoFactorSection({ twoFactorEnabled }: Props) {
         return;
       }
       setEnabled(false);
-      setStep("idle");
-      setPassword("");
+      setStep('idle');
+      setPassword('');
     });
   }
 
-  if (step === "backupcodes") {
+  if (step === 'backupcodes') {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="font-heading italic text-lg">{tr.settings.twoFactor}</CardTitle>
+          <CardTitle className="font-heading italic text-lg">
+            {tr.settings.twoFactor}
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-primary bg-primary/10 px-3 py-2 rounded-lg">
@@ -99,12 +103,15 @@ export function TwoFactorSection({ twoFactorEnabled }: Props) {
           </p>
           <div className="grid grid-cols-2 gap-2">
             {backupCodes.map((c, i) => (
-              <code key={i} className="text-xs font-mono bg-muted/40 px-2 py-1 rounded text-foreground">
+              <code
+                key={i}
+                className="text-xs font-mono bg-muted/40 px-2 py-1 rounded text-foreground"
+              >
                 {c}
               </code>
             ))}
           </div>
-          <Button variant="outline" onClick={() => setStep("idle")}>
+          <Button variant="outline" onClick={() => setStep('idle')}>
             {tr.settings.done}
           </Button>
         </CardContent>
@@ -112,21 +119,27 @@ export function TwoFactorSection({ twoFactorEnabled }: Props) {
     );
   }
 
-  if (step === "setup") {
+  if (step === 'setup') {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="font-heading italic text-lg">{tr.settings.enableTwoFactor}</CardTitle>
+          <CardTitle className="font-heading italic text-lg">
+            {tr.settings.enableTwoFactor}
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {error && (
-            <p className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded-lg">{error}</p>
+            <p className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded-lg">
+              {error}
+            </p>
           )}
 
           {!totpUri ? (
             <>
               <div className="space-y-2">
-                <Label htmlFor="2fa-password">{tr.settings.confirmPassword2fa}</Label>
+                <Label htmlFor="2fa-password">
+                  {tr.settings.confirmPassword2fa}
+                </Label>
                 <Input
                   id="2fa-password"
                   type="password"
@@ -139,14 +152,16 @@ export function TwoFactorSection({ twoFactorEnabled }: Props) {
                 <Button onClick={handleGetUri} disabled={pending}>
                   {pending ? tr.settings.loading : tr.settings.continueBtn}
                 </Button>
-                <Button variant="outline" onClick={() => setStep("idle")}>
+                <Button variant="outline" onClick={() => setStep('idle')}>
                   {tr.cancel}
                 </Button>
               </div>
             </>
           ) : (
             <>
-              <p className="text-sm text-muted-foreground">{tr.settings.scanInstructions}</p>
+              <p className="text-sm text-muted-foreground">
+                {tr.settings.scanInstructions}
+              </p>
               <div className="bg-white p-3 rounded-lg inline-block">
                 <Image
                   src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(totpUri)}`}
@@ -176,10 +191,13 @@ export function TwoFactorSection({ twoFactorEnabled }: Props) {
                 />
               </div>
               <div className="flex gap-3">
-                <Button onClick={handleVerify} disabled={pending || code.length !== 6}>
+                <Button
+                  onClick={handleVerify}
+                  disabled={pending || code.length !== 6}
+                >
                   {pending ? tr.settings.verifying : tr.settings.verifyEnable}
                 </Button>
-                <Button variant="outline" onClick={() => setStep("idle")}>
+                <Button variant="outline" onClick={() => setStep('idle')}>
                   {tr.cancel}
                 </Button>
               </div>
@@ -193,19 +211,27 @@ export function TwoFactorSection({ twoFactorEnabled }: Props) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="font-heading italic text-lg">{tr.settings.twoFactor}</CardTitle>
+        <CardTitle className="font-heading italic text-lg">
+          {tr.settings.twoFactor}
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {error && (
-          <p className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded-lg">{error}</p>
+          <p className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded-lg">
+            {error}
+          </p>
         )}
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium">
-              {enabled ? tr.settings.twoFactorEnabled : tr.settings.twoFactorDisabled}
+              {enabled
+                ? tr.settings.twoFactorEnabled
+                : tr.settings.twoFactorDisabled}
             </p>
             <p className="text-xs text-muted-foreground mt-0.5">
-              {enabled ? tr.settings.twoFactorEnabledDesc : tr.settings.twoFactorDisabledDesc}
+              {enabled
+                ? tr.settings.twoFactorEnabledDesc
+                : tr.settings.twoFactorDisabledDesc}
             </p>
           </div>
           {enabled ? (
@@ -218,7 +244,9 @@ export function TwoFactorSection({ twoFactorEnabled }: Props) {
         {enabled ? (
           <div className="space-y-3 pt-1">
             <div className="space-y-2">
-              <Label htmlFor="disable-password">{tr.settings.passwordToDisable}</Label>
+              <Label htmlFor="disable-password">
+                {tr.settings.passwordToDisable}
+              </Label>
               <Input
                 id="disable-password"
                 type="password"
@@ -228,7 +256,11 @@ export function TwoFactorSection({ twoFactorEnabled }: Props) {
                 className="max-w-xs"
               />
             </div>
-            <Button variant="destructive" onClick={handleDisable} disabled={pending || !password}>
+            <Button
+              variant="destructive"
+              onClick={handleDisable}
+              disabled={pending || !password}
+            >
               {pending ? tr.settings.disabling : tr.settings.disableBtn}
             </Button>
           </div>

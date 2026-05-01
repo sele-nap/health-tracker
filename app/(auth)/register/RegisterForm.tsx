@@ -1,27 +1,32 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { signUp } from "@/lib/auth-client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { useLocale } from "@/components/providers/LocaleProvider";
+import { useLocale } from '@/components/providers/LocaleProvider';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { signUp } from '@/lib/auth-client';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export function RegisterForm() {
   const router = useRouter();
   const { tr } = useLocale();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError("");
+    setError('');
     setLoading(true);
 
     const { error } = await signUp.email({ name, email, password });
@@ -32,14 +37,16 @@ export function RegisterForm() {
       return;
     }
 
-    router.push("/");
+    router.push('/');
   }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 gap-6">
       <div className="text-center space-y-1">
         <p className="text-3xl">🌿</p>
-        <h1 className="font-heading italic text-2xl text-foreground">Health Tracker</h1>
+        <h1 className="font-heading italic text-2xl text-foreground">
+          Health Tracker
+        </h1>
         <p className="text-sm text-muted-foreground">{tr.auth.createAccount}</p>
       </div>
 
@@ -96,8 +103,11 @@ export function RegisterForm() {
               {loading ? tr.auth.creating : tr.auth.createAccountBtn}
             </Button>
             <p className="text-sm text-muted-foreground text-center">
-              {tr.auth.alreadyAccount}{" "}
-              <Link href="/login" className="text-primary underline underline-offset-4">
+              {tr.auth.alreadyAccount}{' '}
+              <Link
+                href="/login"
+                className="text-primary underline underline-offset-4"
+              >
                 {tr.auth.signIn}
               </Link>
             </p>

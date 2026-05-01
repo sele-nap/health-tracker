@@ -1,6 +1,6 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -49,36 +49,36 @@
 }
 
 :root {
-  --background: oklch(0.10 0.022 145);
-  --foreground: oklch(0.90 0.022 110);
+  --background: oklch(0.1 0.022 145);
+  --foreground: oklch(0.9 0.022 110);
   --card: oklch(0.14 0.018 145);
-  --card-foreground: oklch(0.90 0.022 110);
+  --card-foreground: oklch(0.9 0.022 110);
   --popover: oklch(0.13 0.018 145);
-  --popover-foreground: oklch(0.90 0.022 110);
+  --popover-foreground: oklch(0.9 0.022 110);
   --primary: oklch(0.66 0.128 145);
-  --primary-foreground: oklch(0.10 0.022 145);
-  --secondary: oklch(0.22 0.030 145);
+  --primary-foreground: oklch(0.1 0.022 145);
+  --secondary: oklch(0.22 0.03 145);
   --secondary-foreground: oklch(0.82 0.022 140);
   --muted: oklch(0.17 0.014 145);
   --muted-foreground: oklch(0.55 0.022 140);
   --accent: oklch(0.23 0.038 148);
-  --accent-foreground: oklch(0.90 0.022 110);
+  --accent-foreground: oklch(0.9 0.022 110);
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.22 0.022 145);
   --input: oklch(0.17 0.016 145);
   --ring: oklch(0.66 0.128 145);
   --chart-1: oklch(0.66 0.128 145);
-  --chart-2: oklch(0.56 0.100 158);
+  --chart-2: oklch(0.56 0.1 158);
   --chart-3: oklch(0.62 0.092 95);
   --chart-4: oklch(0.52 0.085 188);
   --chart-5: oklch(0.45 0.078 140);
   --radius: 0.75rem;
   --sidebar: oklch(0.08 0.018 145);
-  --sidebar-foreground: oklch(0.90 0.022 110);
+  --sidebar-foreground: oklch(0.9 0.022 110);
   --sidebar-primary: oklch(0.66 0.128 145);
-  --sidebar-primary-foreground: oklch(0.10 0.022 145);
+  --sidebar-primary-foreground: oklch(0.1 0.022 145);
   --sidebar-accent: oklch(0.14 0.018 145);
-  --sidebar-accent-foreground: oklch(0.90 0.022 110);
+  --sidebar-accent-foreground: oklch(0.9 0.022 110);
   --sidebar-border: oklch(0.17 0.014 145);
   --sidebar-ring: oklch(0.66 0.128 145);
 }
@@ -93,26 +93,31 @@
   html {
     @apply font-sans;
   }
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-heading);
   }
 
-  input[type="range"] {
+  input[type='range'] {
     background: var(--border);
     height: 6px;
     border-radius: 9999px;
   }
-  input[type="range"]::-webkit-slider-runnable-track {
+  input[type='range']::-webkit-slider-runnable-track {
     background: var(--border);
     height: 6px;
     border-radius: 9999px;
   }
-  input[type="range"]::-moz-range-track {
+  input[type='range']::-moz-range-track {
     background: var(--border);
     height: 6px;
     border-radius: 9999px;
   }
-  input[type="range"]::-webkit-slider-thumb {
+  input[type='range']::-webkit-slider-thumb {
     appearance: none;
     width: 18px;
     height: 18px;
@@ -122,7 +127,7 @@
     margin-top: -6px;
     box-shadow: 0 0 0 3px oklch(from var(--primary) l c h / 0.2);
   }
-  input[type="range"]::-moz-range-thumb {
+  input[type='range']::-moz-range-thumb {
     width: 18px;
     height: 18px;
     border-radius: 9999px;

@@ -1,22 +1,27 @@
-"use client";
+/* eslint-disable @next/next/no-html-link-for-pages */
+'use client';
 
-import { useActionState, useTransition } from "react";
-import { useRouter } from "next/navigation";
-import { updateMedication, deleteMedication, type MedicationState } from "@/server/actions/medications";
-import { MEDICATION_FORMS } from "@/lib/validations/medications";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { useLocale } from '@/components/providers/LocaleProvider';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { cn } from "@/lib/utils";
-import { useLocale } from "@/components/providers/LocaleProvider";
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { cn } from '@/lib/utils';
+import { MEDICATION_FORMS } from '@/lib/validations/medications';
+import {
+  deleteMedication,
+  updateMedication,
+  type MedicationState,
+} from '@/server/actions/medications';
+import { useRouter } from 'next/navigation';
+import { useActionState, useTransition } from 'react';
 
 type MedicationData = {
   id: string;
@@ -31,7 +36,11 @@ type MedicationData = {
 
 const initialState: MedicationState = {};
 
-export function MedicationEditForm({ medication }: { medication: MedicationData }) {
+export function MedicationEditForm({
+  medication,
+}: {
+  medication: MedicationData;
+}) {
   const { tr } = useLocale();
   const action = updateMedication.bind(null, medication.id);
   const [state, formAction, pending] = useActionState(action, initialState);
@@ -42,7 +51,7 @@ export function MedicationEditForm({ medication }: { medication: MedicationData 
     if (!confirm(tr.medications.deleteConfirm(medication.name))) return;
     startDelete(async () => {
       await deleteMedication(medication.id);
-      router.push("/medications");
+      router.push('/medications');
     });
   }
 
@@ -61,7 +70,7 @@ export function MedicationEditForm({ medication }: { medication: MedicationData 
             id="name"
             name="name"
             defaultValue={medication.name}
-            className={cn(state.errors?.name && "border-destructive")}
+            className={cn(state.errors?.name && 'border-destructive')}
           />
           {state.errors?.name && (
             <p className="text-xs text-destructive">{state.errors.name[0]}</p>
@@ -74,7 +83,7 @@ export function MedicationEditForm({ medication }: { medication: MedicationData 
             id="dosage"
             name="dosage"
             defaultValue={medication.dosage}
-            className={cn(state.errors?.dosage && "border-destructive")}
+            className={cn(state.errors?.dosage && 'border-destructive')}
           />
           {state.errors?.dosage && (
             <p className="text-xs text-destructive">{state.errors.dosage[0]}</p>
@@ -100,7 +109,9 @@ export function MedicationEditForm({ medication }: { medication: MedicationData 
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="prescribedBy">{tr.medications.prescribedByLabel}</Label>
+          <Label htmlFor="prescribedBy">
+            {tr.medications.prescribedByLabel}
+          </Label>
           <Input
             id="prescribedBy"
             name="prescribedBy"
@@ -117,35 +128,43 @@ export function MedicationEditForm({ medication }: { medication: MedicationData 
             name="startDate"
             type="date"
             defaultValue={medication.startDate}
-            className={cn(state.errors?.startDate && "border-destructive")}
+            className={cn(state.errors?.startDate && 'border-destructive')}
           />
           {state.errors?.startDate && (
-            <p className="text-xs text-destructive">{state.errors.startDate[0]}</p>
+            <p className="text-xs text-destructive">
+              {state.errors.startDate[0]}
+            </p>
           )}
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="endDate">
-            {tr.medications.endDateLabel}{" "}
-            <span className="text-muted-foreground font-normal text-xs">{tr.optional}</span>
+            {tr.medications.endDateLabel}{' '}
+            <span className="text-muted-foreground font-normal text-xs">
+              {tr.optional}
+            </span>
           </Label>
           <Input
             id="endDate"
             name="endDate"
             type="date"
             defaultValue={medication.endDate}
-            className={cn(state.errors?.endDate && "border-destructive")}
+            className={cn(state.errors?.endDate && 'border-destructive')}
           />
           {state.errors?.endDate && (
-            <p className="text-xs text-destructive">{state.errors.endDate[0]}</p>
+            <p className="text-xs text-destructive">
+              {state.errors.endDate[0]}
+            </p>
           )}
         </div>
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="instructions">
-          {tr.medications.instructionsLabel}{" "}
-          <span className="text-muted-foreground font-normal text-xs">{tr.optional}</span>
+          {tr.medications.instructionsLabel}{' '}
+          <span className="text-muted-foreground font-normal text-xs">
+            {tr.optional}
+          </span>
         </Label>
         <Textarea
           id="instructions"

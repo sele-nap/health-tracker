@@ -1,16 +1,19 @@
-import type { Metadata } from "next";
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
+import { SettingsForms } from '@/components/settings/SettingsForms';
+import { TwoFactorSection } from '@/components/settings/TwoFactorSection';
+import { auth } from '@/lib/auth';
+import { getT } from '@/lib/locale';
+import type { Metadata } from 'next';
+import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = {
-  title: "Settings",
-  description: "Manage your account and preferences.",
-  openGraph: { title: "Settings · Health Tracker", description: "Manage your account and preferences." },
+  title: 'Settings',
+  description: 'Manage your account and preferences.',
+  openGraph: {
+    title: 'Settings · Health Tracker',
+    description: 'Manage your account and preferences.',
+  },
 };
-import { redirect } from "next/navigation";
-import { SettingsForms } from "@/components/settings/SettingsForms";
-import { TwoFactorSection } from "@/components/settings/TwoFactorSection";
-import { getT } from "@/lib/locale";
 
 export default async function SettingsPage() {
   const [session, tr] = await Promise.all([
@@ -19,7 +22,7 @@ export default async function SettingsPage() {
   ]);
 
   if (!session?.user?.id) {
-    redirect("/login");
+    redirect('/login');
   }
 
   return (
@@ -32,11 +35,13 @@ export default async function SettingsPage() {
       </div>
 
       <SettingsForms
-        currentName={session.user.name ?? ""}
+        currentName={session.user.name ?? ''}
         email={session.user.email}
       />
 
-      <TwoFactorSection twoFactorEnabled={session.user.twoFactorEnabled ?? false} />
+      <TwoFactorSection
+        twoFactorEnabled={session.user.twoFactorEnabled ?? false}
+      />
     </div>
   );
 }

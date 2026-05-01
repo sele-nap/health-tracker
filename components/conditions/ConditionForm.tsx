@@ -1,18 +1,25 @@
-"use client";
+/* eslint-disable @next/next/no-html-link-for-pages */
+'use client';
 
-import { useActionState } from "react";
-import { createCondition, type ConditionState } from "@/server/actions/conditions";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
-import { useLocale } from "@/components/providers/LocaleProvider";
+import { useLocale } from '@/components/providers/LocaleProvider';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
+import {
+  createCondition,
+  type ConditionState,
+} from '@/server/actions/conditions';
+import { useActionState } from 'react';
 
 const initialState: ConditionState = {};
 
 export function ConditionForm() {
   const { tr } = useLocale();
-  const [state, formAction, pending] = useActionState(createCondition, initialState);
+  const [state, formAction, pending] = useActionState(
+    createCondition,
+    initialState,
+  );
 
   return (
     <form action={formAction} className="space-y-6">
@@ -28,7 +35,7 @@ export function ConditionForm() {
           id="name"
           name="name"
           placeholder={tr.conditions.namePlaceholder}
-          className={cn(state.errors?.name && "border-destructive")}
+          className={cn(state.errors?.name && 'border-destructive')}
         />
         {state.errors?.name && (
           <p className="text-xs text-destructive">{state.errors.name[0]}</p>
@@ -37,17 +44,21 @@ export function ConditionForm() {
 
       <div className="space-y-2">
         <Label htmlFor="diagnosedAt">
-          {tr.conditions.diagnosedAtLabel}{" "}
-          <span className="text-muted-foreground font-normal text-xs">{tr.optional}</span>
+          {tr.conditions.diagnosedAtLabel}{' '}
+          <span className="text-muted-foreground font-normal text-xs">
+            {tr.optional}
+          </span>
         </Label>
         <Input
           id="diagnosedAt"
           name="diagnosedAt"
           type="date"
-          className={cn(state.errors?.diagnosedAt && "border-destructive")}
+          className={cn(state.errors?.diagnosedAt && 'border-destructive')}
         />
         {state.errors?.diagnosedAt && (
-          <p className="text-xs text-destructive">{state.errors.diagnosedAt[0]}</p>
+          <p className="text-xs text-destructive">
+            {state.errors.diagnosedAt[0]}
+          </p>
         )}
       </div>
 

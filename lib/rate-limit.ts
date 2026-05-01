@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { prisma } from '@/lib/prisma';
 
 export type RateLimitResult =
   | { limited: false }
@@ -7,7 +7,7 @@ export type RateLimitResult =
 export async function rateLimit(
   key: string,
   limit: number,
-  windowSec: number
+  windowSec: number,
 ): Promise<RateLimitResult> {
   type Row = { count: number; reset_at: Date };
 
@@ -37,7 +37,7 @@ export async function rateLimit(
 
   if (row.count > limit) {
     const retryAfter = Math.ceil(
-      (new Date(row.reset_at).getTime() - Date.now()) / 1000
+      (new Date(row.reset_at).getTime() - Date.now()) / 1000,
     );
     return { limited: true, retryAfter: Math.max(1, retryAfter) };
   }

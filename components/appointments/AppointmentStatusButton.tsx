@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { useTransition } from "react";
-import { useRouter } from "next/navigation";
-import { updateAppointmentStatus } from "@/server/actions/appointments";
-import { useLocale } from "@/components/providers/LocaleProvider";
+import { useLocale } from '@/components/providers/LocaleProvider';
+import { updateAppointmentStatus } from '@/server/actions/appointments';
+import { useRouter } from 'next/navigation';
+import { useTransition } from 'react';
 
-type Status = "COMPLETED" | "CANCELLED" | "RESCHEDULED" | "UPCOMING";
+type Status = 'COMPLETED' | 'CANCELLED' | 'RESCHEDULED' | 'UPCOMING';
 
 type Action = {
   label: string;
@@ -28,39 +28,39 @@ export function AppointmentStatusButton({
     UPCOMING: [
       {
         label: tr.appointments.markComplete,
-        status: "COMPLETED",
+        status: 'COMPLETED',
         className:
-          "text-xs px-2.5 py-1 rounded-md border border-primary/40 text-primary hover:bg-primary/10 transition-colors",
+          'text-xs px-2.5 py-1 rounded-md border border-primary/40 text-primary hover:bg-primary/10 transition-colors',
       },
       {
         label: tr.appointments.cancelAppt,
-        status: "CANCELLED",
+        status: 'CANCELLED',
         className:
-          "text-xs px-2.5 py-1 rounded-md border border-border text-muted-foreground hover:border-destructive hover:text-destructive transition-colors",
+          'text-xs px-2.5 py-1 rounded-md border border-border text-muted-foreground hover:border-destructive hover:text-destructive transition-colors',
       },
     ],
     COMPLETED: [
       {
         label: tr.appointments.reopen,
-        status: "UPCOMING",
+        status: 'UPCOMING',
         className:
-          "text-xs px-2.5 py-1 rounded-md border border-border text-muted-foreground hover:text-foreground transition-colors",
+          'text-xs px-2.5 py-1 rounded-md border border-border text-muted-foreground hover:text-foreground transition-colors',
       },
     ],
     CANCELLED: [
       {
         label: tr.appointments.reopen,
-        status: "UPCOMING",
+        status: 'UPCOMING',
         className:
-          "text-xs px-2.5 py-1 rounded-md border border-border text-muted-foreground hover:text-foreground transition-colors",
+          'text-xs px-2.5 py-1 rounded-md border border-border text-muted-foreground hover:text-foreground transition-colors',
       },
     ],
     RESCHEDULED: [
       {
         label: tr.appointments.markComplete,
-        status: "COMPLETED",
+        status: 'COMPLETED',
         className:
-          "text-xs px-2.5 py-1 rounded-md border border-primary/40 text-primary hover:bg-primary/10 transition-colors",
+          'text-xs px-2.5 py-1 rounded-md border border-primary/40 text-primary hover:bg-primary/10 transition-colors',
       },
     ],
   };
@@ -83,9 +83,11 @@ export function AppointmentStatusButton({
           key={action.status}
           onClick={() => handleClick(action.status)}
           disabled={pending}
-          className={action.className + (pending ? " opacity-50 cursor-not-allowed" : "")}
+          className={
+            action.className + (pending ? ' opacity-50 cursor-not-allowed' : '')
+          }
         >
-          {pending ? "…" : action.label}
+          {pending ? '…' : action.label}
         </button>
       ))}
     </div>

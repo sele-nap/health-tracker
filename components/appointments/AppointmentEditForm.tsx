@@ -1,22 +1,26 @@
-"use client";
+'use client';
 
-import { useActionState, useTransition } from "react";
-import { useRouter } from "next/navigation";
-import { updateAppointment, deleteAppointment, type AppointmentState } from "@/server/actions/appointments";
-import { SPECIALTIES } from "@/lib/validations/appointments";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { useLocale } from '@/components/providers/LocaleProvider';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { cn } from "@/lib/utils";
-import { useLocale } from "@/components/providers/LocaleProvider";
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { cn } from '@/lib/utils';
+import { SPECIALTIES } from '@/lib/validations/appointments';
+import {
+  deleteAppointment,
+  updateAppointment,
+  type AppointmentState,
+} from '@/server/actions/appointments';
+import { useRouter } from 'next/navigation';
+import { useActionState, useTransition } from 'react';
 
 type AppointmentData = {
   id: string;
@@ -31,7 +35,11 @@ type AppointmentData = {
 
 const initialState: AppointmentState = {};
 
-export function AppointmentEditForm({ appointment }: { appointment: AppointmentData }) {
+export function AppointmentEditForm({
+  appointment,
+}: {
+  appointment: AppointmentData;
+}) {
   const { tr } = useLocale();
   const action = updateAppointment.bind(null, appointment.id);
   const [state, formAction, pending] = useActionState(action, initialState);
@@ -42,7 +50,7 @@ export function AppointmentEditForm({ appointment }: { appointment: AppointmentD
     if (!confirm(tr.appointments.deleteConfirm(appointment.title))) return;
     startDelete(async () => {
       await deleteAppointment(appointment.id);
-      router.push("/appointments");
+      router.push('/appointments');
     });
   }
 
@@ -60,7 +68,7 @@ export function AppointmentEditForm({ appointment }: { appointment: AppointmentD
           id="title"
           name="title"
           defaultValue={appointment.title}
-          className={cn(state.errors?.title && "border-destructive")}
+          className={cn(state.errors?.title && 'border-destructive')}
         />
         {state.errors?.title && (
           <p className="text-xs text-destructive">{state.errors.title[0]}</p>
@@ -70,8 +78,10 @@ export function AppointmentEditForm({ appointment }: { appointment: AppointmentD
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="doctorName">
-            {tr.appointments.doctorLabel}{" "}
-            <span className="text-muted-foreground font-normal text-xs">{tr.optional}</span>
+            {tr.appointments.doctorLabel}{' '}
+            <span className="text-muted-foreground font-normal text-xs">
+              {tr.optional}
+            </span>
           </Label>
           <Input
             id="doctorName"
@@ -82,10 +92,15 @@ export function AppointmentEditForm({ appointment }: { appointment: AppointmentD
 
         <div className="space-y-2">
           <Label htmlFor="specialty">
-            {tr.appointments.specialtyLabel}{" "}
-            <span className="text-muted-foreground font-normal text-xs">{tr.optional}</span>
+            {tr.appointments.specialtyLabel}{' '}
+            <span className="text-muted-foreground font-normal text-xs">
+              {tr.optional}
+            </span>
           </Label>
-          <Select name="specialty" defaultValue={appointment.specialty || undefined}>
+          <Select
+            name="specialty"
+            defaultValue={appointment.specialty || undefined}
+          >
             <SelectTrigger id="specialty" className="w-full">
               <SelectValue placeholder="Select specialty…" />
             </SelectTrigger>
@@ -108,17 +123,21 @@ export function AppointmentEditForm({ appointment }: { appointment: AppointmentD
             name="scheduledAt"
             type="datetime-local"
             defaultValue={appointment.scheduledAt}
-            className={cn(state.errors?.scheduledAt && "border-destructive")}
+            className={cn(state.errors?.scheduledAt && 'border-destructive')}
           />
           {state.errors?.scheduledAt && (
-            <p className="text-xs text-destructive">{state.errors.scheduledAt[0]}</p>
+            <p className="text-xs text-destructive">
+              {state.errors.scheduledAt[0]}
+            </p>
           )}
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="durationMin">
-            {tr.appointments.durationLabel}{" "}
-            <span className="text-muted-foreground font-normal text-xs">{tr.optional}</span>
+            {tr.appointments.durationLabel}{' '}
+            <span className="text-muted-foreground font-normal text-xs">
+              {tr.optional}
+            </span>
           </Label>
           <Input
             id="durationMin"
@@ -126,15 +145,17 @@ export function AppointmentEditForm({ appointment }: { appointment: AppointmentD
             type="number"
             min={1}
             max={480}
-            defaultValue={appointment.durationMin ?? ""}
+            defaultValue={appointment.durationMin ?? ''}
           />
         </div>
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="location">
-          {tr.appointments.locationLabel}{" "}
-          <span className="text-muted-foreground font-normal text-xs">{tr.optional}</span>
+          {tr.appointments.locationLabel}{' '}
+          <span className="text-muted-foreground font-normal text-xs">
+            {tr.optional}
+          </span>
         </Label>
         <Input
           id="location"
@@ -145,8 +166,10 @@ export function AppointmentEditForm({ appointment }: { appointment: AppointmentD
 
       <div className="space-y-2">
         <Label htmlFor="purpose">
-          {tr.appointments.purposeLabel}{" "}
-          <span className="text-muted-foreground font-normal text-xs">{tr.optional}</span>
+          {tr.appointments.purposeLabel}{' '}
+          <span className="text-muted-foreground font-normal text-xs">
+            {tr.optional}
+          </span>
         </Label>
         <Textarea
           id="purpose"

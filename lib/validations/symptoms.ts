@@ -1,7 +1,10 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const symptomLogSchema = z.object({
-  loggedAt: z.string().min(1, "Date is required").refine((v) => !isNaN(Date.parse(v)), "Invalid date"),
+  loggedAt: z
+    .string()
+    .min(1, 'Date is required')
+    .refine((v) => !isNaN(Date.parse(v)), 'Invalid date'),
   overallMood: z.coerce.number().int().min(1).max(10).optional(),
   energyLevel: z.coerce.number().int().min(1).max(10).optional(),
   sleepHours: z.coerce.number().min(0).max(24).optional(),

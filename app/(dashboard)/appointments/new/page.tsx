@@ -1,11 +1,14 @@
-import type { Metadata } from "next";
-import { getT } from "@/lib/locale";
-import { AppointmentForm } from "@/components/appointments/AppointmentForm";
+import { AppointmentForm } from '@/components/appointments/AppointmentForm';
+import { getT } from '@/lib/locale';
+import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: "New appointment",
-  description: "Schedule a new medical appointment.",
-  openGraph: { title: "New appointment · Health Tracker", description: "Schedule a new medical appointment." },
+  title: 'New appointment',
+  description: 'Schedule a new medical appointment.',
+  openGraph: {
+    title: 'New appointment · Health Tracker',
+    description: 'Schedule a new medical appointment.',
+  },
 };
 
 export default async function NewAppointmentPage() {
@@ -17,7 +20,9 @@ export default async function NewAppointmentPage() {
         <h1 className="font-heading italic text-3xl text-foreground">
           {tr.appointments.newTitle} 🌿
         </h1>
-        <p className="text-muted-foreground mt-1">{tr.appointments.newSubtitle}</p>
+        <p className="text-muted-foreground mt-1">
+          {tr.appointments.newSubtitle}
+        </p>
       </div>
 
       <AppointmentForm />

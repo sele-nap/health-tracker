@@ -1,27 +1,30 @@
-import type { Metadata } from "next";
-import Link from "next/link";
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
-
-export const metadata: Metadata = {
-  title: "Appointments",
-  description: "Schedule and review your medical appointments.",
-  openGraph: { title: "Appointments · Health Tracker", description: "Schedule and review your medical appointments." },
-};
-import { prisma } from "@/lib/prisma";
-import { decryptIfPresent } from "@/lib/crypto";
-import { redirect } from "next/navigation";
-import { Plus, CalendarDays, List } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { AppointmentStatusButton } from "@/components/appointments/AppointmentStatusButton";
-import { AppointmentSummaryForm } from "@/components/appointments/AppointmentSummaryForm";
 import {
   AppointmentCalendar,
   type CalendarAppointment,
-} from "@/components/appointments/AppointmentCalendar";
-import { getT } from "@/lib/locale";
-import { cn } from "@/lib/utils";
+} from '@/components/appointments/AppointmentCalendar';
+import { AppointmentStatusButton } from '@/components/appointments/AppointmentStatusButton';
+import { AppointmentSummaryForm } from '@/components/appointments/AppointmentSummaryForm';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { auth } from '@/lib/auth';
+import { decryptIfPresent } from '@/lib/crypto';
+import { getT } from '@/lib/locale';
+import { prisma } from '@/lib/prisma';
+import { cn } from '@/lib/utils';
+import { CalendarDays, List, Plus } from 'lucide-react';
+import type { Metadata } from 'next';
+import { headers } from 'next/headers';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
+
+export const metadata: Metadata = {
+  title: 'Appointments',
+  description: 'Schedule and review your medical appointments.',
+  openGraph: {
+    title: 'Appointments · Health Tracker',
+    description: 'Schedule and review your medical appointments.',
+  },
+};
 
 export default async function AppointmentsPage({
   searchParams,
@@ -36,11 +39,11 @@ export default async function AppointmentsPage({
   ]);
 
   if (!session?.user?.id) {
-    redirect("/login");
+    redirect('/login');
   }
 
-  const view = params.view === "calendar" ? "calendar" : "list";
-  const doctorQuery = params.doctor?.trim() ?? "";
+  const view = params.view === 'calendar' ? 'calendar' : 'list';
+  const doctorQuery = params.doctor?.trim() ?? '';
 
   const STATUS_LABELS = {
     UPCOMING: tr.appointments.statusUpcoming,
@@ -49,27 +52,27 @@ export default async function AppointmentsPage({
     RESCHEDULED: tr.appointments.statusRescheduled,
   };
 
-  const STATUS_VARIANTS: Record<string, "default" | "secondary" | "outline"> = {
-    UPCOMING: "default",
-    COMPLETED: "secondary",
-    CANCELLED: "outline",
-    RESCHEDULED: "secondary",
+  const STATUS_VARIANTS: Record<string, 'default' | 'secondary' | 'outline'> = {
+    UPCOMING: 'default',
+    COMPLETED: 'secondary',
+    CANCELLED: 'outline',
+    RESCHEDULED: 'secondary',
   };
 
   function formatDateTime(date: Date) {
     return date.toLocaleDateString(tr.dateLocale, {
-      weekday: "short",
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
     });
   }
 
   const appointments = await prisma.appointment.findMany({
     where: { userId: session.user.id },
-    orderBy: { scheduledAt: "desc" },
+    orderBy: { scheduledAt: 'desc' },
     take: 200,
   });
 
@@ -82,12 +85,12 @@ export default async function AppointmentsPage({
 
   const filtered = doctorQuery
     ? decrypted.filter((a) =>
-        a.doctorName?.toLowerCase().includes(doctorQuery.toLowerCase())
+        a.doctorName?.toLowerCase().includes(doctorQuery.toLowerCase()),
       )
     : decrypted;
 
-  const upcoming = filtered.filter((a) => a.status === "UPCOMING");
-  const past = filtered.filter((a) => a.status !== "UPCOMING");
+  const upcoming = filtered.filter((a) => a.status === 'UPCOMING');
+  const past = filtered.filter((a) => a.status !== 'UPCOMING');
 
   const calendarAppts: CalendarAppointment[] = filtered.map((a) => ({
     id: a.id,
@@ -112,28 +115,40 @@ export default async function AppointmentsPage({
         <div className="flex items-center gap-2 shrink-0">
           <div className="flex rounded-lg border border-border overflow-hidden text-sm">
             <Link
-              href={doctorQuery ? `/appointments?doctor=${encodeURIComponent(doctorQuery)}` : "/appointments"}
+              href={
+                doctorQuery
+                  ? `/appointments?doctor=${encodeURIComponent(doctorQuery)}`
+                  : '/appointments'
+              }
               className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 transition-colors",
-                view === "list"
-                  ? "bg-accent text-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                'flex items-center gap-1.5 px-3 py-1.5 transition-colors',
+                view === 'list'
+                  ? 'bg-accent text-foreground'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-accent/50',
               )}
             >
               <List size={14} />
-              <span className="hidden sm:inline">{tr.appointments.viewList}</span>
+              <span className="hidden sm:inline">
+                {tr.appointments.viewList}
+              </span>
             </Link>
             <Link
-              href={doctorQuery ? `/appointments?view=calendar&doctor=${encodeURIComponent(doctorQuery)}` : "/appointments?view=calendar"}
+              href={
+                doctorQuery
+                  ? `/appointments?view=calendar&doctor=${encodeURIComponent(doctorQuery)}`
+                  : '/appointments?view=calendar'
+              }
               className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 border-l border-border transition-colors",
-                view === "calendar"
-                  ? "bg-accent text-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                'flex items-center gap-1.5 px-3 py-1.5 border-l border-border transition-colors',
+                view === 'calendar'
+                  ? 'bg-accent text-foreground'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-accent/50',
               )}
             >
               <CalendarDays size={14} />
-              <span className="hidden sm:inline">{tr.appointments.viewCalendar}</span>
+              <span className="hidden sm:inline">
+                {tr.appointments.viewCalendar}
+              </span>
             </Link>
           </div>
 
@@ -153,7 +168,10 @@ export default async function AppointmentsPage({
       >
         <input type="hidden" name="view" value={view} />
         <div className="flex flex-col gap-1 flex-1 min-w-48">
-          <label htmlFor="doctor-search" className="text-xs text-muted-foreground">
+          <label
+            htmlFor="doctor-search"
+            className="text-xs text-muted-foreground"
+          >
             {tr.appointments.searchDoctor}
           </label>
           <input
@@ -174,7 +192,11 @@ export default async function AppointmentsPage({
           </button>
           {doctorQuery && (
             <Link
-              href={view === "calendar" ? "/appointments?view=calendar" : "/appointments"}
+              href={
+                view === 'calendar'
+                  ? '/appointments?view=calendar'
+                  : '/appointments'
+              }
               className="h-9 px-4 inline-flex items-center rounded-md border border-border text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               {tr.clearFilter}
@@ -183,7 +205,7 @@ export default async function AppointmentsPage({
         </div>
       </form>
 
-      {view === "calendar" ? (
+      {view === 'calendar' ? (
         <Card>
           <CardContent className="pt-6 pb-6">
             {filtered.length === 0 ? (
@@ -234,8 +256,11 @@ export default async function AppointmentsPage({
                 <AppointmentCard
                   key={appt.id}
                   appointment={appt}
-                  statusLabel={STATUS_LABELS[appt.status as keyof typeof STATUS_LABELS] ?? appt.status.toLowerCase()}
-                  statusVariant={STATUS_VARIANTS[appt.status] ?? "secondary"}
+                  statusLabel={
+                    STATUS_LABELS[appt.status as keyof typeof STATUS_LABELS] ??
+                    appt.status.toLowerCase()
+                  }
+                  statusVariant={STATUS_VARIANTS[appt.status] ?? 'secondary'}
                   formattedDate={formatDateTime(appt.scheduledAt)}
                   editLabel={tr.appointments.edit}
                 />
@@ -252,8 +277,11 @@ export default async function AppointmentsPage({
                 <AppointmentCard
                   key={appt.id}
                   appointment={appt}
-                  statusLabel={STATUS_LABELS[appt.status as keyof typeof STATUS_LABELS] ?? appt.status.toLowerCase()}
-                  statusVariant={STATUS_VARIANTS[appt.status] ?? "secondary"}
+                  statusLabel={
+                    STATUS_LABELS[appt.status as keyof typeof STATUS_LABELS] ??
+                    appt.status.toLowerCase()
+                  }
+                  statusVariant={STATUS_VARIANTS[appt.status] ?? 'secondary'}
                   formattedDate={formatDateTime(appt.scheduledAt)}
                   editLabel={tr.appointments.edit}
                 />
@@ -288,7 +316,7 @@ function AppointmentCard({
 }: {
   appointment: Appointment;
   statusLabel: string;
-  statusVariant: "default" | "secondary" | "outline";
+  statusVariant: 'default' | 'secondary' | 'outline';
   formattedDate: string;
   editLabel: string;
 }) {
@@ -296,7 +324,9 @@ function AppointmentCard({
     <Card>
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between gap-3">
-          <CardTitle className="font-heading italic text-lg leading-tight">{a.title}</CardTitle>
+          <CardTitle className="font-heading italic text-lg leading-tight">
+            {a.title}
+          </CardTitle>
           <div className="flex items-center gap-2 shrink-0">
             <Badge variant={statusVariant}>{statusLabel}</Badge>
           </div>
@@ -319,9 +349,15 @@ function AppointmentCard({
           </p>
         )}
         <div className="pt-2 flex flex-wrap items-center gap-4">
-          <AppointmentStatusButton appointmentId={a.id} currentStatus={a.status} />
-          {a.status === "COMPLETED" && (
-            <AppointmentSummaryForm appointmentId={a.id} existingSummary={a.summary} />
+          <AppointmentStatusButton
+            appointmentId={a.id}
+            currentStatus={a.status}
+          />
+          {a.status === 'COMPLETED' && (
+            <AppointmentSummaryForm
+              appointmentId={a.id}
+              existingSummary={a.summary}
+            />
           )}
           <a
             href={`/appointments/${a.id}/edit`}

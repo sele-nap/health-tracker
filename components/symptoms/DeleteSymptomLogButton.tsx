@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useTransition } from "react";
-import { deleteSymptomLog } from "@/server/actions/symptoms";
-import { useLocale } from "@/components/providers/LocaleProvider";
+import { useLocale } from '@/components/providers/LocaleProvider';
+import { deleteSymptomLog } from '@/server/actions/symptoms';
+import { useTransition } from 'react';
 
 export function DeleteSymptomLogButton({ logId }: { logId: string }) {
   const { tr } = useLocale();

@@ -1,12 +1,12 @@
-import type { Metadata } from "next";
-import Link from "next/link";
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { notFound, redirect } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { SymptomDefinitionManager } from "@/components/conditions/SymptomDefinitionManager";
-import { getT } from "@/lib/locale";
+import { SymptomDefinitionManager } from '@/components/conditions/SymptomDefinitionManager';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { auth } from '@/lib/auth';
+import { getT } from '@/lib/locale';
+import { prisma } from '@/lib/prisma';
+import type { Metadata } from 'next';
+import { headers } from 'next/headers';
+import Link from 'next/link';
+import { notFound, redirect } from 'next/navigation';
 
 export async function generateMetadata({
   params,
@@ -15,13 +15,19 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session?.user?.id) return { title: "Health Tracker" };
-  const cond = await prisma.userCondition.findUnique({ where: { id, userId: session.user.id }, select: { name: true } });
-  const title = cond ? cond.name : "Condition";
+  if (!session?.user?.id) return { title: 'Health Tracker' };
+  const cond = await prisma.userCondition.findUnique({
+    where: { id, userId: session.user.id },
+    select: { name: true },
+  });
+  const title = cond ? cond.name : 'Condition';
   return {
     title,
     description: `Manage custom symptoms for ${title}.`,
-    openGraph: { title: `${title} · Health Tracker`, description: `Manage custom symptoms for ${title}.` },
+    openGraph: {
+      title: `${title} · Health Tracker`,
+      description: `Manage custom symptoms for ${title}.`,
+    },
   };
 }
 
@@ -37,14 +43,14 @@ export default async function ConditionDetailPage({
   ]);
 
   if (!session?.user?.id) {
-    redirect("/login");
+    redirect('/login');
   }
 
   const condition = await prisma.userCondition.findUnique({
     where: { id },
     include: {
       symptomDefinitions: {
-        orderBy: { name: "asc" },
+        orderBy: { name: 'asc' },
         select: { id: true, name: true, unit: true },
       },
     },
@@ -56,8 +62,8 @@ export default async function ConditionDetailPage({
 
   function formatDate(date: Date) {
     return date.toLocaleDateString(tr.dateLocale, {
-      month: "long",
-      year: "numeric",
+      month: 'long',
+      year: 'numeric',
     });
   }
 
@@ -87,7 +93,9 @@ export default async function ConditionDetailPage({
           <CardTitle className="font-heading italic text-lg">
             {ctr.customSymptoms}
           </CardTitle>
-          <p className="text-sm text-muted-foreground">{ctr.customSymptomsDesc}</p>
+          <p className="text-sm text-muted-foreground">
+            {ctr.customSymptomsDesc}
+          </p>
         </CardHeader>
         <CardContent>
           <SymptomDefinitionManager

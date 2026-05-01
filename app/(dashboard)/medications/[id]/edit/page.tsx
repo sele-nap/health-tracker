@@ -1,9 +1,11 @@
-import type { Metadata } from "next";
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { decryptIfPresent } from "@/lib/crypto";
-import { notFound, redirect } from "next/navigation";
+import { MedicationEditForm } from '@/components/medications/MedicationEditForm';
+import { auth } from '@/lib/auth';
+import { decryptIfPresent } from '@/lib/crypto';
+import { getT } from '@/lib/locale';
+import { prisma } from '@/lib/prisma';
+import type { Metadata } from 'next';
+import { headers } from 'next/headers';
+import { notFound, redirect } from 'next/navigation';
 
 export async function generateMetadata({
   params,
@@ -12,16 +14,17 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session?.user?.id) return { title: "Health Tracker" };
-  const med = await prisma.medication.findUnique({ where: { id, userId: session.user.id }, select: { name: true } });
-  const title = med ? `Edit ${med.name}` : "Edit medication";
+  if (!session?.user?.id) return { title: 'Health Tracker' };
+  const med = await prisma.medication.findUnique({
+    where: { id, userId: session.user.id },
+    select: { name: true },
+  });
+  const title = med ? `Edit ${med.name}` : 'Edit medication';
   return {
     title,
     openGraph: { title: `${title} · Health Tracker` },
   };
 }
-import { MedicationEditForm } from "@/components/medications/MedicationEditForm";
-import { getT } from "@/lib/locale";
 
 export default async function EditMedicationPage({
   params,
@@ -35,7 +38,7 @@ export default async function EditMedicationPage({
   ]);
 
   if (!session?.user?.id) {
-    redirect("/login");
+    redirect('/login');
   }
 
   const medication = await prisma.medication.findUnique({
@@ -58,7 +61,7 @@ export default async function EditMedicationPage({
   }
 
   function dateStr(d: Date | null) {
-    if (!d) return "";
+    if (!d) return '';
     return d.toISOString().slice(0, 10);
   }
 
@@ -66,11 +69,11 @@ export default async function EditMedicationPage({
     id: medication.id,
     name: medication.name,
     dosage: medication.dosage,
-    form: medication.form ?? "",
-    prescribedBy: decryptIfPresent(medication.prescribedBy) ?? "",
+    form: medication.form ?? '',
+    prescribedBy: decryptIfPresent(medication.prescribedBy) ?? '',
     startDate: dateStr(medication.startDate),
     endDate: dateStr(medication.endDate),
-    instructions: decryptIfPresent(medication.instructions) ?? "",
+    instructions: decryptIfPresent(medication.instructions) ?? '',
   };
 
   return (

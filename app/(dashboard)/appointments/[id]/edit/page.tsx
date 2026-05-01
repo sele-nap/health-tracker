@@ -1,13 +1,13 @@
-import type { Metadata } from "next";
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { decryptIfPresent } from "@/lib/crypto";
-import { notFound, redirect } from "next/navigation";
-import { AppointmentEditForm } from "@/components/appointments/AppointmentEditForm";
-import { AppointmentNotesSection } from "@/components/appointments/AppointmentNotesSection";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getT } from "@/lib/locale";
+import { AppointmentEditForm } from '@/components/appointments/AppointmentEditForm';
+import { AppointmentNotesSection } from '@/components/appointments/AppointmentNotesSection';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { auth } from '@/lib/auth';
+import { decryptIfPresent } from '@/lib/crypto';
+import { getT } from '@/lib/locale';
+import { prisma } from '@/lib/prisma';
+import type { Metadata } from 'next';
+import { headers } from 'next/headers';
+import { notFound, redirect } from 'next/navigation';
 
 export async function generateMetadata({
   params,
@@ -16,13 +16,19 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session?.user?.id) return { title: "Health Tracker" };
-  const appt = await prisma.appointment.findUnique({ where: { id, userId: session.user.id }, select: { title: true } });
-  const title = appt ? appt.title : "Edit appointment";
+  if (!session?.user?.id) return { title: 'Health Tracker' };
+  const appt = await prisma.appointment.findUnique({
+    where: { id, userId: session.user.id },
+    select: { title: true },
+  });
+  const title = appt ? appt.title : 'Edit appointment';
   return {
     title,
-    description: "Edit appointment details and notes.",
-    openGraph: { title: `${title} · Health Tracker`, description: "Edit appointment details and notes." },
+    description: 'Edit appointment details and notes.',
+    openGraph: {
+      title: `${title} · Health Tracker`,
+      description: 'Edit appointment details and notes.',
+    },
   };
 }
 
@@ -38,7 +44,7 @@ export default async function EditAppointmentPage({
   ]);
 
   if (!session?.user?.id) {
-    redirect("/login");
+    redirect('/login');
   }
 
   const appt = await prisma.appointment.findUnique({
@@ -54,7 +60,7 @@ export default async function EditAppointmentPage({
       durationMin: true,
       purpose: true,
       notes: {
-        orderBy: { createdAt: "asc" },
+        orderBy: { createdAt: 'asc' },
         select: { id: true, content: true, createdAt: true },
       },
     },
@@ -73,12 +79,12 @@ export default async function EditAppointmentPage({
   const data = {
     id: appt.id,
     title: appt.title,
-    doctorName: decryptIfPresent(appt.doctorName) ?? "",
-    specialty: appt.specialty ?? "",
-    location: decryptIfPresent(appt.location) ?? "",
+    doctorName: decryptIfPresent(appt.doctorName) ?? '',
+    specialty: appt.specialty ?? '',
+    location: decryptIfPresent(appt.location) ?? '',
     scheduledAt: toDatetimeLocal(appt.scheduledAt),
     durationMin: appt.durationMin,
-    purpose: appt.purpose ?? "",
+    purpose: appt.purpose ?? '',
   };
 
   const notes = appt.notes.map((n) => ({

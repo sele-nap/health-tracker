@@ -1,20 +1,23 @@
-import type { Metadata } from "next";
-import Link from "next/link";
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
+import { MedicationChecklist } from '@/components/medications/MedicationChecklist';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { auth } from '@/lib/auth';
+import { getT } from '@/lib/locale';
+import { prisma } from '@/lib/prisma';
+import { moodEmoji } from '@/lib/utils';
+import { Activity, CalendarDays, Pill, TrendingUp } from 'lucide-react';
+import type { Metadata } from 'next';
+import { headers } from 'next/headers';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = {
-  title: "Dashboard",
-  description: "Overview of your health at a glance.",
-  openGraph: { title: "Dashboard · Health Tracker", description: "Overview of your health at a glance." },
+  title: 'Dashboard',
+  description: 'Overview of your health at a glance.',
+  openGraph: {
+    title: 'Dashboard · Health Tracker',
+    description: 'Overview of your health at a glance.',
+  },
 };
-import { prisma } from "@/lib/prisma";
-import { redirect } from "next/navigation";
-import { CalendarDays, Pill, Activity, TrendingUp } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MedicationChecklist } from "@/components/medications/MedicationChecklist";
-import { getT } from "@/lib/locale";
-import { moodEmoji } from "@/lib/utils";
 
 export default async function DashboardPage() {
   const [session, tr] = await Promise.all([
@@ -23,7 +26,7 @@ export default async function DashboardPage() {
   ]);
 
   if (!session?.user?.id) {
-    redirect("/login");
+    redirect('/login');
   }
 
   const now = new Date();
@@ -31,7 +34,9 @@ export default async function DashboardPage() {
   const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
 
   const sevenDaysAgo = new Date(todayStart.getTime() - 7 * 24 * 60 * 60 * 1000);
-  const thirtyDaysAgo = new Date(todayStart.getTime() - 30 * 24 * 60 * 60 * 1000);
+  const thirtyDaysAgo = new Date(
+    todayStart.getTime() - 30 * 24 * 60 * 60 * 1000,
+  );
 
   const [todayLog, activeMedsData, nextAppointment, recentLogs, streakLogs] =
     await Promise.all([
@@ -44,7 +49,7 @@ export default async function DashboardPage() {
       }),
       prisma.medication.findMany({
         where: { userId: session.user.id, isActive: true },
-        orderBy: { name: "asc" },
+        orderBy: { name: 'asc' },
         select: {
           id: true,
           name: true,
@@ -60,10 +65,10 @@ export default async function DashboardPage() {
       prisma.appointment.findFirst({
         where: {
           userId: session.user.id,
-          status: "UPCOMING",
+          status: 'UPCOMING',
           scheduledAt: { gte: now },
         },
-        orderBy: { scheduledAt: "asc" },
+        orderBy: { scheduledAt: 'asc' },
         select: { scheduledAt: true, title: true },
       }),
       prisma.symptomLog.findMany({
@@ -80,7 +85,7 @@ export default async function DashboardPage() {
           loggedAt: { gte: thirtyDaysAgo },
         },
         select: { loggedAt: true },
-        orderBy: { loggedAt: "desc" },
+        orderBy: { loggedAt: 'desc' },
       }),
     ]);
 
@@ -91,10 +96,16 @@ export default async function DashboardPage() {
     name: m.name,
     dosage: m.dosage,
     form: m.form,
-    todayStatus: (m.logs[0]?.status ?? null) as "TAKEN" | "SKIPPED" | "PENDING" | null,
+    todayStatus: (m.logs[0]?.status ?? null) as
+      | 'TAKEN'
+      | 'SKIPPED'
+      | 'PENDING'
+      | null,
   }));
 
-  const takenToday = checklistMeds.filter((m) => m.todayStatus === "TAKEN").length;
+  const takenToday = checklistMeds.filter(
+    (m) => m.todayStatus === 'TAKEN',
+  ).length;
 
   const avgMood =
     recentLogs.length > 0
@@ -106,7 +117,7 @@ export default async function DashboardPage() {
     streakLogs.map((l) => {
       const d = l.loggedAt;
       return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
-    })
+    }),
   );
 
   let streak = 0;
@@ -129,10 +140,10 @@ export default async function DashboardPage() {
 
   function formatDate() {
     return new Date().toLocaleDateString(tr.dateLocale, {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
     });
   }
 
@@ -142,7 +153,10 @@ export default async function DashboardPage() {
     if (days === 0) return tr.dashboard.appointmentToday;
     if (days === 1) return tr.dashboard.appointmentTomorrow;
     if (days <= 7) return tr.dashboard.appointmentDays(days);
-    return date.toLocaleDateString(tr.dateLocale, { month: "short", day: "numeric" });
+    return date.toLocaleDateString(tr.dateLocale, {
+      month: 'short',
+      day: 'numeric',
+    });
   }
 
   return (
@@ -166,7 +180,7 @@ export default async function DashboardPage() {
             {todayLog ? (
               <>
                 <p className="text-2xl font-heading italic text-foreground">
-                  {todayLog.overallMood ? moodEmoji(todayLog.overallMood) : "✓"}
+                  {todayLog.overallMood ? moodEmoji(todayLog.overallMood) : '✓'}
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
                   {todayLog.overallMood
@@ -176,14 +190,18 @@ export default async function DashboardPage() {
               </>
             ) : (
               <>
-                <p className="text-2xl font-heading italic text-foreground">—</p>
+                <p className="text-2xl font-heading italic text-foreground">
+                  —
+                </p>
                 <p className="text-xs text-muted-foreground mt-1">
                   {tr.dashboard.notYetLogged}
                 </p>
               </>
             )}
             {streak > 0 && (
-              <p className="text-xs text-primary mt-2">{tr.dashboard.streak(streak)}</p>
+              <p className="text-xs text-primary mt-2">
+                {tr.dashboard.streak(streak)}
+              </p>
             )}
           </CardContent>
         </Card>
@@ -197,10 +215,12 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-heading italic text-foreground">
-              {activeMeds === 0 ? "—" : `${takenToday}/${activeMeds}`}
+              {activeMeds === 0 ? '—' : `${takenToday}/${activeMeds}`}
             </p>
             <p className="text-xs text-muted-foreground mt-1">
-              {activeMeds === 0 ? tr.dashboard.noneActive : tr.dashboard.takenToday}
+              {activeMeds === 0
+                ? tr.dashboard.noneActive
+                : tr.dashboard.takenToday}
             </p>
           </CardContent>
         </Card>
@@ -224,7 +244,9 @@ export default async function DashboardPage() {
               </>
             ) : (
               <>
-                <p className="text-2xl font-heading italic text-foreground">—</p>
+                <p className="text-2xl font-heading italic text-foreground">
+                  —
+                </p>
                 <p className="text-xs text-muted-foreground mt-1">
                   {tr.dashboard.noneScheduled}
                 </p>
@@ -252,7 +274,9 @@ export default async function DashboardPage() {
               </>
             ) : (
               <>
-                <p className="text-2xl font-heading italic text-foreground">—</p>
+                <p className="text-2xl font-heading italic text-foreground">
+                  —
+                </p>
                 <p className="text-xs text-muted-foreground mt-1">
                   {tr.dashboard.noDataYet}
                 </p>
@@ -292,7 +316,7 @@ export default async function DashboardPage() {
           <CardContent>
             {activeMeds === 0 ? (
               <p className="text-sm text-muted-foreground">
-                {tr.dashboard.noMeds}{" "}
+                {tr.dashboard.noMeds}{' '}
                 <Link
                   href="/medications/new"
                   className="text-primary underline underline-offset-4"

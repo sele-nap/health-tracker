@@ -1,5 +1,5 @@
-import Link from "next/link";
-import { getT } from "@/lib/locale";
+import { getT } from '@/lib/locale';
+import Link from 'next/link';
 
 export default async function NotFound() {
   const tr = await getT();
@@ -12,7 +12,9 @@ export default async function NotFound() {
           <h1 className="font-heading italic text-3xl text-foreground">
             {tr.notFound.title}
           </h1>
-          <p className="text-muted-foreground text-sm">{tr.notFound.description}</p>
+          <p className="text-muted-foreground text-sm">
+            {tr.notFound.description}
+          </p>
         </div>
         <Link
           href="/"

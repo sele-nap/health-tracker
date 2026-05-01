@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useTransition } from "react";
-import { toggleMedicationActive } from "@/server/actions/medications";
-import { useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
-import { useLocale } from "@/components/providers/LocaleProvider";
+import { useLocale } from '@/components/providers/LocaleProvider';
+import { cn } from '@/lib/utils';
+import { toggleMedicationActive } from '@/server/actions/medications';
+import { useRouter } from 'next/navigation';
+import { useTransition } from 'react';
 
 type Props = {
   medicationId: string;
@@ -27,16 +27,22 @@ export function ToggleActiveButton({ medicationId, isActive }: Props) {
     <button
       onClick={handleClick}
       disabled={pending}
-      aria-label={isActive ? tr.medications.deactivate : tr.medications.activate}
+      aria-label={
+        isActive ? tr.medications.deactivate : tr.medications.activate
+      }
       className={cn(
-        "text-xs px-2.5 py-1 rounded-md border transition-colors",
+        'text-xs px-2.5 py-1 rounded-md border transition-colors',
         isActive
-          ? "border-border text-muted-foreground hover:border-destructive hover:text-destructive"
-          : "border-primary/40 text-primary hover:bg-primary/10",
-        pending && "opacity-50 cursor-not-allowed"
+          ? 'border-border text-muted-foreground hover:border-destructive hover:text-destructive'
+          : 'border-primary/40 text-primary hover:bg-primary/10',
+        pending && 'opacity-50 cursor-not-allowed',
       )}
     >
-      {pending ? "…" : isActive ? tr.medications.deactivate : tr.medications.activate}
+      {pending
+        ? '…'
+        : isActive
+          ? tr.medications.deactivate
+          : tr.medications.activate}
     </button>
   );
 }

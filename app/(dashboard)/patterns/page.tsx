@@ -1,20 +1,27 @@
-import type { Metadata } from "next";
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
+import {
+  SleepChart,
+  WellbeingChart,
+  type ChartDataPoint,
+} from '@/components/patterns/HealthCharts';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { auth } from '@/lib/auth';
+import { computeCorrelations } from '@/lib/correlations';
+import { en, fr } from '@/lib/i18n';
+import { getLocale } from '@/lib/locale';
+import { prisma } from '@/lib/prisma';
+import { cn } from '@/lib/utils';
+import type { Metadata } from 'next';
+import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = {
-  title: "Trends",
-  description: "Visualize your health data and spot correlations.",
-  openGraph: { title: "Trends · Health Tracker", description: "Visualize your health data and spot correlations." },
+  title: 'Trends',
+  description: 'Visualize your health data and spot correlations.',
+  openGraph: {
+    title: 'Trends · Health Tracker',
+    description: 'Visualize your health data and spot correlations.',
+  },
 };
-import { prisma } from "@/lib/prisma";
-import { redirect } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { WellbeingChart, SleepChart, type ChartDataPoint } from "@/components/patterns/HealthCharts";
-import { en, fr } from "@/lib/i18n";
-import { getLocale } from "@/lib/locale";
-import { computeCorrelations } from "@/lib/correlations";
-import { cn } from "@/lib/utils";
 
 function avg(values: (number | null)[]): string | null {
   const nums = values.filter((v): v is number => v !== null);
@@ -27,10 +34,10 @@ export default async function PatternsPage() {
     auth.api.getSession({ headers: await headers() }),
     getLocale(),
   ]);
-  const tr = locale === "fr" ? fr : en;
+  const tr = locale === 'fr' ? fr : en;
 
   if (!session?.user?.id) {
-    redirect("/login");
+    redirect('/login');
   }
 
   const thirtyDaysAgo = new Date();
@@ -41,7 +48,7 @@ export default async function PatternsPage() {
       userId: session.user.id,
       loggedAt: { gte: thirtyDaysAgo },
     },
-    orderBy: { loggedAt: "asc" },
+    orderBy: { loggedAt: 'asc' },
     select: {
       loggedAt: true,
       overallMood: true,
@@ -55,7 +62,10 @@ export default async function PatternsPage() {
   const correlations = computeCorrelations(logs, locale);
 
   function shortDate(date: Date) {
-    return date.toLocaleDateString(tr.dateLocale, { month: "short", day: "numeric" });
+    return date.toLocaleDateString(tr.dateLocale, {
+      month: 'short',
+      day: 'numeric',
+    });
   }
 
   const chartData: ChartDataPoint[] = logs.map((log) => ({
@@ -104,7 +114,9 @@ export default async function PatternsPage() {
           <Card key={s.label}>
             <CardContent className="pt-4 pb-4">
               <p className="text-xs text-muted-foreground">{s.label}</p>
-              <p className="font-heading italic text-2xl mt-1">{s.value ?? "—"}</p>
+              <p className="font-heading italic text-2xl mt-1">
+                {s.value ?? '—'}
+              </p>
             </CardContent>
           </Card>
         ))}
@@ -143,18 +155,23 @@ export default async function PatternsPage() {
         </CardHeader>
         <CardContent>
           {correlations.length === 0 ? (
-            <p className="text-sm text-muted-foreground">{tr.patterns.correlationsEmpty}</p>
+            <p className="text-sm text-muted-foreground">
+              {tr.patterns.correlationsEmpty}
+            </p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {correlations.map((insight, i) => (
                 <div
                   key={i}
                   className={cn(
-                    "rounded-xl border px-4 py-3 space-y-1.5",
-                    insight.impact === "positive" && "border-primary/30 bg-primary/5",
-                    insight.impact === "alert" && "border-amber-500/30 bg-amber-500/5",
-                    insight.impact === "negative" && "border-destructive/30 bg-destructive/5",
-                    insight.impact === "info" && "border-border bg-muted/20"
+                    'rounded-xl border px-4 py-3 space-y-1.5',
+                    insight.impact === 'positive' &&
+                      'border-primary/30 bg-primary/5',
+                    insight.impact === 'alert' &&
+                      'border-amber-500/30 bg-amber-500/5',
+                    insight.impact === 'negative' &&
+                      'border-destructive/30 bg-destructive/5',
+                    insight.impact === 'info' && 'border-border bg-muted/20',
                   )}
                 >
                   <p className="flex items-center gap-2 text-sm font-medium">
@@ -186,22 +203,22 @@ export default async function PatternsPage() {
               {
                 label: tr.patterns.csvSymptoms,
                 desc: tr.patterns.csvSymptomsDesc,
-                sheet: "symptoms",
+                sheet: 'symptoms',
               },
               {
                 label: tr.patterns.csvMedications,
                 desc: tr.patterns.csvMedicationsDesc,
-                sheet: "medications",
+                sheet: 'medications',
               },
               {
                 label: tr.patterns.csvAppointments,
                 desc: tr.patterns.csvAppointmentsDesc,
-                sheet: "appointments",
+                sheet: 'appointments',
               },
               {
                 label: tr.patterns.csvAdherence,
                 desc: tr.patterns.csvAdherenceDesc,
-                sheet: "adherence",
+                sheet: 'adherence',
               },
             ].map(({ label, desc, sheet }) => (
               <div

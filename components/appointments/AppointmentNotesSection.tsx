@@ -1,13 +1,16 @@
-"use client";
+'use client';
 
-import { useRef, useState, useTransition } from "react";
-import { Trash2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { addAppointmentNote, deleteAppointmentNote } from "@/server/actions/appointmentNotes";
-import { useLocale } from "@/components/providers/LocaleProvider";
-import type { AppointmentNote } from "@/types/appointments";
+import { useLocale } from '@/components/providers/LocaleProvider';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  addAppointmentNote,
+  deleteAppointmentNote,
+} from '@/server/actions/appointmentNotes';
+import type { AppointmentNote } from '@/types/appointments';
+import { Trash2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useRef, useState, useTransition } from 'react';
 
 export type { AppointmentNote };
 
@@ -37,7 +40,7 @@ export function AppointmentNotesSection({
         router.refresh();
       } else {
         setError(
-          result.errors?.content?.[0] ?? result.errors?._form?.[0] ?? "Error"
+          result.errors?.content?.[0] ?? result.errors?._form?.[0] ?? 'Error',
         );
       }
     });
@@ -68,15 +71,17 @@ export function AppointmentNotesSection({
             className="group flex items-start gap-3 px-4 py-3 rounded-lg bg-card border border-border text-sm"
           >
             <div className="flex-1 space-y-1 min-w-0">
-              <p className="text-foreground whitespace-pre-wrap break-words">{note.content}</p>
+              <p className="text-foreground whitespace-pre-wrap break-words">
+                {note.content}
+              </p>
               <p className="text-xs text-muted-foreground">
                 {new Date(note.createdAt).toLocaleDateString(tr.dateLocale, {
-                  weekday: "short",
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
+                  weekday: 'short',
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
                 })}
               </p>
             </div>
@@ -94,11 +99,7 @@ export function AppointmentNotesSection({
 
       <form ref={formRef} onSubmit={handleSubmit} className="space-y-3">
         {error && <p className="text-xs text-destructive">{error}</p>}
-        <Textarea
-          name="content"
-          placeholder={atr.notePlaceholder}
-          rows={3}
-        />
+        <Textarea name="content" placeholder={atr.notePlaceholder} rows={3} />
         <Button type="submit" size="sm" disabled={isPending}>
           {isPending ? tr.saving : atr.addNote}
         </Button>

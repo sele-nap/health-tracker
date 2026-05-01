@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { useActionState, useState } from "react";
-import { updateSymptomLog } from "@/server/actions/symptoms";
-import type { SymptomLogState } from "@/types/actions";
-import type { SymptomDefinitionProp } from "@/types/symptoms";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
-import { useLocale } from "@/components/providers/LocaleProvider";
+import { useLocale } from '@/components/providers/LocaleProvider';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { cn } from '@/lib/utils';
+import { updateSymptomLog } from '@/server/actions/symptoms';
+import type { SymptomLogState } from '@/types/actions';
+import type { SymptomDefinitionProp } from '@/types/symptoms';
+import { useActionState, useState } from 'react';
 
 type SliderFieldProps = {
   id: string;
@@ -21,7 +21,15 @@ type SliderFieldProps = {
   sliderLabels: string[];
 };
 
-function SliderField({ id, name, label, value, onChange, error, sliderLabels }: SliderFieldProps) {
+function SliderField({
+  id,
+  name,
+  label,
+  value,
+  onChange,
+  error,
+  sliderLabels,
+}: SliderFieldProps) {
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
@@ -90,7 +98,7 @@ export function SymptomEditForm({
         init[def.id] = defaultCustomEntries[def.id] ?? 5;
       }
       return init;
-    }
+    },
   );
 
   return (
@@ -108,7 +116,7 @@ export function SymptomEditForm({
           name="loggedAt"
           type="date"
           defaultValue={defaults.loggedAt}
-          className={cn(state.errors?.loggedAt && "border-destructive")}
+          className={cn(state.errors?.loggedAt && 'border-destructive')}
         />
         {state.errors?.loggedAt && (
           <p className="text-xs text-destructive">{state.errors.loggedAt[0]}</p>
@@ -116,14 +124,42 @@ export function SymptomEditForm({
       </div>
 
       <div className="space-y-6">
-        <h2 className="font-heading italic text-lg text-foreground">{tr.symptoms.formTitle}</h2>
-        <SliderField id="overallMood" name="overallMood" label={tr.symptoms.overallMood} value={mood} onChange={setMood} error={state.errors?.overallMood} sliderLabels={tr.symptoms.sliderLabels} />
-        <SliderField id="energyLevel" name="energyLevel" label={tr.symptoms.energyLevel} value={energy} onChange={setEnergy} error={state.errors?.energyLevel} sliderLabels={tr.symptoms.sliderLabels} />
-        <SliderField id="stressLevel" name="stressLevel" label={tr.symptoms.stressLevel} value={stress} onChange={setStress} error={state.errors?.stressLevel} sliderLabels={tr.symptoms.sliderLabels} />
+        <h2 className="font-heading italic text-lg text-foreground">
+          {tr.symptoms.formTitle}
+        </h2>
+        <SliderField
+          id="overallMood"
+          name="overallMood"
+          label={tr.symptoms.overallMood}
+          value={mood}
+          onChange={setMood}
+          error={state.errors?.overallMood}
+          sliderLabels={tr.symptoms.sliderLabels}
+        />
+        <SliderField
+          id="energyLevel"
+          name="energyLevel"
+          label={tr.symptoms.energyLevel}
+          value={energy}
+          onChange={setEnergy}
+          error={state.errors?.energyLevel}
+          sliderLabels={tr.symptoms.sliderLabels}
+        />
+        <SliderField
+          id="stressLevel"
+          name="stressLevel"
+          label={tr.symptoms.stressLevel}
+          value={stress}
+          onChange={setStress}
+          error={state.errors?.stressLevel}
+          sliderLabels={tr.symptoms.sliderLabels}
+        />
       </div>
 
       <div className="space-y-6">
-        <h2 className="font-heading italic text-lg text-foreground">{tr.symptoms.sleep}</h2>
+        <h2 className="font-heading italic text-lg text-foreground">
+          {tr.symptoms.sleep}
+        </h2>
         <div className="space-y-2">
           <Label htmlFor="sleepHours">{tr.symptoms.sleepHours}</Label>
           <Input
@@ -133,15 +169,28 @@ export function SymptomEditForm({
             min={0}
             max={24}
             step={0.5}
-            defaultValue={defaults.sleepHours ?? ""}
+            defaultValue={defaults.sleepHours ?? ''}
             placeholder="e.g. 7.5"
-            className={cn("w-32", state.errors?.sleepHours && "border-destructive")}
+            className={cn(
+              'w-32',
+              state.errors?.sleepHours && 'border-destructive',
+            )}
           />
           {state.errors?.sleepHours && (
-            <p className="text-xs text-destructive">{state.errors.sleepHours[0]}</p>
+            <p className="text-xs text-destructive">
+              {state.errors.sleepHours[0]}
+            </p>
           )}
         </div>
-        <SliderField id="sleepQuality" name="sleepQuality" label={tr.symptoms.sleepQuality} value={sleepQuality} onChange={setSleepQuality} error={state.errors?.sleepQuality} sliderLabels={tr.symptoms.sliderLabels} />
+        <SliderField
+          id="sleepQuality"
+          name="sleepQuality"
+          label={tr.symptoms.sleepQuality}
+          value={sleepQuality}
+          onChange={setSleepQuality}
+          error={state.errors?.sleepQuality}
+          sliderLabels={tr.symptoms.sliderLabels}
+        />
       </div>
 
       {definitions.length > 0 && (
@@ -154,9 +203,11 @@ export function SymptomEditForm({
               key={def.id}
               id={`custom_${def.id}`}
               name={`custom_${def.id}`}
-              label={`${def.name}${def.unit ? ` (${def.unit})` : ""}`}
+              label={`${def.name}${def.unit ? ` (${def.unit})` : ''}`}
               value={customValues[def.id] ?? 5}
-              onChange={(v) => setCustomValues((prev) => ({ ...prev, [def.id]: v }))}
+              onChange={(v) =>
+                setCustomValues((prev) => ({ ...prev, [def.id]: v }))
+              }
               sliderLabels={tr.symptoms.sliderLabels}
             />
           ))}
@@ -171,7 +222,7 @@ export function SymptomEditForm({
           placeholder={tr.symptoms.notesPlaceholder}
           rows={4}
           defaultValue={defaults.notes}
-          className={cn(state.errors?.notes && "border-destructive")}
+          className={cn(state.errors?.notes && 'border-destructive')}
         />
         {state.errors?.notes && (
           <p className="text-xs text-destructive">{state.errors.notes[0]}</p>
@@ -182,7 +233,10 @@ export function SymptomEditForm({
         <Button type="submit" disabled={pending}>
           {pending ? tr.saving : tr.save}
         </Button>
-        <a href="/symptoms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+        <a
+          href="/symptoms"
+          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
           {tr.cancel}
         </a>
       </div>

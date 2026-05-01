@@ -1,32 +1,37 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
-import { signIn } from "@/lib/auth-client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { useLocale } from "@/components/providers/LocaleProvider";
+import { useLocale } from '@/components/providers/LocaleProvider';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { signIn } from '@/lib/auth-client';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useState } from 'react';
 
 function safeRedirect(url: string | null): string {
-  if (url && url.startsWith("/") && !url.startsWith("//")) return url;
-  return "/";
+  if (url && url.startsWith('/') && !url.startsWith('//')) return url;
+  return '/';
 }
 
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { tr } = useLocale();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError("");
+    setError('');
     setLoading(true);
 
     const { error } = await signIn.email({ email, password });
@@ -37,14 +42,16 @@ export function LoginForm() {
       return;
     }
 
-    router.push(safeRedirect(searchParams.get("callbackUrl")));
+    router.push(safeRedirect(searchParams.get('callbackUrl')));
   }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 gap-6">
       <div className="text-center space-y-1">
         <p className="text-3xl">🌿</p>
-        <h1 className="font-heading italic text-2xl text-foreground">Health Tracker</h1>
+        <h1 className="font-heading italic text-2xl text-foreground">
+          Health Tracker
+        </h1>
         <p className="text-sm text-muted-foreground">{tr.auth.welcomeBack}</p>
       </div>
 
@@ -53,7 +60,10 @@ export function LoginForm() {
           <CardHeader className="pb-4" />
           <CardContent className="space-y-4">
             {error && (
-              <p role="alert" className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded-lg">
+              <p
+                role="alert"
+                className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded-lg"
+              >
                 {error}
               </p>
             )}
@@ -87,8 +97,11 @@ export function LoginForm() {
               {loading ? tr.auth.signingIn : tr.auth.signIn}
             </Button>
             <p className="text-sm text-muted-foreground text-center">
-              {tr.auth.noAccount}{" "}
-              <Link href="/register" className="text-primary underline underline-offset-4">
+              {tr.auth.noAccount}{' '}
+              <Link
+                href="/register"
+                className="text-primary underline underline-offset-4"
+              >
                 {tr.auth.signUp}
               </Link>
             </p>

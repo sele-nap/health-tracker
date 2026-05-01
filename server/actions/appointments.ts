@@ -1,40 +1,45 @@
-"use server";
+'use server';
 
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { encryptIfPresent } from "@/lib/crypto";
-import { appointmentSchema } from "@/lib/validations/appointments";
-import { rateLimit } from "@/lib/rate-limit";
-import type { AppointmentState, AppointmentSummaryState } from "@/types/actions";
+import { auth } from '@/lib/auth';
+import { encryptIfPresent } from '@/lib/crypto';
+import { prisma } from '@/lib/prisma';
+import { rateLimit } from '@/lib/rate-limit';
+import { appointmentSchema } from '@/lib/validations/appointments';
+import type {
+  AppointmentState,
+  AppointmentSummaryState,
+} from '@/types/actions';
+import { revalidatePath } from 'next/cache';
+import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 export type { AppointmentState, AppointmentSummaryState };
 
 export async function createAppointment(
   _prevState: AppointmentState,
-  formData: FormData
+  formData: FormData,
 ): Promise<AppointmentState> {
   const session = await auth.api.getSession({ headers: await headers() });
 
   if (!session?.user?.id) {
-    return { errors: { _form: ["Unauthorized"] } };
+    return { errors: { _form: ['Unauthorized'] } };
   }
 
   const rl = await rateLimit(`appointments:write:${session.user.id}`, 20, 60);
   if (rl.limited) {
-    return { errors: { _form: ["Too many requests. Please try again shortly."] } };
+    return {
+      errors: { _form: ['Too many requests. Please try again shortly.'] },
+    };
   }
 
   const raw = {
-    title: formData.get("title"),
-    doctorName: formData.get("doctorName") || undefined,
-    specialty: formData.get("specialty") || undefined,
-    location: formData.get("location") || undefined,
-    scheduledAt: formData.get("scheduledAt"),
-    durationMin: formData.get("durationMin") || undefined,
-    purpose: formData.get("purpose") || undefined,
+    title: formData.get('title'),
+    doctorName: formData.get('doctorName') || undefined,
+    specialty: formData.get('specialty') || undefined,
+    location: formData.get('location') || undefined,
+    scheduledAt: formData.get('scheduledAt'),
+    durationMin: formData.get('durationMin') || undefined,
+    purpose: formData.get('purpose') || undefined,
   };
 
   const parsed = appointmentSchema.safeParse(raw);
@@ -43,8 +48,15 @@ export async function createAppointment(
     return { errors: parsed.error.flatten().fieldErrors };
   }
 
-  const { title, doctorName, specialty, location, scheduledAt, durationMin, purpose } =
-    parsed.data;
+  const {
+    title,
+    doctorName,
+    specialty,
+    location,
+    scheduledAt,
+    durationMin,
+    purpose,
+  } = parsed.data;
 
   await prisma.appointment.create({
     data: {
@@ -56,25 +68,25 @@ export async function createAppointment(
       scheduledAt: new Date(scheduledAt),
       durationMin: durationMin ?? null,
       purpose: purpose ?? null,
-      status: "UPCOMING",
+      status: 'UPCOMING',
     },
   });
 
-  redirect("/appointments");
+  redirect('/appointments');
 }
 
 export async function updateAppointmentStatus(
   appointmentId: string,
-  status: "COMPLETED" | "CANCELLED" | "RESCHEDULED" | "UPCOMING"
+  status: 'COMPLETED' | 'CANCELLED' | 'RESCHEDULED' | 'UPCOMING',
 ) {
   const session = await auth.api.getSession({ headers: await headers() });
 
   if (!session?.user?.id) {
-    throw new Error("Unauthorized");
+    throw new Error('Unauthorized');
   }
 
   const rl = await rateLimit(`appointments:write:${session.user.id}`, 20, 60);
-  if (rl.limited) throw new Error("Too many requests");
+  if (rl.limited) throw new Error('Too many requests');
 
   const appointment = await prisma.appointment.findUnique({
     where: { id: appointmentId },
@@ -82,7 +94,7 @@ export async function updateAppointmentStatus(
   });
 
   if (!appointment || appointment.userId !== session.user.id) {
-    throw new Error("Not found");
+    throw new Error('Not found');
   }
 
   await prisma.appointment.update({
@@ -94,23 +106,25 @@ export async function updateAppointmentStatus(
 export async function saveAppointmentSummary(
   appointmentId: string,
   _prevState: AppointmentSummaryState,
-  formData: FormData
+  formData: FormData,
 ): Promise<AppointmentSummaryState> {
   const session = await auth.api.getSession({ headers: await headers() });
 
   if (!session?.user?.id) {
-    return { errors: { _form: ["Unauthorized"] } };
+    return { errors: { _form: ['Unauthorized'] } };
   }
 
   const rl = await rateLimit(`appointments:write:${session.user.id}`, 20, 60);
   if (rl.limited) {
-    return { errors: { _form: ["Too many requests. Please try again shortly."] } };
+    return {
+      errors: { _form: ['Too many requests. Please try again shortly.'] },
+    };
   }
 
-  const summary = (formData.get("summary") as string | null)?.trim() || null;
+  const summary = (formData.get('summary') as string | null)?.trim() || null;
 
   if (summary && summary.length > 3000) {
-    return { errors: { summary: ["Summary is too long"] } };
+    return { errors: { summary: ['Summary is too long'] } };
   }
 
   const appointment = await prisma.appointment.findUnique({
@@ -119,7 +133,7 @@ export async function saveAppointmentSummary(
   });
 
   if (!appointment || appointment.userId !== session.user.id) {
-    return { errors: { _form: ["Not found"] } };
+    return { errors: { _form: ['Not found'] } };
   }
 
   await prisma.appointment.update({
@@ -127,24 +141,26 @@ export async function saveAppointmentSummary(
     data: { summary: encryptIfPresent(summary) },
   });
 
-  revalidatePath("/appointments");
+  revalidatePath('/appointments');
   return { success: true };
 }
 
 export async function updateAppointment(
   appointmentId: string,
   _prevState: AppointmentState,
-  formData: FormData
+  formData: FormData,
 ): Promise<AppointmentState> {
   const session = await auth.api.getSession({ headers: await headers() });
 
   if (!session?.user?.id) {
-    return { errors: { _form: ["Unauthorized"] } };
+    return { errors: { _form: ['Unauthorized'] } };
   }
 
   const rl = await rateLimit(`appointments:write:${session.user.id}`, 20, 60);
   if (rl.limited) {
-    return { errors: { _form: ["Too many requests. Please try again shortly."] } };
+    return {
+      errors: { _form: ['Too many requests. Please try again shortly.'] },
+    };
   }
 
   const existing = await prisma.appointment.findUnique({
@@ -153,17 +169,17 @@ export async function updateAppointment(
   });
 
   if (!existing || existing.userId !== session.user.id) {
-    return { errors: { _form: ["Not found"] } };
+    return { errors: { _form: ['Not found'] } };
   }
 
   const raw = {
-    title: formData.get("title"),
-    doctorName: formData.get("doctorName") || undefined,
-    specialty: formData.get("specialty") || undefined,
-    location: formData.get("location") || undefined,
-    scheduledAt: formData.get("scheduledAt"),
-    durationMin: formData.get("durationMin") || undefined,
-    purpose: formData.get("purpose") || undefined,
+    title: formData.get('title'),
+    doctorName: formData.get('doctorName') || undefined,
+    specialty: formData.get('specialty') || undefined,
+    location: formData.get('location') || undefined,
+    scheduledAt: formData.get('scheduledAt'),
+    durationMin: formData.get('durationMin') || undefined,
+    purpose: formData.get('purpose') || undefined,
   };
 
   const parsed = appointmentSchema.safeParse(raw);
@@ -172,8 +188,15 @@ export async function updateAppointment(
     return { errors: parsed.error.flatten().fieldErrors };
   }
 
-  const { title, doctorName, specialty, location, scheduledAt, durationMin, purpose } =
-    parsed.data;
+  const {
+    title,
+    doctorName,
+    specialty,
+    location,
+    scheduledAt,
+    durationMin,
+    purpose,
+  } = parsed.data;
 
   await prisma.appointment.update({
     where: { id: appointmentId },
@@ -188,26 +211,27 @@ export async function updateAppointment(
     },
   });
 
-  revalidatePath("/appointments");
-  redirect("/appointments");
+  revalidatePath('/appointments');
+  redirect('/appointments');
 }
 
 export async function deleteAppointment(appointmentId: string) {
   const session = await auth.api.getSession({ headers: await headers() });
 
-  if (!session?.user?.id) throw new Error("Unauthorized");
+  if (!session?.user?.id) throw new Error('Unauthorized');
 
   const rl = await rateLimit(`appointments:delete:${session.user.id}`, 10, 60);
-  if (rl.limited) throw new Error("Too many requests");
+  if (rl.limited) throw new Error('Too many requests');
 
   const appointment = await prisma.appointment.findUnique({
     where: { id: appointmentId },
     select: { userId: true },
   });
 
-  if (!appointment || appointment.userId !== session.user.id) throw new Error("Not found");
+  if (!appointment || appointment.userId !== session.user.id)
+    throw new Error('Not found');
 
   await prisma.appointment.delete({ where: { id: appointmentId } });
 
-  revalidatePath("/appointments");
+  revalidatePath('/appointments');
 }

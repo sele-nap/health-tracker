@@ -1,19 +1,22 @@
-import type { Metadata } from "next";
-import Link from "next/link";
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
+import { DeleteConditionButton } from '@/components/conditions/DeleteConditionButton';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { auth } from '@/lib/auth';
+import { getT } from '@/lib/locale';
+import { prisma } from '@/lib/prisma';
+import { HeartPulse, Plus } from 'lucide-react';
+import type { Metadata } from 'next';
+import { headers } from 'next/headers';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = {
-  title: "Conditions",
-  description: "Manage your chronic conditions and custom symptoms.",
-  openGraph: { title: "Conditions · Health Tracker", description: "Manage your chronic conditions and custom symptoms." },
+  title: 'Conditions',
+  description: 'Manage your chronic conditions and custom symptoms.',
+  openGraph: {
+    title: 'Conditions · Health Tracker',
+    description: 'Manage your chronic conditions and custom symptoms.',
+  },
 };
-import { prisma } from "@/lib/prisma";
-import { redirect } from "next/navigation";
-import { Plus, HeartPulse } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DeleteConditionButton } from "@/components/conditions/DeleteConditionButton";
-import { getT } from "@/lib/locale";
 
 export default async function ConditionsPage() {
   const [session, tr] = await Promise.all([
@@ -22,12 +25,12 @@ export default async function ConditionsPage() {
   ]);
 
   if (!session?.user?.id) {
-    redirect("/login");
+    redirect('/login');
   }
 
   const conditions = await prisma.userCondition.findMany({
     where: { userId: session.user.id },
-    orderBy: { createdAt: "asc" },
+    orderBy: { createdAt: 'asc' },
     include: {
       symptomDefinitions: { select: { id: true } },
     },
@@ -35,8 +38,8 @@ export default async function ConditionsPage() {
 
   function formatDate(date: Date) {
     return date.toLocaleDateString(tr.dateLocale, {
-      month: "long",
-      year: "numeric",
+      month: 'long',
+      year: 'numeric',
     });
   }
 
@@ -64,7 +67,9 @@ export default async function ConditionsPage() {
         <Card>
           <CardContent className="py-12 flex flex-col items-center gap-3 text-center">
             <HeartPulse size={32} className="text-muted-foreground/40" />
-            <p className="text-muted-foreground">{tr.conditions.noConditions}</p>
+            <p className="text-muted-foreground">
+              {tr.conditions.noConditions}
+            </p>
             <p className="text-xs text-muted-foreground/70 max-w-xs">
               {tr.conditions.noConditionsDesc}
             </p>
@@ -103,7 +108,9 @@ export default async function ConditionsPage() {
               </CardHeader>
               <CardContent className="text-sm text-muted-foreground space-y-0.5">
                 {c.diagnosedAt && (
-                  <p>{tr.conditions.diagnosed} {formatDate(c.diagnosedAt)}</p>
+                  <p>
+                    {tr.conditions.diagnosed} {formatDate(c.diagnosedAt)}
+                  </p>
                 )}
                 <p>
                   {c.symptomDefinitions.length === 0

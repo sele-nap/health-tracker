@@ -1,21 +1,21 @@
-"use client";
+'use client';
 
-import { useActionState, useState } from "react";
-import { createSymptomLog } from "@/server/actions/symptoms";
-import type { SymptomLogState } from "@/types/actions";
-import type { SymptomDefinitionProp } from "@/types/symptoms";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
-import { useLocale } from "@/components/providers/LocaleProvider";
+import { useLocale } from '@/components/providers/LocaleProvider';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { cn } from '@/lib/utils';
+import { createSymptomLog } from '@/server/actions/symptoms';
+import type { SymptomLogState } from '@/types/actions';
+import type { SymptomDefinitionProp } from '@/types/symptoms';
+import { useActionState, useState } from 'react';
 
 function todayString() {
   const d = new Date();
   const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
 }
 
@@ -29,7 +29,15 @@ type SliderFieldProps = {
   sliderLabels: string[];
 };
 
-function SliderField({ id, name, label, value, onChange, error, sliderLabels }: SliderFieldProps) {
+function SliderField({
+  id,
+  name,
+  label,
+  value,
+  onChange,
+  error,
+  sliderLabels,
+}: SliderFieldProps) {
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
@@ -84,13 +92,16 @@ export function SymptomForm({
   defaultSleepQuality = 5,
   defaultStress = 5,
   defaultSleepHours,
-  defaultNotes = "",
-  cancelHref = "/symptoms",
+  defaultNotes = '',
+  cancelHref = '/symptoms',
   definitions = [],
   defaultCustomEntries = {},
 }: Props) {
   const { tr } = useLocale();
-  const [state, formAction, pending] = useActionState(createSymptomLog, initialState);
+  const [state, formAction, pending] = useActionState(
+    createSymptomLog,
+    initialState,
+  );
 
   const [mood, setMood] = useState(defaultMood);
   const [energy, setEnergy] = useState(defaultEnergy);
@@ -103,7 +114,7 @@ export function SymptomForm({
         init[def.id] = defaultCustomEntries[def.id] ?? 5;
       }
       return init;
-    }
+    },
   );
 
   return (
@@ -122,7 +133,7 @@ export function SymptomForm({
           type="date"
           defaultValue={defaultDate ?? todayString()}
           max={todayString()}
-          className={cn(state.errors?.loggedAt && "border-destructive")}
+          className={cn(state.errors?.loggedAt && 'border-destructive')}
         />
         {state.errors?.loggedAt && (
           <p className="text-xs text-destructive">{state.errors.loggedAt[0]}</p>
@@ -180,11 +191,16 @@ export function SymptomForm({
             max={24}
             step={0.5}
             placeholder="e.g. 7.5"
-            defaultValue={defaultSleepHours ?? ""}
-            className={cn("w-32", state.errors?.sleepHours && "border-destructive")}
+            defaultValue={defaultSleepHours ?? ''}
+            className={cn(
+              'w-32',
+              state.errors?.sleepHours && 'border-destructive',
+            )}
           />
           {state.errors?.sleepHours && (
-            <p className="text-xs text-destructive">{state.errors.sleepHours[0]}</p>
+            <p className="text-xs text-destructive">
+              {state.errors.sleepHours[0]}
+            </p>
           )}
         </div>
 
@@ -209,9 +225,11 @@ export function SymptomForm({
               key={def.id}
               id={`custom_${def.id}`}
               name={`custom_${def.id}`}
-              label={`${def.name}${def.unit ? ` (${def.unit})` : ""}`}
+              label={`${def.name}${def.unit ? ` (${def.unit})` : ''}`}
               value={customValues[def.id] ?? 5}
-              onChange={(v) => setCustomValues((prev) => ({ ...prev, [def.id]: v }))}
+              onChange={(v) =>
+                setCustomValues((prev) => ({ ...prev, [def.id]: v }))
+              }
               sliderLabels={tr.symptoms.sliderLabels}
             />
           ))}
@@ -226,7 +244,7 @@ export function SymptomForm({
           placeholder={tr.symptoms.notesPlaceholder}
           rows={4}
           defaultValue={defaultNotes}
-          className={cn(state.errors?.notes && "border-destructive")}
+          className={cn(state.errors?.notes && 'border-destructive')}
         />
         {state.errors?.notes && (
           <p className="text-xs text-destructive">{state.errors.notes[0]}</p>

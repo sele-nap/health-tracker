@@ -1,21 +1,24 @@
-import type { Metadata } from "next";
-import Link from "next/link";
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
+import { DeleteSymptomLogButton } from '@/components/symptoms/DeleteSymptomLogButton';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { auth } from '@/lib/auth';
+import { decryptIfPresent } from '@/lib/crypto';
+import { getT } from '@/lib/locale';
+import { prisma } from '@/lib/prisma';
+import { moodEmoji } from '@/lib/utils';
+import { Activity, Plus } from 'lucide-react';
+import type { Metadata } from 'next';
+import { headers } from 'next/headers';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = {
-  title: "Symptoms journal",
-  description: "Track your daily mood, energy, sleep and symptoms.",
-  openGraph: { title: "Symptoms journal · Health Tracker", description: "Track your daily mood, energy, sleep and symptoms." },
+  title: 'Symptoms journal',
+  description: 'Track your daily mood, energy, sleep and symptoms.',
+  openGraph: {
+    title: 'Symptoms journal · Health Tracker',
+    description: 'Track your daily mood, energy, sleep and symptoms.',
+  },
 };
-import { prisma } from "@/lib/prisma";
-import { decryptIfPresent } from "@/lib/crypto";
-import { redirect } from "next/navigation";
-import { Plus, Activity } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DeleteSymptomLogButton } from "@/components/symptoms/DeleteSymptomLogButton";
-import { getT } from "@/lib/locale";
-import { moodEmoji } from "@/lib/utils";
 
 export default async function SymptomsPage({
   searchParams,
@@ -30,12 +33,12 @@ export default async function SymptomsPage({
   ]);
 
   if (!session?.user?.id) {
-    redirect("/login");
+    redirect('/login');
   }
 
   const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
-  const from = ISO_DATE.test(params.from ?? "") ? (params.from ?? "") : "";
-  const to = ISO_DATE.test(params.to ?? "") ? (params.to ?? "") : "";
+  const from = ISO_DATE.test(params.from ?? '') ? (params.from ?? '') : '';
+  const to = ISO_DATE.test(params.to ?? '') ? (params.to ?? '') : '';
   const isFiltered = Boolean(from || to);
 
   const logs = await prisma.symptomLog.findMany({
@@ -46,7 +49,7 @@ export default async function SymptomsPage({
         lte: to ? new Date(`${to}T23:59:59`) : undefined,
       },
     },
-    orderBy: { loggedAt: "desc" },
+    orderBy: { loggedAt: 'desc' },
     take: 200,
     select: {
       id: true,
@@ -74,10 +77,10 @@ export default async function SymptomsPage({
 
   function formatDate(date: Date) {
     return date.toLocaleDateString(tr.dateLocale, {
-      weekday: "short",
-      month: "short",
-      day: "numeric",
-      year: "numeric",
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
     });
   }
 
@@ -106,7 +109,12 @@ export default async function SymptomsPage({
         className="flex flex-wrap items-end gap-3 p-4 rounded-xl border border-border bg-card"
       >
         <div className="flex flex-col gap-1">
-          <label htmlFor="filter-from" className="text-xs text-muted-foreground">{tr.from}</label>
+          <label
+            htmlFor="filter-from"
+            className="text-xs text-muted-foreground"
+          >
+            {tr.from}
+          </label>
           <input
             id="filter-from"
             type="date"
@@ -117,7 +125,9 @@ export default async function SymptomsPage({
           />
         </div>
         <div className="flex flex-col gap-1">
-          <label htmlFor="filter-to" className="text-xs text-muted-foreground">{tr.to}</label>
+          <label htmlFor="filter-to" className="text-xs text-muted-foreground">
+            {tr.to}
+          </label>
           <input
             id="filter-to"
             type="date"
@@ -172,7 +182,9 @@ export default async function SymptomsPage({
                     {formatDate(log.loggedAt)}
                   </CardTitle>
                   <div className="flex items-center gap-3">
-                    <span className="text-xl">{moodEmoji(log.overallMood)}</span>
+                    <span className="text-xl">
+                      {moodEmoji(log.overallMood)}
+                    </span>
                     <Link
                       href={`/symptoms/${log.id}/edit`}
                       className="text-xs text-muted-foreground hover:text-foreground transition-colors"
@@ -187,40 +199,54 @@ export default async function SymptomsPage({
                 <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm">
                   {log.overallMood !== null && (
                     <span>
-                      <span className="text-muted-foreground">{tr.symptoms.moodLabel} </span>
+                      <span className="text-muted-foreground">
+                        {tr.symptoms.moodLabel}{' '}
+                      </span>
                       <span className="font-medium">{log.overallMood}/10</span>
                     </span>
                   )}
                   {log.energyLevel !== null && (
                     <span>
-                      <span className="text-muted-foreground">{tr.symptoms.energyLabel} </span>
+                      <span className="text-muted-foreground">
+                        {tr.symptoms.energyLabel}{' '}
+                      </span>
                       <span className="font-medium">{log.energyLevel}/10</span>
                     </span>
                   )}
                   {log.stressLevel !== null && (
                     <span>
-                      <span className="text-muted-foreground">{tr.symptoms.stressLabel} </span>
+                      <span className="text-muted-foreground">
+                        {tr.symptoms.stressLabel}{' '}
+                      </span>
                       <span className="font-medium">{log.stressLevel}/10</span>
                     </span>
                   )}
                   {log.sleepHours !== null && (
                     <span>
-                      <span className="text-muted-foreground">{tr.symptoms.sleepLabel} </span>
+                      <span className="text-muted-foreground">
+                        {tr.symptoms.sleepLabel}{' '}
+                      </span>
                       <span className="font-medium">{log.sleepHours}h</span>
                     </span>
                   )}
                   {log.sleepQuality !== null && (
                     <span>
-                      <span className="text-muted-foreground">{tr.symptoms.sleepQualityLabel} </span>
+                      <span className="text-muted-foreground">
+                        {tr.symptoms.sleepQualityLabel}{' '}
+                      </span>
                       <span className="font-medium">{log.sleepQuality}/10</span>
                     </span>
                   )}
                   {log.entries.map((e) => (
                     <span key={e.symptomDefinition.name}>
-                      <span className="text-muted-foreground">{e.symptomDefinition.name} </span>
+                      <span className="text-muted-foreground">
+                        {e.symptomDefinition.name}{' '}
+                      </span>
                       <span className="font-medium">
                         {e.severity ?? Number(e.value)}
-                        {e.symptomDefinition.unit ? ` ${e.symptomDefinition.unit}` : "/10"}
+                        {e.symptomDefinition.unit
+                          ? ` ${e.symptomDefinition.unit}`
+                          : '/10'}
                       </span>
                     </span>
                   ))}

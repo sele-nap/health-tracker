@@ -1,12 +1,15 @@
-"use client";
+'use client';
 
-import { useState, useTransition } from "react";
-import { Plus, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { createSymptomDefinition, deleteSymptomDefinition } from "@/server/actions/symptomDefinitions";
-import { useLocale } from "@/components/providers/LocaleProvider";
-import type { SymptomDefinition } from "@/types/symptoms";
+import { useLocale } from '@/components/providers/LocaleProvider';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  createSymptomDefinition,
+  deleteSymptomDefinition,
+} from '@/server/actions/symptomDefinitions';
+import type { SymptomDefinition } from '@/types/symptoms';
+import { Plus, Trash2 } from 'lucide-react';
+import { useState, useTransition } from 'react';
 
 export type { SymptomDefinition };
 
@@ -20,25 +23,29 @@ export function SymptomDefinitionManager({ conditionId, definitions }: Props) {
   const ctr = tr.conditions;
   const [isPending, startTransition] = useTransition();
   const [showForm, setShowForm] = useState(false);
-  const [name, setName] = useState("");
-  const [unit, setUnit] = useState("");
+  const [name, setName] = useState('');
+  const [unit, setUnit] = useState('');
   const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim()) {
-      setError(ctr.symptomNameLabel + " required");
+      setError(ctr.symptomNameLabel + ' required');
       return;
     }
     setError(null);
     startTransition(async () => {
       try {
-        await createSymptomDefinition(conditionId, name.trim(), unit.trim() || undefined);
-        setName("");
-        setUnit("");
+        await createSymptomDefinition(
+          conditionId,
+          name.trim(),
+          unit.trim() || undefined,
+        );
+        setName('');
+        setUnit('');
         setShowForm(false);
       } catch {
-        setError("Failed to save.");
+        setError('Failed to save.');
       }
     });
   }
@@ -71,8 +78,12 @@ export function SymptomDefinitionManager({ conditionId, definitions }: Props) {
 
       {definitions.length === 0 && !showForm && (
         <div className="space-y-1">
-          <p className="text-sm text-muted-foreground">{ctr.noCustomSymptoms}</p>
-          <p className="text-xs text-muted-foreground/60">{ctr.customSymptomsDesc}</p>
+          <p className="text-sm text-muted-foreground">
+            {ctr.noCustomSymptoms}
+          </p>
+          <p className="text-xs text-muted-foreground/60">
+            {ctr.customSymptomsDesc}
+          </p>
         </div>
       )}
 
@@ -85,7 +96,9 @@ export function SymptomDefinitionManager({ conditionId, definitions }: Props) {
             <div>
               <span className="font-medium">{def.name}</span>
               {def.unit && (
-                <span className="text-muted-foreground ml-1.5 text-xs">({def.unit})</span>
+                <span className="text-muted-foreground ml-1.5 text-xs">
+                  ({def.unit})
+                </span>
               )}
             </div>
             <button
@@ -107,7 +120,9 @@ export function SymptomDefinitionManager({ conditionId, definitions }: Props) {
           {error && <p className="text-xs text-destructive">{error}</p>}
 
           <div className="space-y-1">
-            <label className="text-xs text-muted-foreground">{ctr.symptomNameLabel}</label>
+            <label className="text-xs text-muted-foreground">
+              {ctr.symptomNameLabel}
+            </label>
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -119,7 +134,7 @@ export function SymptomDefinitionManager({ conditionId, definitions }: Props) {
 
           <div className="space-y-1">
             <label className="text-xs text-muted-foreground">
-              {ctr.symptomUnitLabel}{" "}
+              {ctr.symptomUnitLabel}{' '}
               <span className="text-muted-foreground/60">{tr.optional}</span>
             </label>
             <Input
@@ -138,8 +153,8 @@ export function SymptomDefinitionManager({ conditionId, definitions }: Props) {
               type="button"
               onClick={() => {
                 setShowForm(false);
-                setName("");
-                setUnit("");
+                setName('');
+                setUnit('');
                 setError(null);
               }}
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"

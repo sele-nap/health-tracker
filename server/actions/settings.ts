@@ -1,39 +1,41 @@
-"use server";
+'use server';
 
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
-import { rateLimit } from "@/lib/rate-limit";
-import type { Locale } from "@/lib/i18n";
-import type { UpdateNameState, ChangePasswordState } from "@/types/actions";
+import { auth } from '@/lib/auth';
+import type { Locale } from '@/lib/i18n';
+import { prisma } from '@/lib/prisma';
+import { rateLimit } from '@/lib/rate-limit';
+import type { ChangePasswordState, UpdateNameState } from '@/types/actions';
+import { revalidatePath } from 'next/cache';
+import { headers } from 'next/headers';
 
-export type { UpdateNameState, ChangePasswordState };
+export type { ChangePasswordState, UpdateNameState };
 
 export async function updateName(
   _prevState: UpdateNameState,
-  formData: FormData
+  formData: FormData,
 ): Promise<UpdateNameState> {
-  const name = (formData.get("name") as string | null)?.trim();
+  const name = (formData.get('name') as string | null)?.trim();
 
   if (!name || name.length === 0) {
-    return { errors: { name: ["Name cannot be empty"] } };
+    return { errors: { name: ['Name cannot be empty'] } };
   }
 
   if (name.length > 100) {
-    return { errors: { name: ["Name is too long"] } };
+    return { errors: { name: ['Name is too long'] } };
   }
 
   const reqHeaders = await headers();
   const session = await auth.api.getSession({ headers: reqHeaders });
 
   if (!session?.user?.id) {
-    return { errors: { _form: ["Unauthorized"] } };
+    return { errors: { _form: ['Unauthorized'] } };
   }
 
   const rl = await rateLimit(`settings:name:${session.user.id}`, 10, 60);
   if (rl.limited) {
-    return { errors: { _form: ["Too many requests. Please try again shortly."] } };
+    return {
+      errors: { _form: ['Too many requests. Please try again shortly.'] },
+    };
   }
 
   await auth.api.updateUser({
@@ -41,40 +43,44 @@ export async function updateName(
     body: { name },
   });
 
-  revalidatePath("/", "layout");
+  revalidatePath('/', 'layout');
   return { success: true };
 }
 
 export async function changePassword(
   _prevState: ChangePasswordState,
-  formData: FormData
+  formData: FormData,
 ): Promise<ChangePasswordState> {
-  const currentPassword = formData.get("currentPassword") as string | null;
-  const newPassword = formData.get("newPassword") as string | null;
-  const confirmPassword = formData.get("confirmPassword") as string | null;
+  const currentPassword = formData.get('currentPassword') as string | null;
+  const newPassword = formData.get('newPassword') as string | null;
+  const confirmPassword = formData.get('confirmPassword') as string | null;
 
   if (!currentPassword) {
-    return { errors: { currentPassword: ["Current password is required"] } };
+    return { errors: { currentPassword: ['Current password is required'] } };
   }
 
   if (!newPassword || newPassword.length < 8) {
-    return { errors: { newPassword: ["New password must be at least 8 characters"] } };
+    return {
+      errors: { newPassword: ['New password must be at least 8 characters'] },
+    };
   }
 
   if (newPassword !== confirmPassword) {
-    return { errors: { newPassword: ["Passwords do not match"] } };
+    return { errors: { newPassword: ['Passwords do not match'] } };
   }
 
   const reqHeaders = await headers();
   const session = await auth.api.getSession({ headers: reqHeaders });
 
   if (!session?.user?.id) {
-    return { errors: { _form: ["Unauthorized"] } };
+    return { errors: { _form: ['Unauthorized'] } };
   }
 
   const rl = await rateLimit(`settings:password:${session.user.id}`, 5, 60);
   if (rl.limited) {
-    return { errors: { _form: ["Too many requests. Please try again shortly."] } };
+    return {
+      errors: { _form: ['Too many requests. Please try again shortly.'] },
+    };
   }
 
   try {
@@ -83,7 +89,7 @@ export async function changePassword(
       body: { currentPassword, newPassword, revokeOtherSessions: true },
     });
   } catch {
-    return { errors: { _form: ["Current password is incorrect"] } };
+    return { errors: { _form: ['Current password is incorrect'] } };
   }
 
   return { success: true };
@@ -92,7 +98,7 @@ export async function changePassword(
 export async function persistLocale(locale: Locale): Promise<void> {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user?.id) return;
-  if (locale !== "en" && locale !== "fr") return;
+  if (locale !== 'en' && locale !== 'fr') return;
 
   await prisma.user.update({
     where: { id: session.user.id },

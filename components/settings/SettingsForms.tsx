@@ -1,14 +1,17 @@
-"use client";
+'use client';
 
-import { useActionState } from "react";
-import { updateName, changePassword } from "@/server/actions/settings";
-import type { UpdateNameState, ChangePasswordState } from "@/server/actions/settings";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
-import { useLocale } from "@/components/providers/LocaleProvider";
+import { useLocale } from '@/components/providers/LocaleProvider';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
+import type {
+  ChangePasswordState,
+  UpdateNameState,
+} from '@/server/actions/settings';
+import { changePassword, updateName } from '@/server/actions/settings';
+import { useActionState } from 'react';
 
 const initialNameState: UpdateNameState = {};
 const initialPasswordState: ChangePasswordState = {};
@@ -20,14 +23,22 @@ type Props = {
 
 export function SettingsForms({ currentName, email }: Props) {
   const { tr } = useLocale();
-  const [nameState, nameAction, namePending] = useActionState(updateName, initialNameState);
-  const [pwState, pwAction, pwPending] = useActionState(changePassword, initialPasswordState);
+  const [nameState, nameAction, namePending] = useActionState(
+    updateName,
+    initialNameState,
+  );
+  const [pwState, pwAction, pwPending] = useActionState(
+    changePassword,
+    initialPasswordState,
+  );
 
   return (
     <div className="space-y-8">
       <Card>
         <CardHeader>
-          <CardTitle className="font-heading italic text-lg">{tr.settings.profile}</CardTitle>
+          <CardTitle className="font-heading italic text-lg">
+            {tr.settings.profile}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <form action={nameAction} className="space-y-4">
@@ -59,10 +70,12 @@ export function SettingsForms({ currentName, email }: Props) {
                 name="name"
                 defaultValue={currentName}
                 placeholder={tr.settings.yourName}
-                className={cn(nameState.errors?.name && "border-destructive")}
+                className={cn(nameState.errors?.name && 'border-destructive')}
               />
               {nameState.errors?.name && (
-                <p className="text-xs text-destructive">{nameState.errors.name[0]}</p>
+                <p className="text-xs text-destructive">
+                  {nameState.errors.name[0]}
+                </p>
               )}
             </div>
 
@@ -75,7 +88,9 @@ export function SettingsForms({ currentName, email }: Props) {
 
       <Card>
         <CardHeader>
-          <CardTitle className="font-heading italic text-lg">{tr.settings.changePassword}</CardTitle>
+          <CardTitle className="font-heading italic text-lg">
+            {tr.settings.changePassword}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <form action={pwAction} className="space-y-4">
@@ -91,16 +106,22 @@ export function SettingsForms({ currentName, email }: Props) {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="currentPassword">{tr.settings.currentPassword}</Label>
+              <Label htmlFor="currentPassword">
+                {tr.settings.currentPassword}
+              </Label>
               <Input
                 id="currentPassword"
                 name="currentPassword"
                 type="password"
                 autoComplete="current-password"
-                className={cn(pwState.errors?.currentPassword && "border-destructive")}
+                className={cn(
+                  pwState.errors?.currentPassword && 'border-destructive',
+                )}
               />
               {pwState.errors?.currentPassword && (
-                <p className="text-xs text-destructive">{pwState.errors.currentPassword[0]}</p>
+                <p className="text-xs text-destructive">
+                  {pwState.errors.currentPassword[0]}
+                </p>
               )}
             </div>
 
@@ -111,15 +132,21 @@ export function SettingsForms({ currentName, email }: Props) {
                 name="newPassword"
                 type="password"
                 autoComplete="new-password"
-                className={cn(pwState.errors?.newPassword && "border-destructive")}
+                className={cn(
+                  pwState.errors?.newPassword && 'border-destructive',
+                )}
               />
               {pwState.errors?.newPassword && (
-                <p className="text-xs text-destructive">{pwState.errors.newPassword[0]}</p>
+                <p className="text-xs text-destructive">
+                  {pwState.errors.newPassword[0]}
+                </p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">{tr.settings.confirmPassword}</Label>
+              <Label htmlFor="confirmPassword">
+                {tr.settings.confirmPassword}
+              </Label>
               <Input
                 id="confirmPassword"
                 name="confirmPassword"

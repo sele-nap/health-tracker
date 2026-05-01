@@ -1,25 +1,25 @@
-import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { sendReminderEmail } from "@/lib/email";
+import { sendReminderEmail } from '@/lib/email';
+import { prisma } from '@/lib/prisma';
+import { NextRequest, NextResponse } from 'next/server';
 
-export const runtime = "nodejs";
+export const runtime = 'nodejs';
 
 function getLocalHHMM(timezone: string): string {
   const now = new Date();
   try {
-    const parts = new Intl.DateTimeFormat("en-US", {
+    const parts = new Intl.DateTimeFormat('en-US', {
       timeZone: timezone,
-      hour: "2-digit",
-      minute: "2-digit",
+      hour: '2-digit',
+      minute: '2-digit',
       hour12: false,
     }).formatToParts(now);
-    const hour = parts.find((p) => p.type === "hour")?.value ?? "00";
-    const minute = parts.find((p) => p.type === "minute")?.value ?? "00";
+    const hour = parts.find((p) => p.type === 'hour')?.value ?? '00';
+    const minute = parts.find((p) => p.type === 'minute')?.value ?? '00';
     // Intl can return "24" for midnight on some platforms — normalise to "00"
-    return `${hour === "24" ? "00" : hour}:${minute}`;
+    return `${hour === '24' ? '00' : hour}:${minute}`;
   } catch {
-    const h = now.getUTCHours().toString().padStart(2, "0");
-    const m = now.getUTCMinutes().toString().padStart(2, "0");
+    const h = now.getUTCHours().toString().padStart(2, '0');
+    const m = now.getUTCMinutes().toString().padStart(2, '0');
     return `${h}:${m}`;
   }
 }
@@ -27,13 +27,16 @@ function getLocalHHMM(timezone: string): string {
 export async function GET(req: NextRequest) {
   const secret = process.env.CRON_SECRET;
   if (!secret) {
-    console.error("[reminders] CRON_SECRET is not set — refusing to run");
-    return NextResponse.json({ error: "Server misconfiguration" }, { status: 500 });
+    console.error('[reminders] CRON_SECRET is not set — refusing to run');
+    return NextResponse.json(
+      { error: 'Server misconfiguration' },
+      { status: 500 },
+    );
   }
 
-  const auth = req.headers.get("authorization");
+  const auth = req.headers.get('authorization');
   if (auth !== `Bearer ${secret}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const now = new Date();
@@ -72,19 +75,21 @@ export async function GET(req: NextRequest) {
     const timeMatches = s.times.includes(localHHMM);
     if (!timeMatches) return false;
 
-    if (s.frequency === "weekly") {
+    if (s.frequency === 'weekly') {
       const user = userMap.get(userId);
       const localDay = user
-        ? new Intl.DateTimeFormat("en-US", {
+        ? new Intl.DateTimeFormat('en-US', {
             timeZone: user.timezone,
-            weekday: "short",
+            weekday: 'short',
           })
             .formatToParts(now)
-            .find((p) => p.type === "weekday")
-            ? new Date(
-                new Intl.DateTimeFormat("en-US", { timeZone: user.timezone }).format(now)
-              ).getDay()
-            : currentDay
+            .find((p) => p.type === 'weekday')
+          ? new Date(
+              new Intl.DateTimeFormat('en-US', {
+                timeZone: user.timezone,
+              }).format(now),
+            ).getDay()
+          : currentDay
         : currentDay;
       if (!s.daysOfWeek.includes(localDay)) return false;
     }
@@ -104,7 +109,7 @@ export async function GET(req: NextRequest) {
   const results = await Promise.allSettled(
     toSend.map(async (schedule) => {
       const user = userMap.get(schedule.medication.userId);
-      if (!user?.email) throw new Error("No email");
+      if (!user?.email) throw new Error('No email');
 
       await sendReminderEmail({
         to: user.email,
@@ -112,17 +117,20 @@ export async function GET(req: NextRequest) {
         dosage: schedule.medication.dosage,
         locale: user.locale,
       });
-    })
+    }),
   );
 
-  const sent = results.filter((r) => r.status === "fulfilled").length;
+  const sent = results.filter((r) => r.status === 'fulfilled').length;
   const errors = results
     .map((r, i) =>
-      r.status === "rejected"
-        ? `medication:${toSend[i].medicationId} — ${r.reason instanceof Error ? r.reason.message : "unknown"}`
-        : null
+      r.status === 'rejected'
+        ? `medication:${toSend[i].medicationId} — ${r.reason instanceof Error ? r.reason.message : 'unknown'}`
+        : null,
     )
     .filter(Boolean) as string[];
 
-  return NextResponse.json({ sent, errors: errors.length ? errors : undefined });
+  return NextResponse.json({
+    sent,
+    errors: errors.length ? errors : undefined,
+  });
 }

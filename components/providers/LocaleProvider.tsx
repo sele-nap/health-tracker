@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
+import { en, fr, type Locale } from '@/lib/i18n';
+import { persistLocale } from '@/server/actions/settings';
+import { useRouter } from 'next/navigation';
 import {
   createContext,
+  useCallback,
   useContext,
   useState,
-  useCallback,
   type ReactNode,
-} from "react";
-import { useRouter } from "next/navigation";
-import { en, fr, type Locale } from "@/lib/i18n";
-import { persistLocale } from "@/server/actions/settings";
+} from 'react';
 
 type Translations = typeof en;
 
@@ -38,10 +38,10 @@ export function LocaleProvider({
       persistLocale(next).catch(() => {});
       router.refresh();
     },
-    [router]
+    [router],
   );
 
-  const tr = locale === "fr" ? fr : en;
+  const tr = locale === 'fr' ? fr : en;
 
   return (
     <LocaleContext.Provider value={{ locale, tr, setLocale }}>
@@ -52,6 +52,6 @@ export function LocaleProvider({
 
 export function useLocale(): LocaleContextValue {
   const ctx = useContext(LocaleContext);
-  if (!ctx) throw new Error("useLocale must be used inside LocaleProvider");
+  if (!ctx) throw new Error('useLocale must be used inside LocaleProvider');
   return ctx;
 }

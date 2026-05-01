@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { useState, useTransition } from "react";
-import { Bell, BellOff, Plus, Trash2, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { useLocale } from '@/components/providers/LocaleProvider';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import {
   createReminderSchedule,
   deleteReminderSchedule,
   toggleReminderEnabled,
-} from "@/server/actions/reminders";
-import { useLocale } from "@/components/providers/LocaleProvider";
-import type { ReminderSchedule } from "@/types/medications";
+} from '@/server/actions/reminders';
+import type { ReminderSchedule } from '@/types/medications';
+import { Bell, BellOff, Plus, Trash2, X } from 'lucide-react';
+import { useState, useTransition } from 'react';
 
 export type { ReminderSchedule };
 
@@ -26,13 +26,13 @@ export function ReminderScheduleSection({ medicationId, schedules }: Props) {
   const rtr = tr.reminders;
   const [isPending, startTransition] = useTransition();
   const [showForm, setShowForm] = useState(false);
-  const [frequency, setFrequency] = useState<"daily" | "weekly">("daily");
-  const [times, setTimes] = useState<string[]>(["08:00"]);
+  const [frequency, setFrequency] = useState<'daily' | 'weekly'>('daily');
+  const [times, setTimes] = useState<string[]>(['08:00']);
   const [daysOfWeek, setDaysOfWeek] = useState<number[]>([1, 2, 3, 4, 5]);
   const [error, setError] = useState<string | null>(null);
 
   function addTime() {
-    if (times.length < 4) setTimes((prev) => [...prev, "08:00"]);
+    if (times.length < 4) setTimes((prev) => [...prev, '08:00']);
   }
 
   function removeTime(i: number) {
@@ -45,7 +45,7 @@ export function ReminderScheduleSection({ medicationId, schedules }: Props) {
 
   function toggleDay(day: number) {
     setDaysOfWeek((prev) =>
-      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
+      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day],
     );
   }
 
@@ -56,17 +56,22 @@ export function ReminderScheduleSection({ medicationId, schedules }: Props) {
       setError(rtr.errorNoTime);
       return;
     }
-    if (frequency === "weekly" && daysOfWeek.length === 0) {
+    if (frequency === 'weekly' && daysOfWeek.length === 0) {
       setError(rtr.errorNoDay);
       return;
     }
     startTransition(async () => {
       try {
-        await createReminderSchedule(medicationId, frequency, times, daysOfWeek);
+        await createReminderSchedule(
+          medicationId,
+          frequency,
+          times,
+          daysOfWeek,
+        );
         setShowForm(false);
-        setTimes(["08:00"]);
+        setTimes(['08:00']);
         setDaysOfWeek([1, 2, 3, 4, 5]);
-        setFrequency("daily");
+        setFrequency('daily');
       } catch {
         setError(rtr.errorSave);
       }
@@ -119,16 +124,21 @@ export function ReminderScheduleSection({ medicationId, schedules }: Props) {
           >
             <div className="space-y-0.5 min-w-0">
               <p className="font-medium">
-                {s.frequency === "daily" ? rtr.daily : rtr.weekly}
-                {" · "}
-                {s.times.join(", ")}
+                {s.frequency === 'daily' ? rtr.daily : rtr.weekly}
+                {' · '}
+                {s.times.join(', ')}
               </p>
-              {s.frequency === "weekly" && s.daysOfWeek.length > 0 && (
+              {s.frequency === 'weekly' && s.daysOfWeek.length > 0 && (
                 <p className="text-xs text-muted-foreground">
-                  {[...s.daysOfWeek].sort((a, b) => a - b).map((d) => rtr.days[d]).join(", ")}
+                  {[...s.daysOfWeek]
+                    .sort((a, b) => a - b)
+                    .map((d) => rtr.days[d])
+                    .join(', ')}
                 </p>
               )}
-              <p className="text-xs text-muted-foreground/70">{rtr.setupNote}</p>
+              <p className="text-xs text-muted-foreground/70">
+                {rtr.setupNote}
+              </p>
             </div>
             <div className="flex items-center gap-1.5 shrink-0">
               <button
@@ -136,10 +146,10 @@ export function ReminderScheduleSection({ medicationId, schedules }: Props) {
                 disabled={isPending}
                 title={rtr.toggle}
                 className={cn(
-                  "p-1.5 rounded-md border transition-colors",
+                  'p-1.5 rounded-md border transition-colors',
                   s.reminderEnabled
-                    ? "border-primary text-primary"
-                    : "border-border text-muted-foreground"
+                    ? 'border-primary text-primary'
+                    : 'border-border text-muted-foreground',
                 )}
               >
                 {s.reminderEnabled ? <Bell size={13} /> : <BellOff size={13} />}
@@ -176,28 +186,30 @@ export function ReminderScheduleSection({ medicationId, schedules }: Props) {
           {error && <p className="text-xs text-destructive">{error}</p>}
 
           <div className="space-y-1.5">
-            <p className="text-xs text-muted-foreground">{rtr.frequencyLabel}</p>
+            <p className="text-xs text-muted-foreground">
+              {rtr.frequencyLabel}
+            </p>
             <div className="flex rounded-lg border border-border overflow-hidden text-sm w-fit">
-              {(["daily", "weekly"] as const).map((f, i) => (
+              {(['daily', 'weekly'] as const).map((f, i) => (
                 <button
                   key={f}
                   type="button"
                   onClick={() => setFrequency(f)}
                   className={cn(
-                    "px-3 py-1.5 transition-colors",
-                    i > 0 && "border-l border-border",
+                    'px-3 py-1.5 transition-colors',
+                    i > 0 && 'border-l border-border',
                     frequency === f
-                      ? "bg-accent text-foreground"
-                      : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                      ? 'bg-accent text-foreground'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-accent/50',
                   )}
                 >
-                  {f === "daily" ? rtr.daily : rtr.weekly}
+                  {f === 'daily' ? rtr.daily : rtr.weekly}
                 </button>
               ))}
             </div>
           </div>
 
-          {frequency === "weekly" && (
+          {frequency === 'weekly' && (
             <div className="space-y-1.5">
               <p className="text-xs text-muted-foreground">{rtr.daysLabel}</p>
               <div className="flex gap-1 flex-wrap">
@@ -207,10 +219,10 @@ export function ReminderScheduleSection({ medicationId, schedules }: Props) {
                     type="button"
                     onClick={() => toggleDay(d)}
                     className={cn(
-                      "w-9 h-9 rounded-lg text-xs border transition-colors",
+                      'w-9 h-9 rounded-lg text-xs border transition-colors',
                       daysOfWeek.includes(d)
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "border-border text-muted-foreground hover:text-foreground"
+                        ? 'bg-primary text-primary-foreground border-primary'
+                        : 'border-border text-muted-foreground hover:text-foreground',
                     )}
                   >
                     {rtr.days[d]}

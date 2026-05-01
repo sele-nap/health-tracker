@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { useActionState, useState } from "react";
-import { saveAppointmentSummary } from "@/server/actions/appointments";
-import type { AppointmentSummaryState } from "@/server/actions/appointments";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
-import { useLocale } from "@/components/providers/LocaleProvider";
+import { useLocale } from '@/components/providers/LocaleProvider';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { cn } from '@/lib/utils';
+import type { AppointmentSummaryState } from '@/server/actions/appointments';
+import { saveAppointmentSummary } from '@/server/actions/appointments';
+import { useActionState, useState } from 'react';
 
 const initialState: AppointmentSummaryState = {};
 
@@ -15,7 +15,10 @@ type Props = {
   existingSummary: string | null;
 };
 
-export function AppointmentSummaryForm({ appointmentId, existingSummary }: Props) {
+export function AppointmentSummaryForm({
+  appointmentId,
+  existingSummary,
+}: Props) {
   const { tr } = useLocale();
   const [open, setOpen] = useState(false);
   const action = saveAppointmentSummary.bind(null, appointmentId);
@@ -27,14 +30,18 @@ export function AppointmentSummaryForm({ appointmentId, existingSummary }: Props
         onClick={() => setOpen(true)}
         className="text-xs text-primary hover:underline underline-offset-4 transition-colors"
       >
-        {existingSummary ? tr.appointments.editSummary : tr.appointments.addSummary}
+        {existingSummary
+          ? tr.appointments.editSummary
+          : tr.appointments.addSummary}
       </button>
     );
   }
 
   if (state.success) {
     return (
-      <p className="text-xs text-primary/80 italic">{tr.appointments.summarySaved}</p>
+      <p className="text-xs text-primary/80 italic">
+        {tr.appointments.summarySaved}
+      </p>
     );
   }
 
@@ -45,10 +52,10 @@ export function AppointmentSummaryForm({ appointmentId, existingSummary }: Props
       )}
       <Textarea
         name="summary"
-        defaultValue={existingSummary ?? ""}
+        defaultValue={existingSummary ?? ''}
         placeholder={tr.appointments.summaryPlaceholder}
         rows={3}
-        className={cn("text-sm", state.errors?.summary && "border-destructive")}
+        className={cn('text-sm', state.errors?.summary && 'border-destructive')}
       />
       {state.errors?.summary && (
         <p className="text-xs text-destructive">{state.errors.summary[0]}</p>

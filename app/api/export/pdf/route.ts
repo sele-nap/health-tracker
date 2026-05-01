@@ -1,12 +1,12 @@
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { decryptIfPresent } from "@/lib/crypto";
-import { getT } from "@/lib/locale";
-import { rateLimit } from "@/lib/rate-limit";
-import { renderToBuffer } from "@react-pdf/renderer";
-import { HealthReportDocument } from "@/components/pdf/HealthReportDocument";
-import React from "react";
+import { HealthReportDocument } from '@/components/pdf/HealthReportDocument';
+import { auth } from '@/lib/auth';
+import { decryptIfPresent } from '@/lib/crypto';
+import { getT } from '@/lib/locale';
+import { prisma } from '@/lib/prisma';
+import { rateLimit } from '@/lib/rate-limit';
+import { renderToBuffer } from '@react-pdf/renderer';
+import { headers } from 'next/headers';
+import React from 'react';
 
 export async function GET() {
   const [session, tr] = await Promise.all([
@@ -15,14 +15,14 @@ export async function GET() {
   ]);
 
   if (!session?.user?.id) {
-    return new Response("Unauthorized", { status: 401 });
+    return new Response('Unauthorized', { status: 401 });
   }
 
   const rl = await rateLimit(`pdf:${session.user.id}`, 5, 60);
   if (rl.limited) {
-    return new Response("Too many requests", {
+    return new Response('Too many requests', {
       status: 429,
-      headers: { "Retry-After": String(rl.retryAfter) },
+      headers: { 'Retry-After': String(rl.retryAfter) },
     });
   }
 
@@ -32,7 +32,7 @@ export async function GET() {
   const [medications, symptomLogs, upcomingAppointments] = await Promise.all([
     prisma.medication.findMany({
       where: { userId: session.user.id, isActive: true },
-      orderBy: { name: "asc" },
+      orderBy: { name: 'asc' },
       select: {
         name: true,
         dosage: true,
@@ -47,7 +47,7 @@ export async function GET() {
         userId: session.user.id,
         loggedAt: { gte: thirtyDaysAgo },
       },
-      orderBy: { loggedAt: "desc" },
+      orderBy: { loggedAt: 'desc' },
       select: {
         loggedAt: true,
         overallMood: true,
@@ -60,10 +60,10 @@ export async function GET() {
     prisma.appointment.findMany({
       where: {
         userId: session.user.id,
-        status: "UPCOMING",
+        status: 'UPCOMING',
         scheduledAt: { gte: now },
       },
-      orderBy: { scheduledAt: "asc" },
+      orderBy: { scheduledAt: 'asc' },
       select: {
         title: true,
         doctorName: true,
@@ -106,9 +106,9 @@ export async function GET() {
 
   return new Response(new Uint8Array(buffer), {
     headers: {
-      "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="${filename}"`,
-      "Cache-Control": "no-store",
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="${filename}"`,
+      'Cache-Control': 'no-store',
     },
   });
 }

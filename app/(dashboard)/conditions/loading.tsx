@@ -10,7 +10,10 @@ export default function Loading() {
       </div>
       <div className="space-y-3">
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="rounded-xl border border-border bg-card p-5 space-y-3">
+          <div
+            key={i}
+            className="rounded-xl border border-border bg-card p-5 space-y-3"
+          >
             <div className="flex items-center justify-between">
               <div className="h-6 w-44 rounded bg-muted/40" />
               <div className="h-4 w-12 rounded bg-muted/30" />
