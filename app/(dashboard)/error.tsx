@@ -20,8 +20,8 @@ export default function DashboardError({
   return (
     <div className="max-w-md mx-auto mt-16 text-center space-y-6">
       <div className="space-y-2">
-        <p className="text-4xl">🌿</p>
-        <h2 className="font-heading italic text-2xl text-foreground">
+        <p className="text-4xl">✨</p>
+        <h2 className="font-heading font-semibold text-2xl text-foreground">
           {tr.error.title}
         </h2>
         <p className="text-muted-foreground text-sm">{tr.error.description}</p>

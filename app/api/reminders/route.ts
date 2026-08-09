@@ -1,5 +1,6 @@
 import { sendReminderEmail } from '@/lib/email';
 import { prisma } from '@/lib/prisma';
+import { timingSafeEqual } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const runtime = 'nodejs';
@@ -34,8 +35,14 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const auth = req.headers.get('authorization');
-  if (auth !== `Bearer ${secret}`) {
+  const auth = req.headers.get('authorization') ?? '';
+  const expected = `Bearer ${secret}`;
+  const authBuf = Buffer.from(auth);
+  const expectedBuf = Buffer.from(expected);
+  if (
+    authBuf.length !== expectedBuf.length ||
+    !timingSafeEqual(authBuf, expectedBuf)
+  ) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

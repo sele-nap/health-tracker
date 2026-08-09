@@ -48,8 +48,8 @@ export function LoginForm() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 gap-6">
       <div className="text-center space-y-1">
-        <p className="text-3xl">🌿</p>
-        <h1 className="font-heading italic text-2xl text-foreground">
+        <p className="text-3xl">✨</p>
+        <h1 className="font-heading font-semibold text-2xl text-foreground">
           Health Tracker
         </h1>
         <p className="text-sm text-muted-foreground">{tr.auth.welcomeBack}</p>

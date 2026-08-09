@@ -79,8 +79,8 @@ export default async function EditMedicationPage({
   return (
     <div className="max-w-xl mx-auto space-y-8">
       <div>
-        <h1 className="font-heading italic text-3xl text-foreground">
-          {tr.medications.editTitle} 🌿
+        <h1 className="font-heading font-semibold text-3xl text-foreground">
+          {tr.medications.editTitle} ✨
         </h1>
         <p className="text-muted-foreground mt-1">{medication.name}</p>
       </div>

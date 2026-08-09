@@ -2,7 +2,11 @@ type CellValue = string | number | boolean | null | undefined;
 
 function escape(value: CellValue): string {
   if (value === null || value === undefined) return '';
-  const str = String(value);
+  let str = String(value);
+  const first = str[0];
+  if (first === '=' || first === '+' || first === '-' || first === '@') {
+    str = "'" + str;
+  }
   if (
     str.includes(',') ||
     str.includes('"') ||

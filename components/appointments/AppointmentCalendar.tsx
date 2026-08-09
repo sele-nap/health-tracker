@@ -114,7 +114,7 @@ export function AppointmentCalendar({ appointments }: Props) {
         >
           <ChevronLeft size={18} />
         </button>
-        <span className="font-heading italic text-lg capitalize">
+        <span className="font-heading font-semibold text-lg capitalize">
           {monthLabel}
         </span>
         <button

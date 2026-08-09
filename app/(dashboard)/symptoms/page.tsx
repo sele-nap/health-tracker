@@ -1,4 +1,5 @@
 import { DeleteSymptomLogButton } from '@/components/symptoms/DeleteSymptomLogButton';
+import { buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { auth } from '@/lib/auth';
 import { decryptIfPresent } from '@/lib/crypto';
@@ -88,17 +89,14 @@ export default async function SymptomsPage({
     <div className="max-w-3xl mx-auto space-y-8">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="font-heading italic text-3xl text-foreground">
-            {tr.symptoms.title} 🌿
+          <h1 className="font-heading font-semibold text-3xl text-foreground">
+            {tr.symptoms.title}
           </h1>
           <p className="text-muted-foreground mt-1">
             {tr.symptoms.entriesCount(decryptedLogs.length)}
           </p>
         </div>
-        <Link
-          href="/symptoms/new"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
-        >
+        <Link href="/symptoms/new" className={buttonVariants({ size: 'lg' })}>
           <Plus size={15} />
           {tr.symptoms.addEntry}
         </Link>

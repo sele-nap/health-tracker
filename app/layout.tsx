@@ -1,12 +1,13 @@
 import { LocaleProvider } from '@/components/providers/LocaleProvider';
 import { getLocale } from '@/lib/locale';
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono, Playfair_Display } from 'next/font/google';
+import { Geist_Mono, Libre_Franklin, Lora } from 'next/font/google';
 import './globals.css';
 
-const geistSans = Geist({
+const libreFranklin = Libre_Franklin({
   variable: '--font-sans',
   subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
 });
 
 const geistMono = Geist_Mono({
@@ -14,10 +15,10 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
-const playfair = Playfair_Display({
+const lora = Lora({
   variable: '--font-heading',
   subsets: ['latin'],
-  style: ['normal', 'italic'],
+  weight: ['400', '500', '600', '700'],
 });
 
 export const metadata: Metadata = {
@@ -44,7 +45,7 @@ export default async function RootLayout({
   return (
     <html
       lang={locale}
-      className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} h-full`}
+      className={`${libreFranklin.variable} ${geistMono.variable} ${lora.variable} h-full`}
     >
       <body className="min-h-full flex flex-col antialiased">
         <LocaleProvider initialLocale={locale}>{children}</LocaleProvider>

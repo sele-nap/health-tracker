@@ -4,7 +4,7 @@ export type Locale = 'en' | 'fr';
 // English
 // ---------------------------------------------------------------------------
 export const en = {
-  dateLocale: 'en-US' as const,
+  dateLocale: 'en-US' as string,
 
   // Common
   save: 'Save',
@@ -137,6 +137,7 @@ export const en = {
     deleteEntry: 'Delete this symptom entry',
     customSection: 'Custom symptoms',
     customSeverity: 'severity',
+    date: 'Date',
   },
 
   // Medications
@@ -549,6 +550,7 @@ export const fr: typeof en = {
     deleteEntry: 'Supprimer cette entrée de symptôme',
     customSection: 'Symptômes personnalisés',
     customSeverity: 'sévérité',
+    date: 'Date',
   },
 
   medications: {

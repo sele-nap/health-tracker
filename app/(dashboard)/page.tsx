@@ -1,4 +1,5 @@
 import { MedicationChecklist } from '@/components/medications/MedicationChecklist';
+import { buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { auth } from '@/lib/auth';
 import { getT } from '@/lib/locale';
@@ -162,14 +163,14 @@ export default async function DashboardPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       <div>
-        <h1 className="font-heading italic text-3xl text-foreground">
-          {getGreeting()} 🌿
+        <h1 className="font-heading font-semibold text-3xl text-foreground">
+          {getGreeting()}
         </h1>
         <p className="text-muted-foreground mt-1">{formatDate()}</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
+        <Card className="bg-primary/5 border-primary/20">
           <CardHeader className="flex flex-row items-center gap-2 pb-2">
             <Activity size={16} className="text-primary" />
             <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -179,10 +180,10 @@ export default async function DashboardPage() {
           <CardContent>
             {todayLog ? (
               <>
-                <p className="text-2xl font-heading italic text-foreground">
+                <p className="text-4xl">
                   {todayLog.overallMood ? moodEmoji(todayLog.overallMood) : '✓'}
                 </p>
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-xs text-muted-foreground mt-2">
                   {todayLog.overallMood
                     ? tr.dashboard.moodValue(todayLog.overallMood)
                     : tr.dashboard.loggedToday}
@@ -190,10 +191,8 @@ export default async function DashboardPage() {
               </>
             ) : (
               <>
-                <p className="text-2xl font-heading italic text-foreground">
-                  —
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-4xl text-muted-foreground/30">—</p>
+                <p className="text-xs text-muted-foreground mt-2">
                   {tr.dashboard.notYetLogged}
                 </p>
               </>
@@ -214,7 +213,7 @@ export default async function DashboardPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-heading italic text-foreground">
+            <p className="text-2xl font-heading font-semibold text-foreground">
               {activeMeds === 0 ? '—' : `${takenToday}/${activeMeds}`}
             </p>
             <p className="text-xs text-muted-foreground mt-1">
@@ -235,7 +234,7 @@ export default async function DashboardPage() {
           <CardContent>
             {nextAppointment ? (
               <>
-                <p className="text-2xl font-heading italic text-foreground">
+                <p className="text-2xl font-heading font-semibold text-foreground">
                   {formatAppointmentDate(nextAppointment.scheduledAt)}
                 </p>
                 <p className="text-xs text-muted-foreground mt-1 truncate">
@@ -244,7 +243,7 @@ export default async function DashboardPage() {
               </>
             ) : (
               <>
-                <p className="text-2xl font-heading italic text-foreground">
+                <p className="text-2xl font-heading font-semibold text-foreground">
                   —
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
@@ -265,7 +264,7 @@ export default async function DashboardPage() {
           <CardContent>
             {avgMood !== null ? (
               <>
-                <p className="text-2xl font-heading italic text-foreground">
+                <p className="text-2xl font-heading font-semibold text-foreground">
                   {avgMood.toFixed(1)}
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
@@ -274,7 +273,7 @@ export default async function DashboardPage() {
               </>
             ) : (
               <>
-                <p className="text-2xl font-heading italic text-foreground">
+                <p className="text-2xl font-heading font-semibold text-foreground">
                   —
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
@@ -286,10 +285,10 @@ export default async function DashboardPage() {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+        <Card className="md:col-span-2">
           <CardHeader>
-            <CardTitle className="font-heading italic text-lg">
+            <CardTitle className="font-heading font-semibold text-lg">
               {tr.dashboard.logToday}
             </CardTitle>
           </CardHeader>
@@ -299,7 +298,7 @@ export default async function DashboardPage() {
             </p>
             <Link
               href="/symptoms/new"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
+              className={buttonVariants({ size: 'lg' })}
             >
               <Activity size={15} />
               {todayLog ? tr.dashboard.addEntry : tr.dashboard.log}
@@ -307,9 +306,9 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="md:col-span-3">
           <CardHeader>
-            <CardTitle className="font-heading italic text-lg">
+            <CardTitle className="font-heading font-semibold text-lg">
               {tr.dashboard.todaysMeds}
             </CardTitle>
           </CardHeader>

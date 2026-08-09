@@ -96,8 +96,8 @@ export default async function EditAppointmentPage({
   return (
     <div className="max-w-xl mx-auto space-y-8">
       <div>
-        <h1 className="font-heading italic text-3xl text-foreground">
-          {tr.appointments.editTitle} 🌿
+        <h1 className="font-heading font-semibold text-3xl text-foreground">
+          {tr.appointments.editTitle} ✨
         </h1>
         <p className="text-muted-foreground mt-1">{appt.title}</p>
       </div>
@@ -106,7 +106,7 @@ export default async function EditAppointmentPage({
 
       <Card>
         <CardHeader className="pb-4">
-          <CardTitle className="font-heading italic text-lg">
+          <CardTitle className="font-heading font-semibold text-lg">
             {tr.appointments.notes}
           </CardTitle>
         </CardHeader>

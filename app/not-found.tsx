@@ -1,3 +1,4 @@
+import { buttonVariants } from '@/components/ui/button';
 import { getT } from '@/lib/locale';
 import Link from 'next/link';
 
@@ -7,19 +8,16 @@ export default async function NotFound() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="text-center space-y-6 max-w-sm px-6">
-        <p className="text-6xl">🌿</p>
+        <p className="text-6xl">✨</p>
         <div className="space-y-2">
-          <h1 className="font-heading italic text-3xl text-foreground">
+          <h1 className="font-heading font-semibold text-3xl text-foreground">
             {tr.notFound.title}
           </h1>
           <p className="text-muted-foreground text-sm">
             {tr.notFound.description}
           </p>
         </div>
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
-        >
+        <Link href="/" className={buttonVariants({ size: 'lg' })}>
           {tr.notFound.backHome}
         </Link>
       </div>

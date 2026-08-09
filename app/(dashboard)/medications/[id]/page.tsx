@@ -135,7 +135,7 @@ export default async function MedicationDetailPage({
       <div className="flex items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-3 mb-1">
-            <h1 className="font-heading italic text-3xl text-foreground">
+            <h1 className="font-heading font-semibold text-3xl text-foreground">
               {medication.name}
             </h1>
             <Badge variant={medication.isActive ? 'default' : 'secondary'}>
@@ -192,12 +192,12 @@ export default async function MedicationDetailPage({
       {adherenceRate !== null && (
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="font-heading italic text-lg">
+            <CardTitle className="font-heading font-semibold text-lg">
               {tr.medications.adherence}
             </CardTitle>
           </CardHeader>
           <CardContent className="flex items-end gap-3">
-            <p className="text-4xl font-heading italic text-primary">
+            <p className="text-4xl font-heading font-semibold text-primary">
               {adherenceRate}%
             </p>
             <p className="text-sm text-muted-foreground pb-1">

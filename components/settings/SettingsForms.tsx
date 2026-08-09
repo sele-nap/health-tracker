@@ -36,7 +36,7 @@ export function SettingsForms({ currentName, email }: Props) {
     <div className="space-y-8">
       <Card>
         <CardHeader>
-          <CardTitle className="font-heading italic text-lg">
+          <CardTitle className="font-heading font-semibold text-lg">
             {tr.settings.profile}
           </CardTitle>
         </CardHeader>
@@ -88,7 +88,7 @@ export function SettingsForms({ currentName, email }: Props) {
 
       <Card>
         <CardHeader>
-          <CardTitle className="font-heading italic text-lg">
+          <CardTitle className="font-heading font-semibold text-lg">
             {tr.settings.changePassword}
           </CardTitle>
         </CardHeader>

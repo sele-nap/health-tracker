@@ -1,3 +1,4 @@
+import { pdfColors } from '@/lib/colors';
 import type { en } from '@/lib/i18n';
 import type {
   ReportAppointment,
@@ -12,27 +13,27 @@ const styles = StyleSheet.create({
   page: {
     fontFamily: 'Helvetica',
     fontSize: 10,
-    color: '#1a2a1a',
+    color: pdfColors.text,
     paddingTop: 48,
     paddingBottom: 48,
     paddingHorizontal: 48,
-    backgroundColor: '#f4f8f2',
+    backgroundColor: pdfColors.pageBg,
   },
   header: {
     marginBottom: 28,
     paddingBottom: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#b0cca8',
+    borderBottomColor: pdfColors.border,
   },
   headerTitle: {
     fontSize: 22,
     fontFamily: 'Helvetica-Bold',
-    color: '#1a2a1a',
+    color: pdfColors.text,
     marginBottom: 4,
   },
   headerMeta: {
     fontSize: 9,
-    color: '#5a7a5a',
+    color: pdfColors.textMuted,
   },
   section: {
     marginBottom: 22,
@@ -40,58 +41,58 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 13,
     fontFamily: 'Helvetica-Bold',
-    color: '#1a2a1a',
+    color: pdfColors.text,
     marginBottom: 10,
     paddingBottom: 4,
     borderBottomWidth: 0.5,
-    borderBottomColor: '#b0cca8',
+    borderBottomColor: pdfColors.border,
   },
   tableRow: {
     flexDirection: 'row',
     paddingVertical: 5,
     borderBottomWidth: 0.5,
-    borderBottomColor: '#cce0c4',
+    borderBottomColor: pdfColors.borderLight,
   },
   tableHeader: {
     flexDirection: 'row',
     paddingVertical: 5,
-    backgroundColor: '#ddeedd',
+    backgroundColor: pdfColors.tableHeaderBg,
     marginBottom: 2,
   },
   cell: {
     flex: 1,
     fontSize: 9,
-    color: '#2a3a2a',
+    color: pdfColors.textSecondary,
     paddingRight: 4,
   },
   cellBold: {
     flex: 1,
     fontSize: 9,
     fontFamily: 'Helvetica-Bold',
-    color: '#1a2a1a',
+    color: pdfColors.text,
     paddingRight: 4,
   },
   medRow: {
     flexDirection: 'row',
     paddingVertical: 6,
     borderBottomWidth: 0.5,
-    borderBottomColor: '#cce0c4',
+    borderBottomColor: pdfColors.borderLight,
     gap: 8,
   },
   medName: {
     width: 160,
     fontSize: 9,
     fontFamily: 'Helvetica-Bold',
-    color: '#1a2a1a',
+    color: pdfColors.text,
   },
   medDetail: {
     flex: 1,
     fontSize: 9,
-    color: '#2a3a2a',
+    color: pdfColors.textSecondary,
   },
   emptyText: {
     fontSize: 9,
-    color: '#7a9a7a',
+    color: pdfColors.textEmpty,
     fontStyle: 'italic',
   },
   footer: {
@@ -101,7 +102,7 @@ const styles = StyleSheet.create({
     right: 48,
     textAlign: 'center',
     fontSize: 8,
-    color: '#9aaa9a',
+    color: pdfColors.footer,
   },
 });
 

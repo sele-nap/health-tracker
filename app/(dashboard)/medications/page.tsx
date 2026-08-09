@@ -1,5 +1,6 @@
 import { ToggleActiveButton } from '@/components/medications/ToggleActiveButton';
 import { Badge } from '@/components/ui/badge';
+import { buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { auth } from '@/lib/auth';
 import { decryptIfPresent } from '@/lib/crypto';
@@ -80,8 +81,8 @@ export default async function MedicationsPage({
     <div className="max-w-3xl mx-auto space-y-8">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="font-heading italic text-3xl text-foreground">
-            {tr.medications.title} 🌿
+          <h1 className="font-heading font-semibold text-3xl text-foreground">
+            {tr.medications.title}
           </h1>
           <p className="text-muted-foreground mt-1">
             {tr.medications.activeCount(activeCount)}
@@ -89,7 +90,7 @@ export default async function MedicationsPage({
         </div>
         <Link
           href="/medications/new"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
+          className={buttonVariants({ size: 'lg' })}
         >
           <Plus size={15} />
           {tr.medications.add}
@@ -141,7 +142,7 @@ export default async function MedicationsPage({
             <Card key={med.id} className={med.isActive ? '' : 'opacity-60'}>
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between gap-3">
-                  <CardTitle className="font-heading italic text-lg">
+                  <CardTitle className="font-heading font-semibold text-lg">
                     <Link
                       href={`/medications/${med.id}`}
                       className="hover:text-primary transition-colors"

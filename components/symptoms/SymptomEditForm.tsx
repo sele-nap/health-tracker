@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { chartColors } from '@/lib/colors';
 import { cn } from '@/lib/utils';
 import { updateSymptomLog } from '@/server/actions/symptoms';
 import type { SymptomLogState } from '@/types/actions';
@@ -19,6 +20,7 @@ type SliderFieldProps = {
   onChange: (v: number) => void;
   error?: string[];
   sliderLabels: string[];
+  trackColor?: string;
 };
 
 function SliderField({
@@ -29,7 +31,15 @@ function SliderField({
   onChange,
   error,
   sliderLabels,
+  trackColor,
 }: SliderFieldProps) {
+  const pct = ((value - 1) / 9) * 100;
+  const trackStyle = trackColor
+    ? {
+        background: `linear-gradient(to right, ${trackColor} ${pct}%, var(--border) ${pct}%)`,
+      }
+    : undefined;
+
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
@@ -50,6 +60,7 @@ function SliderField({
           value={value}
           onChange={(e) => onChange(Number(e.target.value))}
           className="flex-1 appearance-none cursor-pointer"
+          style={trackStyle}
         />
         <span className="text-xs text-muted-foreground w-3">10</span>
       </div>
@@ -110,7 +121,7 @@ export function SymptomEditForm({
       )}
 
       <div className="space-y-2">
-        <Label htmlFor="loggedAt">Date</Label>
+        <Label htmlFor="loggedAt">{tr.symptoms.date}</Label>
         <Input
           id="loggedAt"
           name="loggedAt"
@@ -124,7 +135,7 @@ export function SymptomEditForm({
       </div>
 
       <div className="space-y-6">
-        <h2 className="font-heading italic text-lg text-foreground">
+        <h2 className="font-heading font-semibold text-lg text-foreground">
           {tr.symptoms.formTitle}
         </h2>
         <SliderField
@@ -135,6 +146,7 @@ export function SymptomEditForm({
           onChange={setMood}
           error={state.errors?.overallMood}
           sliderLabels={tr.symptoms.sliderLabels}
+          trackColor={chartColors.mood}
         />
         <SliderField
           id="energyLevel"
@@ -144,6 +156,7 @@ export function SymptomEditForm({
           onChange={setEnergy}
           error={state.errors?.energyLevel}
           sliderLabels={tr.symptoms.sliderLabels}
+          trackColor={chartColors.energy}
         />
         <SliderField
           id="stressLevel"
@@ -153,11 +166,12 @@ export function SymptomEditForm({
           onChange={setStress}
           error={state.errors?.stressLevel}
           sliderLabels={tr.symptoms.sliderLabels}
+          trackColor={chartColors.stress}
         />
       </div>
 
       <div className="space-y-6">
-        <h2 className="font-heading italic text-lg text-foreground">
+        <h2 className="font-heading font-semibold text-lg text-foreground">
           {tr.symptoms.sleep}
         </h2>
         <div className="space-y-2">
@@ -190,12 +204,13 @@ export function SymptomEditForm({
           onChange={setSleepQuality}
           error={state.errors?.sleepQuality}
           sliderLabels={tr.symptoms.sliderLabels}
+          trackColor={chartColors.sleepQuality}
         />
       </div>
 
       {definitions.length > 0 && (
         <div className="space-y-6">
-          <h2 className="font-heading italic text-lg text-foreground">
+          <h2 className="font-heading font-semibold text-lg text-foreground">
             {tr.symptoms.customSection}
           </h2>
           {definitions.map((def) => (

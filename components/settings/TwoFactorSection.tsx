@@ -6,8 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { authClient } from '@/lib/auth-client';
-import Image from 'next/image';
-import { useCallback, useState, useTransition } from 'react';
+import QRCode from 'qrcode';
+import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
 
 type Props = {
   twoFactorEnabled: boolean;
@@ -26,6 +26,18 @@ export function TwoFactorSection({ twoFactorEnabled }: Props) {
   const [enabled, setEnabled] = useState(twoFactorEnabled);
   const [pending, startTransition] = useTransition();
   const [copied, setCopied] = useState(false);
+
+  const qrCanvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    if (totpUri && qrCanvasRef.current) {
+      QRCode.toCanvas(qrCanvasRef.current, totpUri, {
+        width: 160,
+        margin: 2,
+        color: { dark: '#000000', light: '#ffffff' },
+      });
+    }
+  }, [totpUri]);
 
   const copyUri = useCallback(() => {
     if (!totpUri) return;
@@ -93,7 +105,7 @@ export function TwoFactorSection({ twoFactorEnabled }: Props) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="font-heading italic text-lg">
+          <CardTitle className="font-heading font-semibold text-lg">
             {tr.settings.twoFactor}
           </CardTitle>
         </CardHeader>
@@ -123,7 +135,7 @@ export function TwoFactorSection({ twoFactorEnabled }: Props) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="font-heading italic text-lg">
+          <CardTitle className="font-heading font-semibold text-lg">
             {tr.settings.enableTwoFactor}
           </CardTitle>
         </CardHeader>
@@ -163,11 +175,10 @@ export function TwoFactorSection({ twoFactorEnabled }: Props) {
                 {tr.settings.scanInstructions}
               </p>
               <div className="bg-white p-3 rounded-lg inline-block">
-                <Image
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(totpUri)}`}
-                  alt="TOTP QR code"
-                  width={160}
-                  height={160}
+                <canvas
+                  ref={qrCanvasRef}
+                  aria-label="TOTP QR code"
+                  role="img"
                 />
               </div>
               <button
@@ -211,7 +222,7 @@ export function TwoFactorSection({ twoFactorEnabled }: Props) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="font-heading italic text-lg">
+        <CardTitle className="font-heading font-semibold text-lg">
           {tr.settings.twoFactor}
         </CardTitle>
       </CardHeader>

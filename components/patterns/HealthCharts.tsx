@@ -1,6 +1,7 @@
 'use client';
 
 import { useLocale } from '@/components/providers/LocaleProvider';
+import { chartColors } from '@/lib/colors';
 import type { ChartDataPoint } from '@/types/patterns';
 import {
   Area,
@@ -21,24 +22,16 @@ type Props = {
   data: ChartDataPoint[];
 };
 
-const COLORS = {
-  mood: '#8fba70',
-  energy: '#4e9e78',
-  stress: '#c4775a',
-  sleep: '#5a7aaa',
-  sleepQuality: '#9070b8',
-};
-
 const tooltipStyle = {
-  backgroundColor: '#0e180f',
-  border: '1px solid #253525',
+  backgroundColor: chartColors.tooltipBg,
+  border: `1px solid ${chartColors.tooltipBorder}`,
   borderRadius: '8px',
-  color: '#c8e0c0',
+  color: chartColors.tooltipText,
   fontSize: '12px',
 };
 
 const labelStyle = {
-  color: '#6a8a6a',
+  color: chartColors.tick,
   fontSize: '11px',
 };
 
@@ -66,29 +59,37 @@ export function WellbeingChart({ data }: Props) {
       >
         <defs>
           <linearGradient id="gradMood" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor={COLORS.mood} stopOpacity={0.25} />
-            <stop offset="95%" stopColor={COLORS.mood} stopOpacity={0} />
+            <stop offset="5%" stopColor={chartColors.mood} stopOpacity={0.25} />
+            <stop offset="95%" stopColor={chartColors.mood} stopOpacity={0} />
           </linearGradient>
           <linearGradient id="gradEnergy" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor={COLORS.energy} stopOpacity={0.25} />
-            <stop offset="95%" stopColor={COLORS.energy} stopOpacity={0} />
+            <stop
+              offset="5%"
+              stopColor={chartColors.energy}
+              stopOpacity={0.25}
+            />
+            <stop offset="95%" stopColor={chartColors.energy} stopOpacity={0} />
           </linearGradient>
           <linearGradient id="gradStress" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor={COLORS.stress} stopOpacity={0.25} />
-            <stop offset="95%" stopColor={COLORS.stress} stopOpacity={0} />
+            <stop
+              offset="5%"
+              stopColor={chartColors.stress}
+              stopOpacity={0.25}
+            />
+            <stop offset="95%" stopColor={chartColors.stress} stopOpacity={0} />
           </linearGradient>
         </defs>
-        <CartesianGrid strokeDasharray="3 3" stroke="#1a2e1a" />
+        <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
         <XAxis
           dataKey="date"
-          tick={{ fill: '#6a8a6a', fontSize: 11 }}
-          axisLine={{ stroke: '#2a3d2a' }}
+          tick={{ fill: chartColors.tick, fontSize: 11 }}
+          axisLine={{ stroke: chartColors.axis }}
           tickLine={false}
         />
         <YAxis
           domain={[1, 10]}
           ticks={[1, 3, 5, 7, 10]}
-          tick={{ fill: '#6a8a6a', fontSize: 11 }}
+          tick={{ fill: chartColors.tick, fontSize: 11 }}
           axisLine={false}
           tickLine={false}
         />
@@ -96,14 +97,14 @@ export function WellbeingChart({ data }: Props) {
         <Legend
           wrapperStyle={{
             fontSize: '12px',
-            color: '#6a8a6a',
+            color: chartColors.tick,
             paddingTop: '8px',
           }}
         />
         <Area
           type="monotone"
           dataKey="mood"
-          stroke={COLORS.mood}
+          stroke={chartColors.mood}
           strokeWidth={2}
           fill="url(#gradMood)"
           dot={false}
@@ -113,7 +114,7 @@ export function WellbeingChart({ data }: Props) {
         <Area
           type="monotone"
           dataKey="energy"
-          stroke={COLORS.energy}
+          stroke={chartColors.energy}
           strokeWidth={2}
           fill="url(#gradEnergy)"
           dot={false}
@@ -123,7 +124,7 @@ export function WellbeingChart({ data }: Props) {
         <Area
           type="monotone"
           dataKey="stress"
-          stroke={COLORS.stress}
+          stroke={chartColors.stress}
           strokeWidth={2}
           fill="url(#gradStress)"
           dot={false}
@@ -151,17 +152,17 @@ export function SleepChart({ data }: Props) {
       >
         <CartesianGrid
           strokeDasharray="3 3"
-          stroke="#1a2e1a"
+          stroke={chartColors.grid}
           vertical={false}
         />
         <XAxis
           dataKey="date"
-          tick={{ fill: '#6a8a6a', fontSize: 11 }}
-          axisLine={{ stroke: '#2a3d2a' }}
+          tick={{ fill: chartColors.tick, fontSize: 11 }}
+          axisLine={{ stroke: chartColors.axis }}
           tickLine={false}
         />
         <YAxis
-          tick={{ fill: '#6a8a6a', fontSize: 11 }}
+          tick={{ fill: chartColors.tick, fontSize: 11 }}
           axisLine={false}
           tickLine={false}
         />
@@ -169,19 +170,19 @@ export function SleepChart({ data }: Props) {
         <Legend
           wrapperStyle={{
             fontSize: '12px',
-            color: '#6a8a6a',
+            color: chartColors.tick,
             paddingTop: '8px',
           }}
         />
         <Bar
           dataKey="sleepHours"
-          fill={COLORS.sleep}
+          fill={chartColors.sleep}
           radius={[3, 3, 0, 0]}
           name={tr.patterns.chartHours}
         />
         <Bar
           dataKey="sleepQuality"
-          fill={COLORS.sleepQuality}
+          fill={chartColors.sleepQuality}
           radius={[3, 3, 0, 0]}
           name={tr.patterns.chartQuality}
         />

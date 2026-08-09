@@ -93,8 +93,8 @@ export default async function PatternsPage() {
     <div className="max-w-4xl mx-auto space-y-8">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="font-heading italic text-3xl text-foreground">
-            {tr.patterns.title} 🌿
+          <h1 className="font-heading font-semibold text-3xl text-foreground">
+            {tr.patterns.title} ✨
           </h1>
           <p className="text-muted-foreground mt-1">
             {tr.patterns.subtitle(logs.length)}
@@ -114,7 +114,7 @@ export default async function PatternsPage() {
           <Card key={s.label}>
             <CardContent className="pt-4 pb-4">
               <p className="text-xs text-muted-foreground">{s.label}</p>
-              <p className="font-heading italic text-2xl mt-1">
+              <p className="font-heading font-semibold text-2xl mt-1">
                 {s.value ?? '—'}
               </p>
             </CardContent>
@@ -124,7 +124,7 @@ export default async function PatternsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="font-heading italic text-lg">
+          <CardTitle className="font-heading font-semibold text-lg">
             {tr.patterns.wellbeingChart}
           </CardTitle>
         </CardHeader>
@@ -135,7 +135,7 @@ export default async function PatternsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="font-heading italic text-lg">
+          <CardTitle className="font-heading font-semibold text-lg">
             {tr.patterns.sleepChart}
           </CardTitle>
         </CardHeader>
@@ -146,7 +146,7 @@ export default async function PatternsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="font-heading italic text-lg">
+          <CardTitle className="font-heading font-semibold text-lg">
             {tr.patterns.correlationsTitle}
           </CardTitle>
           <p className="text-sm text-muted-foreground mt-1">
@@ -190,7 +190,7 @@ export default async function PatternsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="font-heading italic text-lg">
+          <CardTitle className="font-heading font-semibold text-lg">
             {tr.patterns.exportData}
           </CardTitle>
           <p className="text-sm text-muted-foreground mt-1">
